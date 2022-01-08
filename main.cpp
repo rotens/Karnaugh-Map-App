@@ -16,17 +16,14 @@ class Map4x4
     std::array<std::array<Value, 4>, 4> kmap;
     int8_t zeroes = 16;
     std::vector<std::array<std::pair<int8_t, int8_t>, 4>> square2x2Groups;
-    std::array<std::pair<int8_t, int8_t>, 8> rect4x2Group;
+    std::vector<std::array<std::pair<int8_t, int8_t>, 8>> rect4x2Groups;
 
-    // void setNewIndexes(std::pair<int8_t, int8_t>&, int8_t, int8_t);
     void findSquare2x2Groups();
     void findRect4x2Groups();
-    // void moveGroup(std::array<std::pair<int8_t, int8_t>, 4>&, int8_t, int8_t);
-    bool isSquare2x2Group(int8_t, int8_t);
-    void addSquare2x2GroupToVector(int8_t, int8_t);
-    bool isRect4x2VerticalGroup(int8_t, int8_t);
-    bool isRect4x2HorizontalGroup(int8_t, int8_t);
+    bool isGroup(int8_t, int8_t, int8_t, int8_t);
+    void addSquare2x2Group(int8_t, int8_t);
     void addRect4x2Group(int8_t, int8_t, int8_t, int8_t);
+    bool isContainedIn4x2Group(int8_t, int8_t, int8_t, int8_t);
 
 public:
     void printKmap() const;
@@ -41,14 +38,14 @@ public:
 void Map4x4::findGroups()
 {
     findRect4x2Groups();
-    //findSquare2x2Groups();
+    findSquare2x2Groups();
 }
 
 void Map4x4::findRect4x2Groups()
 {
     for (int8_t i = 0; i < 4; ++i)
     {
-        if (isRect4x2HorizontalGroup(i, 0))
+        if (isGroup(i, 0, 2, 4))
         {
             addRect4x2Group(i, 0, 2, 4);
         }
@@ -56,7 +53,7 @@ void Map4x4::findRect4x2Groups()
 
     for (int8_t i = 0; i < 4; ++i)
     {
-        if (isRect4x2VerticalGroup(0, i))
+        if (isGroup(0, i, 4, 2))
         {
             addRect4x2Group(0, i, 4, 2);
         }
@@ -66,6 +63,7 @@ void Map4x4::findRect4x2Groups()
 void Map4x4::addRect4x2Group(int8_t row, int8_t col, int8_t height, int8_t width)
 {
     int8_t k = 0;
+    std::array<std::pair<int8_t, int8_t>, 8> rect4x2Group;
 
     for (int8_t i = row; i < row+height; ++i)
     {
@@ -74,65 +72,8 @@ void Map4x4::addRect4x2Group(int8_t row, int8_t col, int8_t height, int8_t width
             rect4x2Group[k++] = getRealIndices(i, j);
         }
     }
-}
 
-bool Map4x4::isRect4x2HorizontalGroup(int8_t row, int8_t col)
-{
-    int8_t x, y;
-    int8_t dontCares = 0;
-
-    for (int8_t i = row; i < row+2; ++i)
-    {
-        for (int8_t j = col; j <= col+4; ++j)
-        {
-            std::tie(x, y) = getRealIndices(i, j);
-
-            if (kmap[x][y] != Value::one) 
-            {
-                if (kmap[x][y] != Value::dont_care)
-                {
-                    return false;
-                }
-                    
-                ++dontCares;
-            }
-        }
-    }
-
-    if (dontCares == 8)
-        return false;
-    
-    return true;
-}
-
-bool Map4x4::isRect4x2VerticalGroup(int8_t row, int8_t col)
-{
-    int8_t x, y;
-    int8_t dontCares = 0;
-
-    for (int8_t i = row; i < row+4; ++i)
-    {
-        for (int8_t j = col; j < col+2; ++j)
-        {
-            std::tie(x, y) = getRealIndices(i, j);
-
-            if (kmap[x][y] != Value::one) 
-            {
-                if (kmap[x][y] != Value::dont_care)
-                {
-                    __TEST__
-                    return false;
-                }
-                    
-                ++dontCares;
-            }
-        }
-    }
-
-    if (dontCares == 8)
-        return false;
-    
-    return true;
+    rect4x2Groups.push_back(std::move(rect4x2Group));
 }
 
 void Map4x4::findSquare2x2Groups() 
@@ -141,22 +82,22 @@ void Map4x4::findSquare2x2Groups()
     {
         for (int8_t j = 0; j < 4; ++j) 
         {
-            if (isSquare2x2Group(i, j))
+            if (isGroup(i, j, 2, 2) and not isContainedIn4x2Group(i, j, 2, 2))
             {
-                addSquare2x2GroupToVector(i, j);
+                addSquare2x2Group(i, j);
             }
         }
     }
 }
 
-bool Map4x4::isSquare2x2Group(int8_t row, int8_t col)
+bool Map4x4::isGroup(int8_t row, int8_t col, int8_t height, int8_t width)
 {
     int8_t x, y;
     int8_t dontCares = 0;
 
-    for (int8_t i = row; i <= row+1; ++i)
+    for (int8_t i = row; i < row+height; ++i)
     {
-        for (int8_t j = col; j <= col+1; ++j)
+        for (int8_t j = col; j < col+width; ++j)
         {
             std::tie(x, y) = getRealIndices(i, j);
 
@@ -172,13 +113,13 @@ bool Map4x4::isSquare2x2Group(int8_t row, int8_t col)
         }
     }
 
-    if (dontCares == 4)
+    if (dontCares == width*height)
         return false;
     
     return true;
 }
 
-void Map4x4::addSquare2x2GroupToVector(int8_t row, int8_t col)
+void Map4x4::addSquare2x2Group(int8_t row, int8_t col)
 {
     std::array<std::pair<int8_t, int8_t>, 4> newGroup;
     newGroup[0] = getRealIndices(row, col);
@@ -188,33 +129,32 @@ void Map4x4::addSquare2x2GroupToVector(int8_t row, int8_t col)
     square2x2Groups.push_back(std::move(newGroup));
 }
 
-// void Map4x4::moveGroup(std::array<std::pair<int8_t, int8_t>, 4>& group, int8_t row, int8_t col)
-// {
-//     row %= 4;
-//     col %= 4;
+bool Map4x4::isContainedIn4x2Group(int8_t row, int8_t col, int8_t width, int8_t height)
+{
+    int8_t matches = 0;
+    auto firstCell = std::pair<int8_t, int8_t>(row, col);
+    auto lastCell = getRealIndices(row+height-1, col+width-1);
 
-//     for (auto& indexes : group)
-//     {
-//         setNewIndexes(indexes, row, col);
-//     }
-// }
+    for (const auto& group : rect4x2Groups)
+    {
+        for (const auto& elem : group) 
+        {
+            if (elem == firstCell)
+                ++matches;
 
-// void Map4x4::setNewIndexes(std::pair<int8_t, int8_t>& indexes, int8_t row, int8_t col)
-// {
-//     if (indexes.first + row < 0)
-//         indexes.first += 4 + row;
-//     else if (indexes.first + row > 3)
-//         indexes.first = (indexes.first + row) % 4;
-//     else 
-//         indexes.first += row; 
+            if (elem == lastCell)
+                ++matches;   
+        }
 
-//     if (indexes.second + col < 0)
-//         indexes.second += 4 + col;
-//     else if (indexes.second + col > 3)
-//         indexes.second = (indexes.second + col) % 4;
-//     else 
-//         indexes.second += col; 
-// }
+        if (matches == 2)
+            return true;
+
+        matches = 0;
+    }
+
+    return false;
+}
+
 
 // void Map4x4::printGroup() const
 // {
@@ -250,11 +190,14 @@ void Map4x4::printSquare2x2Groups() const
 
 void Map4x4::printRect4x2Group() const
 {
-    for (const auto& elem : rect4x2Group)
+    for (const auto& group : rect4x2Groups)
     {
-        std::cout << "(" << (int)elem.first << ", " << (int)elem.second << ")" << " ";
+        for (const auto& elem : group)
+        {
+            std::cout << "(" << (int)elem.first << ", " << (int)elem.second << ")" << " ";
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 }
 
 void Map4x4::initializeKmap()
@@ -295,17 +238,17 @@ int main()
     
 
     std::array<std::array<Value, 4>, 4> testKmap = {{
+        {Value::zero, Value::zero, Value::zero, Value::zero},
         {Value::one, Value::one, Value::zero, Value::zero},
-        {Value::one, Value::one, Value::zero, Value::zero},
-        {Value::one, Value::one, Value::zero, Value::zero},
-        {Value::one, Value::one, Value::zero, Value::zero}
+        {Value::one, Value::one, Value::one, Value::one},
+        {Value::one, Value::one, Value::one, Value::one}
     }};
 
     Map4x4 kmapObject;
     kmapObject.initializeKmapWith(testKmap);
     kmapObject.printKmap();
     kmapObject.findGroups();
-    // kmapObject.printSquare2x2Groups();
+    kmapObject.printSquare2x2Groups();
     kmapObject.printRect4x2Group();
     // kmap.printKmap();
     // kmap.printGroup();
