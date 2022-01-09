@@ -16,13 +16,16 @@ class Map4x4
     std::array<std::array<Value, 4>, 4> kmap;
     int8_t zeroes = 16;
     std::vector<std::array<std::pair<int8_t, int8_t>, 4>> square2x2Groups;
+    std::vector<std::array<std::pair<int8_t, int8_t>, 4>> rect4x1Groups;
     std::vector<std::array<std::pair<int8_t, int8_t>, 8>> rect4x2Groups;
 
     void findSquare2x2Groups();
     void findRect4x2Groups();
+    void findRect4x1Groups();
     bool isGroup(int8_t, int8_t, int8_t, int8_t);
     void addSquare2x2Group(int8_t, int8_t);
     void addRect4x2Group(int8_t, int8_t, int8_t, int8_t);
+    void addRect4x1Group(int8_t, int8_t, int8_t, int8_t);
     bool isContainedIn4x2Group(int8_t, int8_t, int8_t, int8_t);
 
 public:
@@ -32,6 +35,7 @@ public:
     void printGroup() const;
     void printSquare2x2Groups() const;
     void printRect4x2Group() const;
+    void printRect4x1Group() const;
     void findGroups();
 };
 
@@ -39,6 +43,7 @@ void Map4x4::findGroups()
 {
     findRect4x2Groups();
     findSquare2x2Groups();
+    findRect4x1Groups();
 }
 
 void Map4x4::findRect4x2Groups()
@@ -90,6 +95,43 @@ void Map4x4::findSquare2x2Groups()
     }
 }
 
+void Map4x4::findRect4x1Groups()
+{
+    for (int8_t i = 0; i < 4; ++i)
+    {
+        /* Horizontal group */
+        if (isGroup(i, 0, 1, 4) and not isContainedIn4x2Group(i, 0, 1, 4))
+        {
+            addRect4x1Group(i, 0, 1, 4);
+        }
+    }
+
+    for (int8_t i = 0; i < 4; ++i)
+    {
+        /* Vertical group */
+        if (isGroup(0, i, 4, 1) and not isContainedIn4x2Group(0, i, 4, 1))
+        {
+            addRect4x1Group(0, i, 4, 1);
+        }
+    }
+}
+
+void Map4x4::addRect4x1Group(int8_t row, int8_t col, int8_t height, int8_t width)
+{
+    int8_t k = 0;
+    std::array<std::pair<int8_t, int8_t>, 4> newGroup;
+
+    for (int8_t i = row; i < row+height; ++i) 
+    {
+        for (int8_t j = col; j < col+width; ++j)
+        {
+            newGroup[k++] = std::make_pair(i, j);
+        }
+    }
+
+    rect4x1Groups.push_back(std::move(newGroup));
+}
+
 bool Map4x4::isGroup(int8_t row, int8_t col, int8_t height, int8_t width)
 {
     int8_t x, y;
@@ -129,7 +171,7 @@ void Map4x4::addSquare2x2Group(int8_t row, int8_t col)
     square2x2Groups.push_back(std::move(newGroup));
 }
 
-bool Map4x4::isContainedIn4x2Group(int8_t row, int8_t col, int8_t width, int8_t height)
+bool Map4x4::isContainedIn4x2Group(int8_t row, int8_t col, int8_t height, int8_t width)
 {
     int8_t matches = 0;
     auto firstCell = std::pair<int8_t, int8_t>(row, col);
@@ -200,6 +242,18 @@ void Map4x4::printRect4x2Group() const
     }
 }
 
+void Map4x4::printRect4x1Group() const
+{
+    for (const auto& group : rect4x1Groups)
+    {
+        for (const auto& elem : group)
+        {
+            std::cout << "(" << (int)elem.first << ", " << (int)elem.second << ")" << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
 void Map4x4::initializeKmap()
 {
     for (auto& row : kmap)
@@ -238,8 +292,8 @@ int main()
     
 
     std::array<std::array<Value, 4>, 4> testKmap = {{
-        {Value::zero, Value::zero, Value::zero, Value::zero},
-        {Value::one, Value::one, Value::zero, Value::zero},
+        {Value::one, Value::zero, Value::zero, Value::zero},
+        {Value::one, Value::zero, Value::zero, Value::zero},
         {Value::one, Value::one, Value::one, Value::one},
         {Value::one, Value::one, Value::one, Value::one}
     }};
@@ -250,6 +304,8 @@ int main()
     kmapObject.findGroups();
     kmapObject.printSquare2x2Groups();
     kmapObject.printRect4x2Group();
+    kmapObject.printRect4x1Group();
+
     // kmap.printKmap();
     // kmap.printGroup();
     // kmap.moveGroup(-2, -2);
