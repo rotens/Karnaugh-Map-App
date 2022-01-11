@@ -9,9 +9,10 @@
 #define __TEST__ std::cout<<"TEST"<<std::endl;
 
 enum class Value { zero = '0', one = '1', dont_care = 'X' };
-
+template<int N> using VecIter = std::vector<std::array<std::pair<int8_t, int8_t>, N>>::iterator;
 std::pair<int8_t, int8_t> getRealIndices(int8_t, int8_t);
 int8_t translateIndices(int8_t, int8_t);
+
 
 class Map4x4
 {
@@ -24,6 +25,7 @@ class Map4x4
     std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups;
     std::vector<std::pair<int8_t, int8_t>> _1x1Groups;
     std::array<int8_t, 16> cellsInGroup{};
+    std::array<int8_t, 16> cellsNumberOfGroups{};
 
     void findSquare2x2Groups();
     void findRect4x2Groups();
@@ -37,14 +39,17 @@ class Map4x4
     void addRect4x1Group(int8_t, int8_t, int8_t, int8_t);
     void addRect2x1Group(int8_t, int8_t, int8_t, int8_t);
     void add1x1Group(int8_t, int8_t);
-    bool isContainedIn4x2Group(int8_t, int8_t, int8_t, int8_t);
     bool is4x1GroupContainedIn4x2Group(int8_t, int8_t, int8_t, int8_t);
-    bool isContainedIn2x2Group(int8_t, int8_t, int8_t, int8_t);
-    bool isContainedIn4x1Group(int8_t, int8_t, int8_t, int8_t);
     template<int N> 
     bool isContainedInGroup(
         std::vector<std::array<std::pair<int8_t, int8_t>, N>>&, int8_t, int8_t, int8_t, int8_t);
     bool isAnyCellNotInGroupExistent();
+    void removeRedundantGroups();
+    template<int N, typename T> 
+    void removeRedundantGroupsFromGivenVector(
+        std::vector<std::array<std::pair<int8_t, int8_t>, N>>&);
+    template<int N> 
+    void decrementNumberOfGroups(std::array<std::pair<int8_t, int8_t>, N>&);
 
 public:
     void printKmap() const;
@@ -58,6 +63,7 @@ public:
     void print1x1Group() const;
     void countZeroesAndOnes();
     void findGroups();
+    void printCellsNumberOfGroups();
 };
 
 void Map4x4::findGroups()
@@ -67,6 +73,7 @@ void Map4x4::findGroups()
     findSquare2x2Groups();
     findRect2x1Groups();
     find1x1Groups();
+    removeRedundantGroups();
 }
 
 void Map4x4::findRect4x2Groups()
@@ -105,6 +112,7 @@ void Map4x4::addRect4x2Group(int8_t row, int8_t col, int8_t height, int8_t width
         {
             rect4x2Group[k++] = getRealIndices(i, j);
             cellsInGroup[translateIndices(i, j)] = 1;
+            ++cellsNumberOfGroups[translateIndices(i, j)];
         }
     }
 
@@ -139,6 +147,7 @@ void Map4x4::addSquare2x2Group(int8_t row, int8_t col)
         {
             newGroup[k++] = getRealIndices(i, j);
             cellsInGroup[translateIndices(i, j)] = 1;
+            ++cellsNumberOfGroups[translateIndices(i, j)];
         }
     }
     
@@ -183,6 +192,7 @@ void Map4x4::addRect4x1Group(int8_t row, int8_t col, int8_t height, int8_t width
         {
             newGroup[k++] = getRealIndices(i, j);
             cellsInGroup[translateIndices(i, j)] = 1;
+            ++cellsNumberOfGroups[translateIndices(i, j)];
         }
     }
 
@@ -231,6 +241,7 @@ void Map4x4::addRect2x1Group(int8_t row, int8_t col, int8_t height, int8_t width
         {
             newGroup[k++] = getRealIndices(i, j);
             cellsInGroup[translateIndices(i, j)] = 1;
+            ++cellsNumberOfGroups[translateIndices(i, j)];
         }
     }
 
@@ -279,6 +290,7 @@ void Map4x4::add1x1Group(int8_t row, int8_t col)
 {
     _1x1Groups.push_back(std::make_pair(row, col));
     cellsInGroup[translateIndices(row, col)] = 1;
+    ++cellsNumberOfGroups[translateIndices(row, col)];
 }
 
 bool Map4x4::isGroup(int8_t row, int8_t col, int8_t height, int8_t width)
@@ -343,84 +355,6 @@ bool Map4x4::is4x1GroupContainedIn4x2Group(int8_t row, int8_t col, int8_t height
     return false;
 }
 
-// bool Map4x4::isContainedIn4x2Group(int8_t row, int8_t col, int8_t height, int8_t width)
-// {
-//     int8_t matches = 0;
-//     auto firstCell = std::pair<int8_t, int8_t>(row, col);
-//     auto lastCell = getRealIndices(row+height-1, col+width-1);
-
-//     for (const auto& group : rect4x2Groups)
-//     {
-//         for (const auto& elem : group) 
-//         {
-//             if (elem == firstCell)
-//                 ++matches;
-
-//             if (elem == lastCell)
-//                 ++matches;
-//         }
-
-//         if (matches == 2)
-//             return true;
-
-//         matches = 0;
-//     }
-
-//     return false;
-// }
-
-// bool Map4x4::isContainedIn2x2Group(int8_t row, int8_t col, int8_t height, int8_t width)
-// {
-//     int8_t matches = 0;
-//     auto firstCell = std::pair<int8_t, int8_t>(row, col);
-//     auto lastCell = getRealIndices(row+height-1, col+width-1);
-
-//     for (const auto& group : square2x2Groups)
-//     {
-//         for (const auto& elem : group) 
-//         {
-//             if (elem == firstCell)
-//                 ++matches;
-
-//             if (elem == lastCell)
-//                 ++matches;
-//         }
-
-//         if (matches == 2)
-//             return true;
-
-//         matches = 0;
-//     }
-
-//     return false;
-// }
-
-// bool Map4x4::isContainedIn4x1Group(int8_t row, int8_t col, int8_t height, int8_t width)
-// {
-//     int8_t matches = 0;
-//     auto firstCell = std::pair<int8_t, int8_t>(row, col);
-//     auto lastCell = getRealIndices(row+height-1, col+width-1);
-
-//     for (const auto& group : rect4x1Groups)
-//     {
-//         for (const auto& elem : group) 
-//         {
-//             if (elem == firstCell)
-//                 ++matches;
-
-//             if (elem == lastCell)
-//                 ++matches;
-//         }
-
-//         if (matches == 2)
-//             return true;
-
-//         matches = 0;
-//     }
-
-//     return false;
-// }
-
 template<int N> 
 bool Map4x4::isContainedInGroup(
     std::vector<std::array<std::pair<int8_t, int8_t>, N>>& groups, 
@@ -454,6 +388,56 @@ bool Map4x4::isAnyCellNotInGroupExistent()
 {
     auto sum = std::accumulate(cellsInGroup.begin(), cellsInGroup.end(), 0);
     return sum == ones ? false : true;
+}
+
+void Map4x4::removeRedundantGroups()
+{
+    removeRedundantGroupsFromGivenVector<4, VecIter<4>>(square2x2Groups);
+    removeRedundantGroupsFromGivenVector<4, VecIter<4>>(rect4x1Groups);
+    removeRedundantGroupsFromGivenVector<2, VecIter<2>>(rect2x1Groups);
+}
+
+template<int N, typename T> 
+void Map4x4::removeRedundantGroupsFromGivenVector(
+    std::vector<std::array<std::pair<int8_t, int8_t>, N>>& groups)
+{
+    std::vector<T> iters;
+    bool hasCellInOnlyOneGroup = false;
+    int8_t index;
+
+    for (auto it = groups.begin(); it != groups.end(); ++it)
+    {
+        for (const auto& cell : *it)
+        {
+            index = translateIndices(cell.first, cell.second);
+            if (cellsNumberOfGroups[index] == 1)
+            {
+                hasCellInOnlyOneGroup = true;
+                break;
+            }
+        }
+
+        if (not hasCellInOnlyOneGroup)
+        {
+            iters.push_back(it);
+            decrementNumberOfGroups<N>(*it);
+        }
+    }
+
+    for (const auto& iter : iters)
+        groups.erase(iter);
+}
+
+template<int N>
+void Map4x4::decrementNumberOfGroups(std::array<std::pair<int8_t, int8_t>, N>& group)
+{
+    int8_t index;
+
+    for (const auto& cell : group)
+    {
+        index = translateIndices(cell.first, cell.second);
+        --cellsNumberOfGroups[index];
+    }
 }
 
 void Map4x4::printKmap() const
@@ -525,6 +509,15 @@ void Map4x4::print1x1Group() const
     std::cout << std::endl;
 }
 
+void Map4x4::printCellsNumberOfGroups()
+{
+    for (const auto& num : cellsNumberOfGroups)
+    {
+        std::cout << (int)num << " ";
+    }
+    std::cout << std::endl;
+}
+
 void Map4x4::initializeKmap()
 {
     for (auto& row : kmap)
@@ -585,8 +578,8 @@ int main()
     std::array<std::array<Value, 4>, 4> testKmap = {{
         {Value::one, Value::one, Value::one, Value::one},
         {Value::one, Value::one, Value::zero, Value::zero},
-        {Value::one, Value::zero, Value::one, Value::zero},
-        {Value::zero, Value::zero, Value::zero, Value::zero}
+        {Value::one, Value::one, Value::zero, Value::zero},
+        {Value::zero, Value::one, Value::zero, Value::zero}
     }};
 
     Map4x4 kmapObject;
@@ -599,6 +592,7 @@ int main()
     kmapObject.printRect4x1Group(); 
     kmapObject.printRect2x1Group(); 
     kmapObject.print1x1Group(); 
+    kmapObject.printCellsNumberOfGroups();
 
     // kmap.printKmap();
     // kmap.printGroup();
