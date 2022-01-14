@@ -19,6 +19,7 @@ class Map4x4
     std::vector<std::pair<int8_t, int8_t>> _1x1Groups;
     std::array<int8_t, 16> cellsInGroup{};
     std::array<int8_t, 16> cellsNumberOfGroups{};
+    std::vector<std::string> algebraicMinterms;
 
     void findSquare2x2Groups();
     void findRect4x2Groups();
@@ -43,6 +44,10 @@ class Map4x4
         std::vector<std::array<std::pair<int8_t, int8_t>, N>>&);
     template<int N> 
     void decrementNumberOfGroups(std::array<std::pair<int8_t, int8_t>, N>&);
+    template<int N>
+    void findAlgebraicMinterms(std::vector<std::array<std::pair<int8_t, int8_t>, N>>&);
+    std::string getProduct(std::vector<std::string>&);
+    std::string getVariable(std::vector<std::string>&);
 
 public:
     void printKmap() const;
@@ -56,5 +61,7 @@ public:
     void print1x1Group() const;
     void countZeroesAndOnes();
     void findGroups();
+    void solve();
     void printCellsNumberOfGroups();
+    void printMinterms() const;
 };

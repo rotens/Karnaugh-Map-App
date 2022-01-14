@@ -1,6 +1,17 @@
 #include "Map4x4.hpp"
 #include <tuple>
 
+void Map4x4::solve()
+{
+    countZeroesAndOnes();
+    findGroups();
+    findAlgebraicMinterms<8>(rect4x2Groups);
+    findAlgebraicMinterms<4>(rect4x1Groups);
+    findAlgebraicMinterms<4>(square2x2Groups);
+    findAlgebraicMinterms<2>(rect2x1Groups);
+    // findAlgebraicMinterms(rect4x2Groups);
+}
+
 void Map4x4::findGroups()
 {
     findRect4x2Groups();
@@ -375,6 +386,61 @@ void Map4x4::decrementNumberOfGroups(std::array<std::pair<int8_t, int8_t>, N>& g
     }
 }
 
+template<int N>
+void Map4x4::findAlgebraicMinterms(std::vector<std::array<std::pair<int8_t, int8_t>, N>>& groups)
+{
+    std::string products;
+    std::vector<std::string> cellsBinaryNumbers;
+
+    for (const auto& group : groups)
+    {
+        for (const auto& cell : group)
+        {
+            cellsBinaryNumbers.push_back(grayCode[cell.second] + grayCode[cell.first]);
+        }
+
+        for (const auto& cell : cellsBinaryNumbers)
+        {
+            std::cout << cell << std::endl;
+        }
+
+        products = getProduct(cellsBinaryNumbers);
+        algebraicMinterms.push_back(products);
+    }
+}
+
+std::string Map4x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
+{
+    int8_t ones = 0;
+    std::string product = "";
+
+    for (int8_t i = 0; i < cellsBinaryNumbers.size(); ++i)
+    {
+        for (const auto& number : cellsBinaryNumbers)
+        {
+            if (number[i] == '1')
+                ++ones; 
+        }
+        std::cout << (int)ones << std::endl;
+        if (ones == cellsBinaryNumbers.size())
+        {
+            product += variables[i];
+            ones = 0;
+            continue;
+        }
+
+        if (ones == 0)
+        {
+            product += variables[i] + '\'';
+        }
+
+        ones = 0;
+    }
+    
+    return product;
+}
+
+
 void Map4x4::printKmap() const
 {
     for (const auto& row : kmap)
@@ -481,4 +547,13 @@ void Map4x4::countZeroesAndOnes()
                 ++ones;
         }
     }
+}
+
+void Map4x4::printMinterms() const
+{
+    for (const auto& product : algebraicMinterms)
+    {
+        std::cout << product << "+";
+    }
+    std::cout << std::endl;
 }
