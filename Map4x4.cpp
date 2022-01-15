@@ -366,7 +366,7 @@ void Map4x4::removeRedundantGroupsFromGivenVector(
         if (not hasCellInOnlyOneGroup)
         {
             iters.push_back(it);
-            decrementNumberOfGroups<N>(*it);
+            // decrementNumberOfGroups<N>(*it);
         }
     }
 
@@ -399,13 +399,14 @@ void Map4x4::findAlgebraicMinterms(std::vector<std::array<std::pair<int8_t, int8
             cellsBinaryNumbers.push_back(grayCode[cell.second] + grayCode[cell.first]);
         }
 
-        for (const auto& cell : cellsBinaryNumbers)
-        {
-            std::cout << cell << std::endl;
-        }
+        // for (const auto& cell : cellsBinaryNumbers)
+        // {
+        //     std::cout << cell << std::endl;
+        // }
 
         products = getProduct(cellsBinaryNumbers);
         algebraicMinterms.push_back(products);
+        cellsBinaryNumbers.clear();
     }
 }
 
@@ -421,7 +422,7 @@ std::string Map4x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
             if (number[i] == '1')
                 ++ones; 
         }
-        std::cout << (int)ones << std::endl;
+
         if (ones == cellsBinaryNumbers.size())
         {
             product += variables[i];
