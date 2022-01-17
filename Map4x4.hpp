@@ -47,7 +47,8 @@ class Map4x4
     template<int N>
     void findAlgebraicMinterms(std::vector<std::array<std::pair<int8_t, int8_t>, N>>&);
     std::string getProduct(std::vector<std::string>&);
-    std::string getVariable(std::vector<std::string>&);
+    template<int N> 
+    int getNumberOfCellsInGroup(std::vector<std::array<std::pair<int8_t, int8_t>, N>>&);
 
 public:
     void printKmap() const;

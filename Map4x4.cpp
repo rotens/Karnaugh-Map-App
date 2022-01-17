@@ -1,14 +1,17 @@
 #include "Map4x4.hpp"
+#include <cmath>
 #include <tuple>
+
+#define __TEST__ std::cout<<"TEST"<<std::endl;
 
 void Map4x4::solve()
 {
     countZeroesAndOnes();
     findGroups();
-    findAlgebraicMinterms<8>(rect4x2Groups);
-    findAlgebraicMinterms<4>(rect4x1Groups);
-    findAlgebraicMinterms<4>(square2x2Groups);
-    findAlgebraicMinterms<2>(rect2x1Groups);
+    // findAlgebraicMinterms<8>(rect4x2Groups);
+    // findAlgebraicMinterms<4>(rect4x1Groups);
+    // findAlgebraicMinterms<4>(square2x2Groups);
+    // findAlgebraicMinterms<2>(rect2x1Groups);
     // findAlgebraicMinterms(rect4x2Groups);
 }
 
@@ -75,8 +78,8 @@ void Map4x4::findSquare2x2Groups()
             {
                 addSquare2x2Group(i, j);
 
-                if (not isAnyCellNotInGroupExistent())
-                    return;
+                // if (not isAnyCellNotInGroupExistent())
+                //     return;
             }
         }
     }
@@ -339,16 +342,144 @@ bool Map4x4::isAnyCellNotInGroupExistent()
 void Map4x4::removeRedundantGroups()
 {
     removeRedundantGroupsFromGivenVector<4, VecIter<4>>(square2x2Groups);
-    removeRedundantGroupsFromGivenVector<4, VecIter<4>>(rect4x1Groups);
-    removeRedundantGroupsFromGivenVector<2, VecIter<2>>(rect2x1Groups);
+    // removeRedundantGroupsFromGivenVector<4, VecIter<4>>(rect4x1Groups);
+    // removeRedundantGroupsFromGivenVector<2, VecIter<2>>(rect2x1Groups);
 }
 
 template<int N, typename T> 
 void Map4x4::removeRedundantGroupsFromGivenVector(
     std::vector<std::array<std::pair<int8_t, int8_t>, N>>& groups)
 {
-    std::vector<T> iters;
-    bool hasCellInOnlyOneGroup = false;
+    std::vector<T> itersMax;
+    std::vector<T> testedIters;
+    int8_t index;
+    std::array<int8_t, 16> tempCellsNumberOfGroups{};
+    int8_t maxNumberOfGroups = static_cast<int8_t>(ceil(1.0*getNumberOfCellsInGroup<N>(groups) / N));
+    int8_t numberOfCellsInOnlyOneGroup = 0;
+    int8_t numberOfCellsInOnlyOneGroupMax = 0;
+
+    std::cout << (int)maxNumberOfGroups << std::endl;
+    if (maxNumberOfGroups == groups.size())
+        return;
+
+    auto groupsIter = groups.begin();
+
+    for (int i = 0; i <= groups.size()-maxNumberOfGroups; ++i)
+    {
+        for (int k = i+1; k <= groups.size()-maxNumberOfGroups+1; ++k)
+        {
+            testedIters.push_back(groupsIter + i);
+            for (int j = k; j < k+(maxNumberOfGroups-1); ++j)
+            {
+                testedIters.push_back(groupsIter + j);
+            }
+
+            for (const auto& it : testedIters)
+            {
+                for (const auto& cell : *it)
+                {
+                    index = translateIndices(cell.first, cell.second);
+                    tempCellsNumberOfGroups[index] += 1;
+                }
+            }
+
+            for (const auto& number : tempCellsNumberOfGroups)
+            {
+                if (1 == number) 
+                {
+                    ++numberOfCellsInOnlyOneGroup;
+                }
+            }
+            std::cout << "Number of cells " << (int)numberOfCellsInOnlyOneGroup << std::endl;
+            for (const auto& it : testedIters)
+            {
+                for (const auto& cell : *it)
+                {
+                    std::cout << "(" << (int)cell.first << ", " << (int)cell.second << ") ";
+                }
+                std::cout << std::endl;
+            }
+            if (numberOfCellsInOnlyOneGroup > numberOfCellsInOnlyOneGroupMax)
+            {
+                numberOfCellsInOnlyOneGroupMax = numberOfCellsInOnlyOneGroup;
+                itersMax = testedIters; 
+            }
+            // __TEST__;   
+            numberOfCellsInOnlyOneGroup = 0; 
+            std::fill(tempCellsNumberOfGroups.begin(), tempCellsNumberOfGroups.end(), 0);
+            testedIters.clear();
+        }
+    
+    
+    }
+
+    // for (auto it = groups.begin(); it != groups.end() - maxNumberOfGroups + 1 ; ++it)
+    // {
+       
+    //     for (auto it2 = it; it2 != it + maxNumberOfGroups; ++it2)
+    //     {
+    //         for (const auto& cell : *it2)
+    //         {
+    //             index = translateIndices(cell.first, cell.second);
+    //             tempCellsNumberOfGroups[index] += 1;
+    //         }
+    //         iters.push_back(it2);
+    //     }
+
+    //     for (const auto& number : tempCellsNumberOfGroups)
+    //     {
+    //         if (1 == number) 
+    //         {
+    //             ++numberOfCellsInOnlyOneGroup;
+    //         }
+    //     }
+
+    //     if (numberOfCellsInOnlyOneGroup > numberOfCellsInOnlyOneGroupMax)
+    //     {
+    //         numberOfCellsInOnlyOneGroupMax = numberOfCellsInOnlyOneGroup;
+    //         itersMax = iters; 
+    //     }
+        
+    //     iters.clear();
+    //     std::fill(tempCellsNumberOfGroups.begin(), tempCellsNumberOfGroups.end(), 0);
+    // }
+
+    std::vector<std::array<std::pair<int8_t, int8_t>, N>> newGroups;
+
+    for (const auto& it : itersMax)
+    {
+        newGroups.push_back(*it);
+    }
+
+    groups = std::move(newGroups);
+
+    // for (auto it = groups.begin(); it != groups.end(); ++it)
+    // {
+    //     for (const auto& cell : *it)
+    //     {
+    //         index = translateIndices(cell.first, cell.second);
+    //         if (cellsNumberOfGroups[index] == 1)
+    //         {
+    //             hasCellInOnlyOneGroup = true;
+    //             break;
+    //         }
+    //     }
+
+    //     if (not hasCellInOnlyOneGroup)
+    //     {
+    //         iters.push_back(it);
+    //         // decrementNumberOfGroups<N>(*it);
+    //     }
+    // }
+
+    // for (const auto& iter : iters)
+    //     groups.erase(iter);
+}
+
+template<int N> 
+int Map4x4::getNumberOfCellsInGroup(std::vector<std::array<std::pair<int8_t, int8_t>, N>>& groups)
+{
+    std::array<int8_t, 16> _cellsInGroup{};
     int8_t index;
 
     for (auto it = groups.begin(); it != groups.end(); ++it)
@@ -356,22 +487,11 @@ void Map4x4::removeRedundantGroupsFromGivenVector(
         for (const auto& cell : *it)
         {
             index = translateIndices(cell.first, cell.second);
-            if (cellsNumberOfGroups[index] == 1)
-            {
-                hasCellInOnlyOneGroup = true;
-                break;
-            }
-        }
-
-        if (not hasCellInOnlyOneGroup)
-        {
-            iters.push_back(it);
-            // decrementNumberOfGroups<N>(*it);
+            _cellsInGroup[index] = 1;
         }
     }
 
-    for (const auto& iter : iters)
-        groups.erase(iter);
+    return std::accumulate(_cellsInGroup.begin(), _cellsInGroup.end(), 0);
 }
 
 template<int N>
