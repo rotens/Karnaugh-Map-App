@@ -362,6 +362,7 @@ void Map4x4::removeRedundantGroupsFromGivenVector(
     if (maxNumberOfGroups == groups.size())
         return;
 
+
     auto groupsIter = groups.begin();
 
     for (int i = 0; i <= groups.size()-maxNumberOfGroups; ++i)
