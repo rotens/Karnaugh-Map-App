@@ -49,6 +49,10 @@ int main()
     map1x2Object.findAlgebraicMinterm();
     std::cout << map1x2Object.getAlgebraicMinterm() << std::endl;
 
+    map1x2Object.changeValue(0, Value::zero);
+    map1x2Object.findAlgebraicMinterm();
+    std::cout << map1x2Object.getAlgebraicMinterm() << std::endl;
+
 
     // while (window.isOpen())
     // {
