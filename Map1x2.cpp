@@ -13,7 +13,7 @@ void Map1x2::findAlgebraicMinterm()
         return;
     }
 
-    if (ones == 2)
+    if (zeroes == 0)
     {
         algebraicMinterm = "1";
         return;
@@ -40,13 +40,11 @@ bool Map1x2::changeValue(int index, Value value)
 
     if (value == Value::one)
     {
-        ++ones;
         --zeroes;
         return true;
     }
 
     ++zeroes;
-    --ones;
 
     return true;
 }

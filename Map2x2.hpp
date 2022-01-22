@@ -7,7 +7,6 @@ class Map2x2
 {
     std::array<std::array<Value, 2>, 2> kmap;
     int zeroes{4};
-    int ones{0};
     std::vector<std::pair<int, int>> _1x1Groups;
     std::vector<std::array<std::pair<int, int>, 2>> rect2x1Groups;
     std::vector<std::string> algebraicMinterms;
@@ -26,4 +25,5 @@ class Map2x2
 public:
     void solve();
     void initializeKmapWith(std::array<std::array<Value, 2>, 2>&);
+    std::vector<std::string>& getAlgebraicMinterms();
 };

@@ -60,6 +60,9 @@ void Map2x2::find1x1Groups()
 
 void Map2x2::findGroups()
 {
+    rect2x1Groups.clear();
+    _1x1Groups.clear();
+
     find2x1Groups();
     
     if (not rect2x1Groups.empty())
@@ -71,9 +74,17 @@ void Map2x2::findGroups()
 void Map2x2::initializeKmapWith(std::array<std::array<Value, 2>, 2>& kmap)
 {
     this->kmap = kmap;
+    for (const auto& row : kmap)
+    {
+        for (const auto& cell : row)
+        {
+            if (cell == Value::one)
+                --zeroes;
+        }
+    }
 }
 
-void Map2x2::findAlgebraicMinterms()
+void Map2x2::findAlgebraicMintermsFor1x1Groups()
 {
     std::string product = "";
 
@@ -118,15 +129,16 @@ void Map2x2::findAlgebraicMintermsFor2x1Groups()
 void Map2x2::findAlgebraicMinterms()
 {
     algebraicMinterms.clear();
+
     if (zeroes == 4)
     {
         algebraicMinterms.push_back("0");
         return;
     }
 
-    if (ones == 4)
+    if (zeroes == 0)
     {
-        algebraicMinterms.push_back("0");
+        algebraicMinterms.push_back("1");
         return;
     }
     
@@ -138,4 +150,33 @@ void Map2x2::solve()
 {
     findGroups();
     findAlgebraicMinterms();
+}
+
+bool Map2x2::changeValue(int row, int col, Value value)
+{
+    if (row < 0 or row > 1)
+        return false;
+
+    if (col < 0 or col > 1)
+        return false;
+
+    if (kmap[row][col] == value)
+        return true;
+
+    kmap[row][col] = value;
+
+    if (value == Value::one)
+    {
+        --zeroes;
+        return true;
+    }
+
+    ++zeroes;
+
+    return true;
+}
+
+std::vector<std::string>& Map2x2::getAlgebraicMinterms()
+{
+    return algebraicMinterms;
 }

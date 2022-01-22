@@ -5,7 +5,6 @@
 class Map1x2 
 {
     int zeroes{2};
-    int ones{0};
     std::array<Value, 2> kmap;
     std::string algebraicMinterm{"0"};
 

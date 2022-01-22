@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Map4x4.hpp"
 #include "Map1x2.hpp"
+#include "Map2x2.hpp"
 
 #define __TEST__ std::cout<<"TEST"<<std::endl;
 
@@ -11,47 +12,40 @@ int main()
     // sf::CircleShape shape(100.f);
     // shape.setFillColor(sf::Color::Green);
     
-    std::array<std::array<Value, 4>, 4> testKmap = {{
-        {Value::one, Value::one, Value::one, Value::one},
-        {Value::one, Value::one, Value::zero, Value::one},
-        {Value::one, Value::one, Value::one, Value::one},
-        {Value::zero, Value::one, Value::one, Value::one}
-    }};
-
     // std::array<std::array<Value, 4>, 4> testKmap = {{
-    //     {Value::zero, Value::zero, Value::zero, Value::zero},
-    //     {Value::zero, Value::one, Value::one, Value::zero},
-    //     {Value::zero, Value::one, Value::one, Value::zero},
-    //     {Value::zero, Value::zero, Value::zero, Value::zero}
+    //     {Value::one, Value::one, Value::one, Value::one},
+    //     {Value::one, Value::one, Value::zero, Value::one},
+    //     {Value::one, Value::one, Value::one, Value::one},
+    //     {Value::zero, Value::one, Value::one, Value::one}
     // }};
 
-    // Map4x4 kmapObject;
-    // kmapObject.initializeKmapWith(testKmap);
-    // kmapObject.printKmap();
-    // kmapObject.solve();
-    // kmapObject.printSquare2x2Groups();
-    // kmapObject.printRect4x2Group();
-    // kmapObject.printRect4x1Group(); 
-    // kmapObject.printRect2x1Group(); 
-    // kmapObject.print1x1Group(); 
-    // kmapObject.printMinterms();
+
+    // Map1x2 map1x2Object;
+    // map1x2Object.changeValue(0, Value::one);
+    // map1x2Object.findAlgebraicMinterm();
+    // std::cout << map1x2Object.getAlgebraicMinterm() << std::endl;
+
+    // map1x2Object.changeValue(1, Value::one);
+    // map1x2Object.findAlgebraicMinterm();
+    // std::cout << map1x2Object.getAlgebraicMinterm() << std::endl;
+
+    // map1x2Object.changeValue(0, Value::zero);
+    // map1x2Object.findAlgebraicMinterm();
+    // std::cout << map1x2Object.getAlgebraicMinterm() << std::endl;
 
 
-    // std::vector<int> test2;
-    // std::vector<int> test{1,2,3,4,5,6,7,8,9};
+    std::array<std::array<Value, 2>, 2> testKmap = {{
+        {Value::zero, Value::one},
+        {Value::one, Value::zero}
+    }};
 
-    Map1x2 map1x2Object;
-    map1x2Object.changeValue(0, Value::one);
-    map1x2Object.findAlgebraicMinterm();
-    std::cout << map1x2Object.getAlgebraicMinterm() << std::endl;
-
-    map1x2Object.changeValue(1, Value::one);
-    map1x2Object.findAlgebraicMinterm();
-    std::cout << map1x2Object.getAlgebraicMinterm() << std::endl;
-
-    map1x2Object.changeValue(0, Value::zero);
-    map1x2Object.findAlgebraicMinterm();
-    std::cout << map1x2Object.getAlgebraicMinterm() << std::endl;
+    Map2x2 map2x2Object;
+    map2x2Object.initializeKmapWith(testKmap);
+    map2x2Object.solve();
+    for (const auto& minterm : map2x2Object.getAlgebraicMinterms())
+    {
+        std::cout << minterm << " + "; 
+    }
 
 
     // while (window.isOpen())
