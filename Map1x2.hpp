@@ -1,9 +1,5 @@
 #pragma once
 #include <array>
-#include <iostream>
-#include <numeric>
-#include <utility>
-#include <vector>
 #include "other.hpp"
 
 class Map1x2 

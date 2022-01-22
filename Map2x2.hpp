@@ -18,10 +18,12 @@ class Map2x2
     void add2x1Group(int, int, int, int);
     bool is2x1Group(int, int, int, int);
     void findAlgebraicMinterms();
-    std::string getProduct(std::vector<std::string>&);
+    void findAlgebraicMintermsFor2x1Groups();
+    void findAlgebraicMintermsFor1x1Groups();
     bool changeValue(int, int, Value);
     void findGroups();
 
 public:
     void solve();
+    void initializeKmapWith(std::array<std::array<Value, 2>, 2>&);
 };

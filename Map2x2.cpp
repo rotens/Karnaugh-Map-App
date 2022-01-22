@@ -67,3 +67,75 @@ void Map2x2::findGroups()
 
     find1x1Groups();
 }
+
+void Map2x2::initializeKmapWith(std::array<std::array<Value, 2>, 2>& kmap)
+{
+    this->kmap = kmap;
+}
+
+void Map2x2::findAlgebraicMinterms()
+{
+    std::string product = "";
+
+    for (const auto& group : _1x1Groups)
+    {
+        product += group.first == 0 ? "B\'" : "B";
+        product += group.second == 0 ? "A\'" : "A";
+        algebraicMinterms.push_back(product);
+        product = "";
+    }
+}
+
+void Map2x2::findAlgebraicMintermsFor2x1Groups()
+{
+    std::string product = "";
+    int onesA = 0;
+    int onesB = 0;
+
+    for (const auto& group : rect2x1Groups)
+    {
+        for (const auto& cell : group)
+        {
+            if (cell.first == 1)
+                ++onesB;
+
+            if (cell.second == 1)
+                ++onesA;
+        }
+
+        product += onesA == 2 ? "A" : "";
+        product += onesA == 0 ? "A\'" : "";
+        product += onesB == 2 ? "B" : "";
+        product += onesB == 0 ? "B\'" : "";
+        algebraicMinterms.push_back(product);
+        
+        onesA = 0;
+        onesB = 0;
+        product = "";
+    }
+}
+
+void Map2x2::findAlgebraicMinterms()
+{
+    algebraicMinterms.clear();
+    if (zeroes == 4)
+    {
+        algebraicMinterms.push_back("0");
+        return;
+    }
+
+    if (ones == 4)
+    {
+        algebraicMinterms.push_back("0");
+        return;
+    }
+    
+    findAlgebraicMintermsFor2x1Groups();
+    findAlgebraicMintermsFor1x1Groups();
+}
+
+void Map2x2::solve() 
+{
+    findGroups();
+    findAlgebraicMinterms();
+}
