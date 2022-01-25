@@ -45,7 +45,15 @@ int main()
     //     std::cout << minterm << " + "; 
     // }
 
-    MapInterface mapInterface;
+    sf::Font font;
+    if (!font.loadFromFile("fonts/segoeui.ttf"))
+    {
+        __TEST__;
+        std::cerr << "Can't load font from file" << std::endl;
+        return -1;
+    }
+
+    MapInterface mapInterface(font);
     mapInterface.loop();
     
 
