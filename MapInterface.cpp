@@ -14,6 +14,16 @@ MapInterface::MapInterface(sf::Font& font)
         text.setFont(font);
 }
 
+void MapInterface::fillCellsWithWhiteColor()
+{
+    for (auto& cell : rectangles)
+    {
+        cell.setFillColor(sf::Color::White);
+        window.draw(cell);
+    }
+        
+}
+
 void MapInterface::drawMap()
 {
     int k = 0;
@@ -42,6 +52,24 @@ void MapInterface::drawMap()
     }
 }
 
+void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
+{
+    if (mouseMove.x <= mapWidthOffset or mouseMove.x >= mapWidthOffset + 4*58 + 6)
+        return;
+
+    if (mouseMove.y <= mapHeightOffset or mouseMove.y >= mapHeightOffset + 4*58 + 6)
+        return;
+
+    
+    int col = (mouseMove.x - mapWidthOffset) / 60;
+    int row = (mouseMove.y - mapHeightOffset) / 60;
+    std::cout << row*4 + col << std::endl;
+    int index = row*4 + col;
+    fillCellsWithWhiteColor();
+    rectangles[index].setFillColor(sf::Color(170, 215, 255));
+    window.draw(rectangles[index]);
+}
+
 void MapInterface::loop()
 {
     window.create(sf::VideoMode(windowWidth, windowHeight), "Karnaugh map simulator!");
@@ -55,15 +83,6 @@ void MapInterface::loop()
     // rectangle.setPosition(500, mapHeightOffset);
 
     
-    // set the string to display
-    cellValues[0].setString("0");
-
-    // set the character size
-    cellValues[0].setCharacterSize(30); // in pixels, not points!
-
-    // set the color
-    cellValues[0].setFillColor(sf::Color::Black);
-    cellValues[0].setPosition(mapWidthOffset + textRelativeWidthOffset, mapHeightOffset + textRelativeHeightOffset);
     // sf::FloatRect textRect = cellValues[0].getLocalBounds();
     // std::cout << textRect.left << " " << textRect.top << std::endl;
     // std::cout << textRect.width << " " << textRect.height << std::endl;
@@ -73,10 +92,18 @@ void MapInterface::loop()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::MouseButtonPressed)
-                std::cout << "Test" << std::endl;
+            switch (event.type) 
+            {
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+                case sf::Event::MouseButtonPressed:
+                    std::cout << "Test" << std::endl;
+                    break;
+                case sf::Event::MouseMoved:
+                    cellHover(event.mouseMove);
+            }
+
         }
 
         window.clear(sf::Color::White);
