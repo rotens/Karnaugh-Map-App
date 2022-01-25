@@ -13,7 +13,6 @@ class Map2x2
 
     void find2x1Groups();
     void find1x1Groups();
-    void add1x1Group(int, int);
     void add2x1Group(int, int, int, int);
     bool is2x1Group(int, int, int, int);
     void findAlgebraicMinterms();
