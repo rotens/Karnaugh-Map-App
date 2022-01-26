@@ -19,9 +19,7 @@ void MapInterface::fillCellsWithWhiteColor()
     for (auto& cell : rectangles)
     {
         cell.setFillColor(sf::Color::White);
-        window.draw(cell);
     }
-        
 }
 
 void MapInterface::drawMap()
@@ -55,19 +53,24 @@ void MapInterface::drawMap()
 void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
 {
     if (mouseMove.x <= mapWidthOffset or mouseMove.x >= mapWidthOffset + 4*58 + 6)
+    {
+        fillCellsWithWhiteColor();
         return;
+    } 
 
     if (mouseMove.y <= mapHeightOffset or mouseMove.y >= mapHeightOffset + 4*58 + 6)
+    {
+        fillCellsWithWhiteColor();
         return;
+    }
 
-    
     int col = (mouseMove.x - mapWidthOffset) / 60;
     int row = (mouseMove.y - mapHeightOffset) / 60;
-    std::cout << row*4 + col << std::endl;
     int index = row*4 + col;
+
     fillCellsWithWhiteColor();
     rectangles[index].setFillColor(sf::Color(170, 215, 255));
-    window.draw(rectangles[index]);
+    // window.draw(rectangles[index]);
 }
 
 void MapInterface::loop()
@@ -108,7 +111,6 @@ void MapInterface::loop()
 
         window.clear(sf::Color::White);
         drawMap();
-        window.draw(cellValues[0]);
         window.display();
     }
 }
