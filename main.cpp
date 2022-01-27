@@ -3,19 +3,14 @@
 #include "Map4x4.hpp"
 #include "Map1x2.hpp"
 #include "Map2x2.hpp"
-#include "MapInterface.h"
+#include "MapInterface.hpp"
 
 #define __TEST__ std::cout<<"TEST"<<std::endl;
 
 int main()
 {
     
-    // std::array<std::array<Value, 4>, 4> testKmap = {{
-    //     {Value::one, Value::one, Value::one, Value::one},
-    //     {Value::one, Value::one, Value::zero, Value::one},
-    //     {Value::one, Value::one, Value::one, Value::one},
-    //     {Value::zero, Value::one, Value::one, Value::one}
-    // }};
+    
 
 
     // Map1x2 map1x2Object;
@@ -45,6 +40,16 @@ int main()
     //     std::cout << minterm << " + "; 
     // }
 
+    std::array<std::array<Value, 4>, 4> testKmap = {{
+        {Value::zero, Value::zero, Value::one, Value::zero},
+        {Value::zero, Value::zero, Value::zero, Value::zero},
+        {Value::zero, Value::zero, Value::zero, Value::zero},
+        {Value::zero, Value::zero, Value::zero, Value::zero}
+    }};
+
+    Map4x4 kmapObject;
+    kmapObject.initializeKmapWith(testKmap);
+
     sf::Font font;
     if (!font.loadFromFile("fonts/segoeui.ttf"))
     {
@@ -53,9 +58,8 @@ int main()
         return -1;
     }
 
-    MapInterface mapInterface(font);
+    MapInterface mapInterface(font, kmapObject);
     mapInterface.loop();
     
-
     return 0;
 }

@@ -679,3 +679,32 @@ void Map4x4::printMinterms() const
     }
     std::cout << std::endl;
 }
+
+std::array<std::array<Value, 4>, 4>& Map4x4::getKmap()
+{
+    return kmap;
+}
+
+Value Map4x4::getCellValue(int row, int col)
+{
+    if (row < 0 or row > 3)
+        return Value::zero;
+    
+    if (col < 0 or col > 3)
+        return Value::zero;
+
+    return kmap[row][col];
+}
+
+bool Map4x4::changeCellValue(int row, int col, Value value)
+{
+    if (row < 0 or row > 3)
+        return false;
+    
+    if (col < 0 or col > 3)
+        return false;
+
+    kmap[row][col] = value;
+
+    return true;
+}

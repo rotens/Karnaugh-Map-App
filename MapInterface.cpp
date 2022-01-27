@@ -1,4 +1,4 @@
-#include "MapInterface.h"
+#include "MapInterface.hpp"
 #include <iostream>
 
 constexpr int windowWidth = 800;
@@ -8,7 +8,8 @@ constexpr int mapHeightOffset = 197;
 constexpr int textRelativeHeightOffset = 19 - 10;
 constexpr int textRelativeWidthOffset = 23 - 3;
 
-MapInterface::MapInterface(sf::Font& font) 
+MapInterface::MapInterface(sf::Font& font, Map4x4 kmapObject)
+    : kmapObject(kmapObject)
 {
     for (auto& text : cellValues)
         text.setFont(font);
@@ -38,7 +39,7 @@ void MapInterface::drawMap()
 
             window.draw(rectangles[k]);
 
-            cellValues[k].setString("0");
+            cellValues[k].setString(static_cast<char>(kmapObject.getCellValue(i, j)));
             cellValues[k].setCharacterSize(30); 
             cellValues[k].setFillColor(sf::Color::Black);
             cellValues[k].setPosition(
@@ -73,6 +74,31 @@ void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
     // window.draw(rectangles[index]);
 }
 
+void MapInterface::handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseButtonEvent)
+{
+    if (mouseButtonEvent.x <= mapWidthOffset or mouseButtonEvent.x >= mapWidthOffset + 4*58 + 6)
+    {
+        return;
+    } 
+
+    if (mouseButtonEvent.y <= mapHeightOffset or mouseButtonEvent.y >= mapHeightOffset + 4*58 + 6)
+    {
+        return;
+    }
+
+    int col = (mouseButtonEvent.x - mapWidthOffset) / 60;
+    int row = (mouseButtonEvent.y - mapHeightOffset) / 60;
+    int index = row*4 + col;
+
+    if (kmapObject.getCellValue(row, col) == Value::one)
+    {
+        kmapObject.changeCellValue(row, col, Value::zero);
+        return;
+    }
+
+    kmapObject.changeCellValue(row, col, Value::one);
+}
+
 void MapInterface::loop()
 {
     window.create(sf::VideoMode(windowWidth, windowHeight), "Karnaugh map simulator!");
@@ -101,10 +127,13 @@ void MapInterface::loop()
                     window.close();
                     break;
                 case sf::Event::MouseButtonPressed:
+                    handleMouseButtonPressed(event.mouseButton);
                     std::cout << "Test" << std::endl;
                     break;
                 case sf::Event::MouseMoved:
                     cellHover(event.mouseMove);
+                    break;
+
             }
 
         }

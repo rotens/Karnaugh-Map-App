@@ -1,17 +1,22 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Map4x4.hpp"
 
 
 class MapInterface
 {
-    void drawMap();
     sf::RenderWindow window;
     sf::RectangleShape rectangles[16];
     sf::Text cellValues[16];
+    Map4x4 kmapObject;
+
     void fillCellsWithWhiteColor();
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
+    void handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseButtonEvent);
+    void drawMap();
+
 public:
-    MapInterface(sf::Font&);
+    MapInterface(sf::Font&, Map4x4 kmapObject);
     void loop();
 
 };

@@ -65,4 +65,7 @@ public:
     void solve();
     void printCellsNumberOfGroups();
     void printMinterms() const;
+    std::array<std::array<Value, 4>, 4>& getKmap();
+    Value getCellValue(int row, int col);
+    bool changeCellValue(int row, int col, Value value);
 };
