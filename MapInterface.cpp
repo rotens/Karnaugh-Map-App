@@ -142,6 +142,47 @@ void MapInterface::draw4x2Group()
     window.draw(rectangle4x2Group);
 }
 
+void MapInterface::draw4x1Group()
+{
+    int width;
+    int height;
+    int k = 0;
+    std::pair<int8_t, int8_t> firstCell;
+    std::pair<int8_t, int8_t> lastCell;
+
+    for (const auto& group : kmapObject.get4x1Groups())
+    {
+        firstCell = group[0];
+        lastCell  = group[3];
+
+        if (firstCell.first == lastCell.first)
+        {
+            width = 4;
+            height = 1;
+        }
+        else
+        {
+            width = 1;
+            height = 4;
+        }
+        
+        rectangles4x1Groups[k].setOutlineColor(colors[k]);
+        rectangles4x1Groups[k].setOutlineThickness(2.f);
+        rectangles4x1Groups[k].setFillColor(sf::Color::Transparent);
+        rectangles4x1Groups[k].setSize(
+            sf::Vector2f(
+                58*width + (width-1)*2, 
+                58*height + (height-1)*2));
+        rectangles4x1Groups[k].setPosition(
+            sf::Vector2f(
+                mapWidthOffset + 60*firstCell.second, 
+                mapHeightOffset + 60*firstCell.first));
+
+        window.draw(rectangles4x1Groups[k]);
+        k++;
+    }
+}
+
 void MapInterface::draw2x1Group()
 {
     int width;
@@ -280,6 +321,7 @@ void MapInterface::loop()
         drawGrayCode();
         drawVariables();
         draw4x2Group();
+        draw4x1Group();
         draw1x1Group();
         draw2x1Group();
         drawCellValues();

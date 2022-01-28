@@ -13,11 +13,15 @@ class Map4x4
     int8_t zeroes = 0;
     int8_t ones = 0;
     std::vector<std::array<std::pair<int8_t, int8_t>, 4>> square2x2Groups;
-    std::vector<std::array<std::pair<int8_t, int8_t>, 4>> rect4x1Groups;
-    std::vector<std::array<std::pair<int8_t, int8_t>, 8>> rect4x2Groups;
-    std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups = {
-        {{{0, 0}, {0, 1}}}, {{{1, 3}, {2, 3}}}, {{{0, 0}, {1, 0}}}
+    std::vector<std::array<std::pair<int8_t, int8_t>, 4>> rect4x1Groups = {
+        {{{0, 1}, {1, 1}, {2, 1}, {3, 1}}},
+        {{{1, 0}, {1, 1}, {1, 2}, {1, 3}}}
     };
+    std::vector<std::array<std::pair<int8_t, int8_t>, 8>> rect4x2Groups;
+    std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups;
+    // std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups = {
+    //     {{{0, 0}, {0, 1}}}, {{{1, 3}, {2, 3}}}, {{{0, 0}, {1, 0}}}
+    // };
     std::vector<std::pair<int8_t, int8_t>> _1x1Groups;
     // std::vector<std::pair<int8_t, int8_t>> _1x1Groups = {
     //     {2, 2}, {3, 3}, {1, 1}, {0,0}
@@ -76,4 +80,5 @@ public:
     int8_t getZeroes();
     std::vector<std::pair<int8_t, int8_t>>& get1x1Groups();
     std::vector<std::array<std::pair<int8_t, int8_t>, 2>>& get2x1Groups();
+    std::vector<std::array<std::pair<int8_t, int8_t>, 4>>& get4x1Groups();
 };
