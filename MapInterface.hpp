@@ -7,6 +7,7 @@ class MapInterface
 {
     sf::RenderWindow window;
     sf::RectangleShape rectangles[16];
+    sf::RectangleShape rectangles2x1Group[5];
     sf::RectangleShape rectangle4x2Group;
     sf::Text cellValues[16];
     sf::Text grayCodeText[8];
@@ -17,10 +18,12 @@ class MapInterface
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
     void handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseButtonEvent);
     void drawMap();
+    void drawCellValues();
     void drawGrayCode();
     void drawVariables();
     void draw4x2Group();
     void draw1x1Group();
+    void draw2x1Group();
 
 public:
     MapInterface(sf::Font&, Map4x4& kmapObject);

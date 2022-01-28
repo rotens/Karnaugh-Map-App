@@ -718,3 +718,8 @@ std::vector<std::pair<int8_t, int8_t>>& Map4x4::get1x1Groups()
 {
     return _1x1Groups; 
 }
+
+std::vector<std::array<std::pair<int8_t, int8_t>, 2>>& Map4x4::get2x1Groups()
+{
+    return rect2x1Groups;
+}

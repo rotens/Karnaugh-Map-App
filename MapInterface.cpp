@@ -18,7 +18,8 @@ constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
 sf::Color colors[8] = {
     sf::Color::Red, sf::Color::Blue, 
-    sf::Color::Cyan, sf::Color::Green};
+    sf::Color::Cyan, sf::Color::Green,
+    sf::Color::Magenta};
 
 MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
     : kmapObject(kmapObject)
@@ -56,13 +57,25 @@ void MapInterface::drawMap()
                 mapHeightOffset + i * 60);
 
             window.draw(rectangles[k]);
+            ++k;
+        }
+    }
+}
 
+void MapInterface::drawCellValues()
+{
+    int k = 0;
+    for (int i = 0; i < 4; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
             cellValues[k].setString(static_cast<char>(kmapObject.getCellValue(i, j)));
             cellValues[k].setCharacterSize(30); 
             cellValues[k].setFillColor(sf::Color::Black);
             cellValues[k].setPosition(
                 mapWidthOffset + textRelativeWidthOffset + j * 60, 
                 mapHeightOffset + textRelativeHeightOffset + i * 60);
+
             window.draw(cellValues[k]);
             ++k;
         }
@@ -129,6 +142,44 @@ void MapInterface::draw4x2Group()
     window.draw(rectangle4x2Group);
 }
 
+void MapInterface::draw2x1Group()
+{
+    int width;
+    int height;
+    int k = 0;
+
+    for (const auto& group : kmapObject.get2x1Groups())
+    {
+        auto [firstCell, lastCell] = group;
+
+        if (firstCell.first == lastCell.first)
+        {
+            width = 2;
+            height = 1;
+        }
+        else
+        {
+            width = 1;
+            height = 2;
+        }
+        
+        rectangles2x1Group[k].setOutlineColor(colors[k]);
+        rectangles2x1Group[k].setOutlineThickness(2.f);
+        rectangles2x1Group[k].setFillColor(sf::Color::Transparent);
+        rectangles2x1Group[k].setSize(
+            sf::Vector2f(
+                58*width + (width-1)*2, 
+                58*height + (height-1)*2));
+        rectangles2x1Group[k].setPosition(
+            sf::Vector2f(
+                mapWidthOffset + 60*firstCell.second, 
+                mapHeightOffset + 60*firstCell.first));
+
+        window.draw(rectangles2x1Group[k]);
+        k++;
+    }
+}
+
 void MapInterface::draw1x1Group()
 {
     int index;
@@ -138,7 +189,6 @@ void MapInterface::draw1x1Group()
     {
         index = group.first*4 + group.second;
         rectangles[index].setOutlineColor(colors[k++]);
-        rectangles[index].setFillColor(sf::Color::Transparent);
         window.draw(rectangles[index]);
     }
 }
@@ -217,12 +267,10 @@ void MapInterface::loop()
                     break;
                 case sf::Event::MouseButtonPressed:
                     handleMouseButtonPressed(event.mouseButton);
-                    std::cout << "Test" << std::endl;
                     break;
                 case sf::Event::MouseMoved:
                     cellHover(event.mouseMove);
                     break;
-
             }
 
         }
@@ -233,6 +281,8 @@ void MapInterface::loop()
         drawVariables();
         draw4x2Group();
         draw1x1Group();
+        draw2x1Group();
+        drawCellValues();
         window.display();
     }
 }
