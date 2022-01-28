@@ -16,7 +16,9 @@ class Map4x4
     std::vector<std::array<std::pair<int8_t, int8_t>, 4>> rect4x1Groups;
     std::vector<std::array<std::pair<int8_t, int8_t>, 8>> rect4x2Groups;
     std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups;
-    std::vector<std::pair<int8_t, int8_t>> _1x1Groups;
+    std::vector<std::pair<int8_t, int8_t>> _1x1Groups = {
+        {2, 2}, {3, 3}, {1, 1}, {0,0}
+    };
     std::array<int8_t, 16> cellsInGroup{};
     std::array<int8_t, 16> cellsNumberOfGroups{};
     std::vector<std::string> algebraicMinterms;
@@ -68,4 +70,6 @@ public:
     std::array<std::array<Value, 4>, 4>& getKmap();
     Value getCellValue(int row, int col);
     bool changeCellValue(int row, int col, Value value);
+    int8_t getZeroes();
+    std::vector<std::pair<int8_t, int8_t>>& get1x1Groups();
 };

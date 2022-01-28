@@ -7,6 +7,7 @@ class MapInterface
 {
     sf::RenderWindow window;
     sf::RectangleShape rectangles[16];
+    sf::RectangleShape rectangle4x2Group;
     sf::Text cellValues[16];
     sf::Text grayCodeText[8];
     sf::Text variablesText[2];
@@ -18,6 +19,8 @@ class MapInterface
     void drawMap();
     void drawGrayCode();
     void drawVariables();
+    void draw4x2Group();
+    void draw1x1Group();
 
 public:
     MapInterface(sf::Font&, Map4x4& kmapObject);

@@ -40,15 +40,17 @@ int main()
     //     std::cout << minterm << " + "; 
     // }
 
+
     std::array<std::array<Value, 4>, 4> testKmap = {{
-        {Value::zero, Value::zero, Value::one, Value::zero},
-        {Value::zero, Value::zero, Value::zero, Value::zero},
-        {Value::zero, Value::zero, Value::zero, Value::zero},
-        {Value::zero, Value::zero, Value::zero, Value::zero}
+        {Value::one, Value::one, Value::one, Value::one},
+        {Value::one, Value::one, Value::one, Value::one},
+        {Value::one, Value::one, Value::one, Value::one},
+        {Value::one, Value::one, Value::zero, Value::one}
     }};
 
     Map4x4 kmapObject;
     kmapObject.initializeKmapWith(testKmap);
+    kmapObject.countZeroesAndOnes();
 
     sf::Font font;
     if (!font.loadFromFile("fonts/segoeui.ttf"))

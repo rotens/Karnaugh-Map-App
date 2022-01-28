@@ -16,6 +16,9 @@ constexpr int ABVariablesWidthOffset = mapWidthOffset + 101;
 constexpr int ABVariablesHeightOffset = mapHeightOffset - 68;
 constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
+sf::Color colors[8] = {
+    sf::Color::Red, sf::Color::Blue, 
+    sf::Color::Cyan, sf::Color::Green};
 
 MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
     : kmapObject(kmapObject)
@@ -112,6 +115,34 @@ void MapInterface::drawVariables()
     window.draw(variablesText[1]);
 }
 
+void MapInterface::draw4x2Group()
+{
+    if (kmapObject.getZeroes() != 0)
+        return;
+    
+    rectangle4x2Group.setOutlineColor(sf::Color::Red);
+    rectangle4x2Group.setOutlineThickness(2.f);
+    rectangle4x2Group.setFillColor(sf::Color::Transparent);
+    rectangle4x2Group.setSize(sf::Vector2f(238, 238));
+    rectangle4x2Group.setPosition(sf::Vector2f(mapWidthOffset, mapHeightOffset));
+
+    window.draw(rectangle4x2Group);
+}
+
+void MapInterface::draw1x1Group()
+{
+    int index;
+    int k = 0;
+
+    for (const auto& group : kmapObject.get1x1Groups())
+    {
+        index = group.first*4 + group.second;
+        rectangles[index].setOutlineColor(colors[k++]);
+        rectangles[index].setFillColor(sf::Color::Transparent);
+        window.draw(rectangles[index]);
+    }
+}
+
 void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
 {
     if (mouseMove.x <= mapWidthOffset or mouseMove.x >= mapWidthOffset + 4*58 + 6)
@@ -200,6 +231,8 @@ void MapInterface::loop()
         drawMap();
         drawGrayCode();
         drawVariables();
+        draw4x2Group();
+        draw1x1Group();
         window.display();
     }
 }

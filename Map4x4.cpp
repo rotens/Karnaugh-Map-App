@@ -708,3 +708,13 @@ bool Map4x4::changeCellValue(int row, int col, Value value)
 
     return true;
 }
+
+int8_t Map4x4::getZeroes()
+{
+    return zeroes;
+}
+
+std::vector<std::pair<int8_t, int8_t>>& Map4x4::get1x1Groups()
+{
+    return _1x1Groups; 
+}
