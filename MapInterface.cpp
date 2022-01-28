@@ -1,4 +1,5 @@
 #include "MapInterface.hpp"
+#include "other.hpp"
 #include <iostream>
 
 constexpr int windowWidth = 800;
@@ -6,12 +7,19 @@ constexpr int windowHeight = 640;
 constexpr int mapWidthOffset = 500;
 constexpr int mapHeightOffset = 197;
 constexpr int textRelativeHeightOffset = 19 - 10;
-constexpr int textRelativeWidthOffset = 23 - 3;
+constexpr int textRelativeWidthOffset = 24 - 3;
+constexpr int horizontalGrayCodeHeightOffset = mapHeightOffset - 34;
+constexpr int horizontalGrayCodeWidthOffset = mapWidthOffset + 17 - 1; // 1 = text's left bound
+constexpr int verticalGrayCodeHeightOffset = mapHeightOffset + 21 - 8;
+constexpr int verticalGrayCodeWidthOffset = mapWidthOffset - 34; // 1 = text's left bound
 
-MapInterface::MapInterface(sf::Font& font, Map4x4 kmapObject)
+MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
     : kmapObject(kmapObject)
 {
     for (auto& text : cellValues)
+        text.setFont(font);
+
+    for (auto& text : grayCodeText)
         text.setFont(font);
 }
 
@@ -48,6 +56,30 @@ void MapInterface::drawMap()
             window.draw(cellValues[k]);
             ++k;
         }
+    }
+}
+
+void MapInterface::drawGrayCode()
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        grayCodeText[i].setString(grayCode[i]);
+        grayCodeText[i].setCharacterSize(24); 
+        grayCodeText[i].setFillColor(sf::Color::Black);
+        grayCodeText[i].setPosition(
+            horizontalGrayCodeWidthOffset + i * 60,
+            horizontalGrayCodeHeightOffset);
+
+        window.draw(grayCodeText[i]);
+
+        grayCodeText[i+4].setString(grayCode[i]);
+        grayCodeText[i+4].setCharacterSize(24); 
+        grayCodeText[i+4].setFillColor(sf::Color::Black);
+        grayCodeText[i+4].setPosition(
+            verticalGrayCodeWidthOffset,
+            verticalGrayCodeHeightOffset + i * 60);
+
+        window.draw(grayCodeText[i+4]);
     }
 }
 
@@ -112,9 +144,7 @@ void MapInterface::loop()
     // rectangle.setPosition(500, mapHeightOffset);
 
     
-    // sf::FloatRect textRect = cellValues[0].getLocalBounds();
-    // std::cout << textRect.left << " " << textRect.top << std::endl;
-    // std::cout << textRect.width << " " << textRect.height << std::endl;
+    
 
     while (window.isOpen())
     {
@@ -140,6 +170,7 @@ void MapInterface::loop()
 
         window.clear(sf::Color::White);
         drawMap();
+        drawGrayCode();
         window.display();
     }
 }
