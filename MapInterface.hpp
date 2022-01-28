@@ -9,6 +9,7 @@ class MapInterface
     sf::RectangleShape rectangles[16];
     sf::Text cellValues[16];
     sf::Text grayCodeText[8];
+    sf::Text variablesText[2];
     Map4x4 kmapObject;
 
     void fillCellsWithWhiteColor();
@@ -16,6 +17,7 @@ class MapInterface
     void handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseButtonEvent);
     void drawMap();
     void drawGrayCode();
+    void drawVariables();
 
 public:
     MapInterface(sf::Font&, Map4x4& kmapObject);

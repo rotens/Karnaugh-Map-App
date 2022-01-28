@@ -12,6 +12,10 @@ constexpr int horizontalGrayCodeHeightOffset = mapHeightOffset - 34;
 constexpr int horizontalGrayCodeWidthOffset = mapWidthOffset + 17 - 1; // 1 = text's left bound
 constexpr int verticalGrayCodeHeightOffset = mapHeightOffset + 21 - 8;
 constexpr int verticalGrayCodeWidthOffset = mapWidthOffset - 34; // 1 = text's left bound
+constexpr int ABVariablesWidthOffset = mapWidthOffset + 101;
+constexpr int ABVariablesHeightOffset = mapHeightOffset - 68;
+constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
+constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
 
 MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
     : kmapObject(kmapObject)
@@ -21,6 +25,9 @@ MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
 
     for (auto& text : grayCodeText)
         text.setFont(font);
+
+    variablesText[0].setFont(font);
+    variablesText[1].setFont(font);
 }
 
 void MapInterface::fillCellsWithWhiteColor()
@@ -83,6 +90,28 @@ void MapInterface::drawGrayCode()
     }
 }
 
+void MapInterface::drawVariables()
+{
+    variablesText[0].setString("AB");
+    variablesText[0].setCharacterSize(30); 
+    variablesText[0].setFillColor(sf::Color::Black);
+    variablesText[0].setPosition(
+        ABVariablesWidthOffset,
+        ABVariablesHeightOffset);
+
+    window.draw(variablesText[0]);
+
+    variablesText[1].setString("CD");
+    variablesText[1].setCharacterSize(30); 
+    variablesText[1].setFillColor(sf::Color::Black);
+    variablesText[1].setRotation(-90.f);
+    variablesText[1].setPosition(
+        CDVariablesWidthOffset,
+        CDVariablesHeightOffset);
+
+    window.draw(variablesText[1]);
+}
+
 void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
 {
     if (mouseMove.x <= mapWidthOffset or mouseMove.x >= mapWidthOffset + 4*58 + 6)
@@ -103,7 +132,6 @@ void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
 
     fillCellsWithWhiteColor();
     rectangles[index].setFillColor(sf::Color(170, 215, 255));
-    // window.draw(rectangles[index]);
 }
 
 void MapInterface::handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseButtonEvent)
@@ -171,6 +199,7 @@ void MapInterface::loop()
         window.clear(sf::Color::White);
         drawMap();
         drawGrayCode();
+        drawVariables();
         window.display();
     }
 }
