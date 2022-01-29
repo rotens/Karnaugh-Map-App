@@ -22,10 +22,11 @@ class MapInterface
     void drawCellValues();
     void drawGrayCode();
     void drawVariables();
-    void draw4x2Group();
-    void draw1x1Group();
-    void draw2x1Group();
-    void draw4x1Group();
+    void draw4x4Groups();
+    void draw2x2Groups();
+    void draw1x1Groups();
+    void draw2x1Groups();
+    void draw4x1Groups();
 
 public:
     MapInterface(sf::Font&, Map4x4& kmapObject);

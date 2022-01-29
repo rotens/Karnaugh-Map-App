@@ -20,6 +20,7 @@ sf::Color colors[8] = {
     sf::Color::Red, sf::Color::Blue, 
     sf::Color::Cyan, sf::Color::Green,
     sf::Color::Magenta};
+std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 1}}};
 
 MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
     : kmapObject(kmapObject)
@@ -128,7 +129,7 @@ void MapInterface::drawVariables()
     window.draw(variablesText[1]);
 }
 
-void MapInterface::draw4x2Group()
+void MapInterface::draw4x4Groups()
 {
     if (kmapObject.getZeroes() != 0)
         return;
@@ -142,7 +143,42 @@ void MapInterface::draw4x2Group()
     window.draw(rectangle4x2Group);
 }
 
-void MapInterface::draw4x1Group()
+void MapInterface::draw2x2Groups()
+{
+    int k = 0;
+
+    for (const auto& group : kmapObject.get2x2Groups())
+    {
+        int l = 0;
+
+        for (const auto& cell : group) 
+        {
+            sf::RectangleShape lines[2];
+
+            lines[0].setSize(sf::Vector2f(62, 2));
+            lines[0].setFillColor(colors[k]);
+            lines[0].setPosition(
+                (mapWidthOffset-2) + (cell.second) * 60,
+                (mapHeightOffset-2) + (cell.first + diffs[l].first) * 60
+            );
+            window.draw(lines[0]);
+            
+            lines[1].setSize(sf::Vector2f(2, 62));
+            lines[1].setFillColor(colors[k]);
+            lines[1].setPosition(
+                (mapWidthOffset-2) + (cell.second + diffs[l].second) * 60,
+                (mapHeightOffset-2) + cell.first * 60
+            );
+            window.draw(lines[1]);
+
+            ++l;
+        }
+
+        ++k;
+    }
+}
+
+void MapInterface::draw4x1Groups()
 {
     int width;
     int height;
@@ -183,7 +219,7 @@ void MapInterface::draw4x1Group()
     }
 }
 
-void MapInterface::draw2x1Group()
+void MapInterface::draw2x1Groups()
 {
     int width;
     int height;
@@ -221,7 +257,7 @@ void MapInterface::draw2x1Group()
     }
 }
 
-void MapInterface::draw1x1Group()
+void MapInterface::draw1x1Groups()
 {
     int index;
     int k = 0;
@@ -320,10 +356,11 @@ void MapInterface::loop()
         drawMap();
         drawGrayCode();
         drawVariables();
-        draw4x2Group();
-        draw4x1Group();
-        draw1x1Group();
-        draw2x1Group();
+        draw4x4Groups();
+        draw4x1Groups();
+        draw2x2Groups();
+        draw1x1Groups();
+        draw2x1Groups();
         drawCellValues();
         window.display();
     }
