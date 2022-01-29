@@ -27,6 +27,7 @@ class MapInterface
     void draw1x1Groups();
     void draw2x1Groups();
     void draw4x1Groups();
+    void draw4x2Groups();
 
 public:
     MapInterface(sf::Font&, Map4x4& kmapObject);

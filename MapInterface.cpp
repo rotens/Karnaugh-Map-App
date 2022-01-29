@@ -1,6 +1,7 @@
 #include "MapInterface.hpp"
 #include "other.hpp"
 #include <iostream>
+#include <cmath>
 
 constexpr int windowWidth = 800;
 constexpr int windowHeight = 640;
@@ -141,6 +142,59 @@ void MapInterface::draw4x4Groups()
     rectangle4x2Group.setPosition(sf::Vector2f(mapWidthOffset, mapHeightOffset));
 
     window.draw(rectangle4x2Group);
+}
+
+void MapInterface::draw4x2Groups()
+{
+    int k = 0;
+    int width;
+    int height;
+    int longerLineWidth;
+    int longerLineHeight;
+    int shorterLinesWidth;
+    int shorterLinesHeight;
+    std::pair<int8_t, int8_t> firstCell;
+    std::pair<int8_t, int8_t> fourthCell;
+    std::pair<int8_t, int8_t> lastCell;
+
+    for (const auto& group : kmapObject.get4x2Groups())
+    {
+        firstCell = group[0];
+        fourthCell = group[3];
+        lastCell = group[7];
+
+        if (firstCell.first == fourthCell.first)
+        {
+            width = 4;
+            height = 1;
+            longerLineWidth = 242;
+            longerLineHeight = 2;
+            shorterLinesWidth = 2;
+            shorterLinesHeight = 62;
+        }
+        else
+        {
+            width = 1;
+            height = 4;
+            longerLineWidth = 2;
+            longerLineHeight = 242;
+            shorterLinesWidth = 62;
+            shorterLinesHeight = 2;
+        }
+
+        sf::RectangleShape lines[6];
+
+        lines[0].setSize(sf::Vector2f(longerLineWidth, longerLineHeight));
+        lines[0].setFillColor(colors[k]);
+        lines[0].setPosition(
+            (mapWidthOffset-2) + (cell.second) * 60,
+            (mapHeightOffset-2) + (cell.first + diffs[l].first) * 60
+        );
+        window.draw(lines[0]);
+
+      
+        k++;
+    }
 }
 
 void MapInterface::draw2x2Groups()
@@ -358,6 +412,7 @@ void MapInterface::loop()
         drawVariables();
         draw4x4Groups();
         draw4x1Groups();
+        draw4x2Groups();
         draw2x2Groups();
         draw1x1Groups();
         draw2x1Groups();
