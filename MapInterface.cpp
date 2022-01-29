@@ -165,8 +165,8 @@ void MapInterface::draw4x2Groups()
 
         if (firstCell.first == fourthCell.first)
         {
-            width = 4;
-            height = 1;
+            width = 1;
+            height = 0;
             longerLineWidth = 242;
             longerLineHeight = 2;
             shorterLinesWidth = 2;
@@ -174,8 +174,8 @@ void MapInterface::draw4x2Groups()
         }
         else
         {
-            width = 1;
-            height = 4;
+            width = 0;
+            height = 1;
             longerLineWidth = 2;
             longerLineHeight = 242;
             shorterLinesWidth = 62;
@@ -184,14 +184,61 @@ void MapInterface::draw4x2Groups()
 
         sf::RectangleShape lines[6];
 
+
+        // 1
+
         lines[0].setSize(sf::Vector2f(longerLineWidth, longerLineHeight));
         lines[0].setFillColor(colors[k]);
         lines[0].setPosition(
-            (mapWidthOffset-2) + (cell.second) * 60,
-            (mapHeightOffset-2) + (cell.first + diffs[l].first) * 60
+            (mapWidthOffset-2) + firstCell.second * 60,
+            (mapHeightOffset-2) + firstCell.first * 60
         );
         window.draw(lines[0]);
+        
+        lines[1].setSize(sf::Vector2f(shorterLinesWidth, shorterLinesHeight));
+        lines[1].setFillColor(colors[k]);
+        lines[1].setPosition(
+            (mapWidthOffset-2) + firstCell.second * 60,
+            (mapHeightOffset-2) + firstCell.first * 60
+        );
+        window.draw(lines[1]);
 
+        lines[2].setSize(sf::Vector2f(shorterLinesWidth, shorterLinesHeight));
+        lines[2].setFillColor(colors[k]);
+        lines[2].setPosition(
+            (mapWidthOffset-2) + firstCell.second*60 + 4*60*width,
+            (mapHeightOffset-2) + firstCell.first*60 + 4*60*height
+        );
+        window.draw(lines[2]);
+
+        // 2
+
+        lines[3].setSize(sf::Vector2f(longerLineWidth, longerLineHeight));
+        lines[3].setFillColor(colors[k]);
+        lines[3].setPosition(
+            (mapWidthOffset-2) + lastCell.second * 60 + 62,
+            (mapHeightOffset-2) + lastCell.first * 60 + 62
+        );
+        lines[3].setRotation(180.f);
+        window.draw(lines[3]);
+        
+        lines[4].setSize(sf::Vector2f(shorterLinesWidth, shorterLinesHeight));
+        lines[4].setFillColor(colors[k]);
+        lines[4].setPosition(
+            (mapWidthOffset-2) + lastCell.second * 60 + 62,
+            (mapHeightOffset-2) + lastCell.first * 60 + 62
+        );
+        lines[4].setRotation(180.f);
+        window.draw(lines[4]);
+
+        lines[5].setSize(sf::Vector2f(shorterLinesWidth, shorterLinesHeight));
+        lines[5].setFillColor(colors[k]);
+        lines[5].setPosition(
+            (mapWidthOffset-2) + lastCell.second * 60 + 62 - 4*60*width,
+            (mapHeightOffset-2) + lastCell.first * 60 + 62 - 4*60*height
+        );
+        lines[5].setRotation(180.f);
+        window.draw(lines[5]);
       
         k++;
     }
