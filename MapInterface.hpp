@@ -7,7 +7,6 @@ class MapInterface
 {
     sf::RenderWindow window;
     sf::RectangleShape rectangles[16];
-    sf::RectangleShape rectangles2x1Group[5];
     sf::RectangleShape rectangles4x1Groups[4];
     sf::RectangleShape rectangle4x2Group;
     sf::Text cellValues[16];

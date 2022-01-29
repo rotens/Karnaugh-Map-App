@@ -23,14 +23,18 @@ class Map4x4
     //     {{{0, 1}, {1, 1}, {2, 1}, {3, 1}}},
     //     {{{1, 0}, {1, 1}, {1, 2}, {1, 3}}}
     // };
-    std::vector<std::array<std::pair<int8_t, int8_t>, 8>> rect4x2Groups = {
-        {{{3, 0}, {3, 1}, {3, 2}, {3, 3}, {0, 0}, {0, 1}, {0, 2}, {0, 3}}},
-        {{{0, 3}, {1, 3}, {2, 3}, {3, 3}, {0, 0}, {1, 0}, {2, 0}, {3, 0}}}
-    };
-    std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups;
+    std::vector<std::array<std::pair<int8_t, int8_t>, 8>> rect4x2Groups;
+    // std::vector<std::array<std::pair<int8_t, int8_t>, 8>> rect4x2Groups = {
+    //     {{{3, 0}, {3, 1}, {3, 2}, {3, 3}, {0, 0}, {0, 1}, {0, 2}, {0, 3}}},
+    //     {{{0, 3}, {1, 3}, {2, 3}, {3, 3}, {0, 0}, {1, 0}, {2, 0}, {3, 0}}}
+    // };
+    // std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups;
     // std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups = {
     //     {{{0, 0}, {0, 1}}}, {{{1, 3}, {2, 3}}}, {{{0, 0}, {1, 0}}}
     // };
+    std::vector<std::array<std::pair<int8_t, int8_t>, 2>> rect2x1Groups = {
+         {{{1, 3}, {1, 0}}}, {{{3, 1}, {0, 1}}}, {{{2, 1}, {2, 2}}}
+    };
     std::vector<std::pair<int8_t, int8_t>> _1x1Groups;
     // std::vector<std::pair<int8_t, int8_t>> _1x1Groups = {
     //     {2, 2}, {3, 3}, {1, 1}, {0,0}
