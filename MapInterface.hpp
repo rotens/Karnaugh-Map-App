@@ -12,7 +12,9 @@ class MapInterface
     sf::Text cellValues[16];
     sf::Text grayCodeText[8];
     sf::Text variablesText[2];
+    sf::Text algebraicMintermsText[17];
     Map4x4 kmapObject;
+    int currentColorIndex{0}; 
 
     void fillCellsWithWhiteColor();
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
@@ -21,12 +23,14 @@ class MapInterface
     void drawCellValues();
     void drawGrayCode();
     void drawVariables();
-    void draw4x4Groups();
+    void draw4x4Group();
     void draw2x2Groups();
     void draw1x1Groups();
     void draw2x1Groups();
     void draw4x1Groups();
     void draw4x2Groups();
+    void drawGroups();
+    void drawAlgebraicMinterms();
 
 public:
     MapInterface(sf::Font&, Map4x4& kmapObject);

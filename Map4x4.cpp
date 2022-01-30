@@ -738,3 +738,8 @@ std::vector<std::array<std::pair<int8_t, int8_t>, 8>>& Map4x4::get4x2Groups()
 {
     return rect4x2Groups;
 }
+
+std::vector<std::string>& Map4x4::getAlgebraicMinterms()
+{
+    return algebraicMinterms;
+}

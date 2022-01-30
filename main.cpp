@@ -42,10 +42,10 @@ int main()
 
 
     std::array<std::array<Value, 4>, 4> testKmap = {{
-        {Value::one, Value::one, Value::one, Value::one},
-        {Value::one, Value::one, Value::one, Value::one},
-        {Value::one, Value::one, Value::one, Value::one},
-        {Value::one, Value::one, Value::zero, Value::one}
+        {Value::zero, Value::zero, Value::zero, Value::zero},
+        {Value::zero, Value::zero, Value::zero, Value::zero},
+        {Value::zero, Value::zero, Value::zero, Value::zero},
+        {Value::zero, Value::zero, Value::zero, Value::zero}
     }};
 
     Map4x4 kmapObject;

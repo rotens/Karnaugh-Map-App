@@ -17,6 +17,9 @@ constexpr int ABVariablesWidthOffset = mapWidthOffset + 101;
 constexpr int ABVariablesHeightOffset = mapHeightOffset - 68;
 constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
+constexpr int mintermsWidthOffset = mapWidthOffset - 74;
+constexpr int mintermsHeightOffset = mapHeightOffset + 240 + 50;
+
 sf::Color colors[8] = {
     sf::Color::Red, sf::Color::Blue, 
     sf::Color::Cyan, sf::Color::Green,
@@ -30,6 +33,9 @@ MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
         text.setFont(font);
 
     for (auto& text : grayCodeText)
+        text.setFont(font);
+
+    for (auto& text : algebraicMintermsText)
         text.setFont(font);
 
     variablesText[0].setFont(font);
@@ -130,7 +136,7 @@ void MapInterface::drawVariables()
     window.draw(variablesText[1]);
 }
 
-void MapInterface::draw4x4Groups()
+void MapInterface::draw4x4Group()
 {
     if (kmapObject.getZeroes() != 0)
         return;
@@ -146,7 +152,6 @@ void MapInterface::draw4x4Groups()
 
 void MapInterface::draw4x2Groups()
 {
-    int k = 0;
     int width;
     int height;
     int longerLineWidth;
@@ -187,7 +192,7 @@ void MapInterface::draw4x2Groups()
         // 1
 
         lines[0].setSize(sf::Vector2f(longerLineWidth, longerLineHeight));
-        lines[0].setFillColor(colors[k]);
+        lines[0].setFillColor(colors[currentColorIndex]);
         lines[0].setPosition(
             (mapWidthOffset-2) + firstCell.second * 60,
             (mapHeightOffset-2) + firstCell.first * 60
@@ -195,7 +200,7 @@ void MapInterface::draw4x2Groups()
         window.draw(lines[0]);
         
         lines[1].setSize(sf::Vector2f(shorterLinesWidth, shorterLinesHeight));
-        lines[1].setFillColor(colors[k]);
+        lines[1].setFillColor(colors[currentColorIndex]);
         lines[1].setPosition(
             (mapWidthOffset-2) + firstCell.second * 60,
             (mapHeightOffset-2) + firstCell.first * 60
@@ -203,7 +208,7 @@ void MapInterface::draw4x2Groups()
         window.draw(lines[1]);
 
         lines[2].setSize(sf::Vector2f(shorterLinesWidth, shorterLinesHeight));
-        lines[2].setFillColor(colors[k]);
+        lines[2].setFillColor(colors[currentColorIndex]);
         lines[2].setPosition(
             (mapWidthOffset-2) + firstCell.second*60 + 4*60*width,
             (mapHeightOffset-2) + firstCell.first*60 + 4*60*height
@@ -213,7 +218,7 @@ void MapInterface::draw4x2Groups()
         // 2
 
         lines[3].setSize(sf::Vector2f(longerLineWidth, longerLineHeight));
-        lines[3].setFillColor(colors[k]);
+        lines[3].setFillColor(colors[currentColorIndex]);
         lines[3].setPosition(
             (mapWidthOffset-2) + lastCell.second * 60 + 62,
             (mapHeightOffset-2) + lastCell.first * 60 + 62
@@ -222,7 +227,7 @@ void MapInterface::draw4x2Groups()
         window.draw(lines[3]);
         
         lines[4].setSize(sf::Vector2f(shorterLinesWidth, shorterLinesHeight));
-        lines[4].setFillColor(colors[k]);
+        lines[4].setFillColor(colors[currentColorIndex]);
         lines[4].setPosition(
             (mapWidthOffset-2) + lastCell.second * 60 + 62,
             (mapHeightOffset-2) + lastCell.first * 60 + 62
@@ -231,7 +236,7 @@ void MapInterface::draw4x2Groups()
         window.draw(lines[4]);
 
         lines[5].setSize(sf::Vector2f(shorterLinesWidth, shorterLinesHeight));
-        lines[5].setFillColor(colors[k]);
+        lines[5].setFillColor(colors[currentColorIndex]);
         lines[5].setPosition(
             (mapWidthOffset-2) + lastCell.second * 60 + 62 - 4*60*width,
             (mapHeightOffset-2) + lastCell.first * 60 + 62 - 4*60*height
@@ -239,14 +244,12 @@ void MapInterface::draw4x2Groups()
         lines[5].setRotation(180.f);
         window.draw(lines[5]);
       
-        k++;
+       ++currentColorIndex;
     }
 }
 
 void MapInterface::draw2x2Groups()
 {
-    int k = 0;
-
     for (const auto& group : kmapObject.get2x2Groups())
     {
         int l = 0;
@@ -256,7 +259,7 @@ void MapInterface::draw2x2Groups()
             sf::RectangleShape lines[2];
 
             lines[0].setSize(sf::Vector2f(62, 2));
-            lines[0].setFillColor(colors[k]);
+            lines[0].setFillColor(colors[currentColorIndex]);
             lines[0].setPosition(
                 (mapWidthOffset-2) + (cell.second) * 60,
                 (mapHeightOffset-2) + (cell.first + diffs[l].first) * 60
@@ -264,7 +267,7 @@ void MapInterface::draw2x2Groups()
             window.draw(lines[0]);
             
             lines[1].setSize(sf::Vector2f(2, 62));
-            lines[1].setFillColor(colors[k]);
+            lines[1].setFillColor(colors[currentColorIndex]);
             lines[1].setPosition(
                 (mapWidthOffset-2) + (cell.second + diffs[l].second) * 60,
                 (mapHeightOffset-2) + cell.first * 60
@@ -274,7 +277,7 @@ void MapInterface::draw2x2Groups()
             ++l;
         }
 
-        ++k;
+        ++currentColorIndex;
     }
 }
 
@@ -302,7 +305,7 @@ void MapInterface::draw4x1Groups()
             height = 4;
         }
         
-        rectangles4x1Groups[k].setOutlineColor(colors[k]);
+        rectangles4x1Groups[k].setOutlineColor(colors[currentColorIndex]);
         rectangles4x1Groups[k].setOutlineThickness(2.f);
         rectangles4x1Groups[k].setFillColor(sf::Color::Transparent);
         rectangles4x1Groups[k].setSize(
@@ -315,7 +318,8 @@ void MapInterface::draw4x1Groups()
                 mapHeightOffset + 60*firstCell.first));
 
         window.draw(rectangles4x1Groups[k]);
-        k++;
+        ++k;
+        ++currentColorIndex;
     }
 }
 
@@ -323,7 +327,6 @@ void MapInterface::draw2x1Groups()
 {
     int width;
     int height;
-    int k = 0;
 
     for (const auto& group : kmapObject.get2x1Groups())
     {
@@ -345,7 +348,7 @@ void MapInterface::draw2x1Groups()
         // 1
 
         lines[0].setSize(sf::Vector2f(62, 2));
-        lines[0].setFillColor(colors[k]);
+        lines[0].setFillColor(colors[currentColorIndex]);
         lines[0].setPosition(
             (mapWidthOffset-2) + firstCell.second * 60,
             (mapHeightOffset-2) + firstCell.first * 60
@@ -353,7 +356,7 @@ void MapInterface::draw2x1Groups()
         window.draw(lines[0]);
 
         lines[1].setSize(sf::Vector2f(2, 62));
-        lines[1].setFillColor(colors[k]);
+        lines[1].setFillColor(colors[currentColorIndex]);
         lines[1].setPosition(
             (mapWidthOffset-2) + firstCell.second * 60,
             (mapHeightOffset-2) + firstCell.first * 60
@@ -362,7 +365,7 @@ void MapInterface::draw2x1Groups()
         window.draw(lines[1]);
 
         lines[2].setSize(sf::Vector2f(2 + 60*width, 2 + 60*height));
-        lines[2].setFillColor(colors[k]);
+        lines[2].setFillColor(colors[currentColorIndex]);
         lines[2].setPosition(
             (mapWidthOffset-2) + firstCell.second * 60 + 60*height,
             (mapHeightOffset-2) + firstCell.first * 60 + 60*width
@@ -372,7 +375,7 @@ void MapInterface::draw2x1Groups()
         // 2
 
         lines[3].setSize(sf::Vector2f(62, 2));
-        lines[3].setFillColor(colors[k]);
+        lines[3].setFillColor(colors[currentColorIndex]);
         lines[3].setPosition(
             (mapWidthOffset-2) + lastCell.second * 60 + 62,
             (mapHeightOffset-2) + lastCell.first * 60 + 62
@@ -381,7 +384,7 @@ void MapInterface::draw2x1Groups()
         window.draw(lines[3]);
 
         lines[4].setSize(sf::Vector2f(2, 62));
-        lines[4].setFillColor(colors[k]);
+        lines[4].setFillColor(colors[currentColorIndex]);
         lines[4].setPosition(
             (mapWidthOffset-2) + lastCell.second * 60 + 62,
             (mapHeightOffset-2) + lastCell.first * 60 + 62
@@ -390,7 +393,7 @@ void MapInterface::draw2x1Groups()
         window.draw(lines[4]);
 
         lines[5].setSize(sf::Vector2f(2 + 60*width, 2 + 60*height));
-        lines[5].setFillColor(colors[k]);
+        lines[5].setFillColor(colors[currentColorIndex]);
         lines[5].setPosition(
             (mapWidthOffset-2) + lastCell.second * 60 + 62 - 60*height,
             (mapHeightOffset-2) + lastCell.first * 60 + 62 - 60*width
@@ -398,20 +401,71 @@ void MapInterface::draw2x1Groups()
         lines[5].setRotation(180.f);
         window.draw(lines[5]);
        
-        k++;
+        ++currentColorIndex;
     }
 }
 
 void MapInterface::draw1x1Groups()
 {
     int index;
-    int k = 0;
 
     for (const auto& group : kmapObject.get1x1Groups())
     {
         index = group.first*4 + group.second;
-        rectangles[index].setOutlineColor(colors[k++]);
+        rectangles[index].setOutlineColor(colors[currentColorIndex++]);
         window.draw(rectangles[index]);
+    }
+}
+
+void MapInterface::drawGroups() 
+{
+    currentColorIndex = 0;
+    draw4x4Group();
+    draw4x2Groups();
+    draw4x1Groups();
+    draw2x2Groups();
+    draw2x1Groups();
+    draw1x1Groups();
+}
+
+void MapInterface::drawAlgebraicMinterms()
+{
+    int i = 1;
+    int colorIndex = 0;
+    int currentWidthOffset = mintermsWidthOffset;
+
+    algebraicMintermsText[0].setString("y = ");
+    algebraicMintermsText[0].setCharacterSize(24);
+    algebraicMintermsText[0].setFillColor(sf::Color::Black);
+    algebraicMintermsText[0].setPosition(mintermsWidthOffset, mintermsHeightOffset);
+    window.draw(algebraicMintermsText[0]);
+
+    sf::FloatRect bounds = algebraicMintermsText[0].getLocalBounds();
+    currentWidthOffset += bounds.width;
+
+    for (const auto& minterm : kmapObject.getAlgebraicMinterms())
+    {
+        algebraicMintermsText[i].setString(minterm);
+        algebraicMintermsText[i].setCharacterSize(24);
+        algebraicMintermsText[i].setFillColor(colors[colorIndex]);
+        algebraicMintermsText[i].setPosition(currentWidthOffset, mintermsHeightOffset);
+        window.draw(algebraicMintermsText[i]);
+
+        bounds = algebraicMintermsText[i].getLocalBounds();
+        currentWidthOffset += bounds.width + 8;
+        ++i;
+
+        algebraicMintermsText[i].setString("+");
+        algebraicMintermsText[i].setCharacterSize(24);
+        algebraicMintermsText[i].setFillColor(sf::Color::Black);
+        algebraicMintermsText[i].setPosition(currentWidthOffset, mintermsHeightOffset);
+        window.draw(algebraicMintermsText[i]);
+
+        bounds = algebraicMintermsText[i].getLocalBounds();
+        currentWidthOffset += bounds.width + 12;
+        ++i;
+
+        ++colorIndex;
     }
 }
 
@@ -501,13 +555,9 @@ void MapInterface::loop()
         drawMap();
         drawGrayCode();
         drawVariables();
-        draw4x4Groups();
-        draw4x1Groups();
-        draw4x2Groups();
-        draw2x2Groups();
-        draw1x1Groups();
-        draw2x1Groups();
+        drawGroups();
         drawCellValues();
+        drawAlgebraicMinterms();
         window.display();
     }
 }
