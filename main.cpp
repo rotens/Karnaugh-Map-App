@@ -1,3 +1,4 @@
+#include <bitset>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Map4x4.hpp"
@@ -63,5 +64,11 @@ int main()
     MapInterface mapInterface(font, kmapObject);
     mapInterface.loop();
     
+    // for (int i = 0; i < 16; ++i)
+    // {
+    //     std::bitset<4> x(i);
+    //     std::cout << x[0] << x[1] << x[2] << x[3] << std::endl;
+    // }
+
     return 0;
 }

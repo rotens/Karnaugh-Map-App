@@ -2,6 +2,7 @@
 #include "other.hpp"
 #include <iostream>
 #include <cmath>
+#include <bitset>
 
 constexpr int windowWidth = 800;
 constexpr int windowHeight = 640;
@@ -19,12 +20,14 @@ constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
 constexpr int mintermsWidthOffset = mapWidthOffset - 74;
 constexpr int mintermsHeightOffset = mapHeightOffset + 240 + 50;
-
+constexpr int truthTableWidthOffset = 70;
+constexpr int truthTableHeightOffset = 80; 
+constexpr char truthTableHeader[] = {'A', 'B', 'C', 'D', '0', '1'};
 sf::Color colors[8] = {
     sf::Color::Red, sf::Color::Blue, 
     sf::Color::Cyan, sf::Color::Green,
     sf::Color::Magenta};
-std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 1}}};
+constexpr std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 1}}};
 
 MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
     : kmapObject(kmapObject)
@@ -36,6 +39,12 @@ MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
         text.setFont(font);
 
     for (auto& text : algebraicMintermsText)
+        text.setFont(font);
+    
+    for (auto& text : truthTableHeaderText)
+        text.setFont(font);
+
+    for (auto& text : truthTableVariablesValues)
         text.setFont(font);
 
     variablesText[0].setFont(font);
@@ -516,10 +525,73 @@ void MapInterface::handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseBu
     kmapObject.changeCellValue(row, col, Value::one);
 }
 
+void MapInterface::drawTruthTable()
+{
+    int index;
+    int value = 0;
+    char bit;
+    sf::FloatRect bounds;
+
+    for (int i = 0; i < 17; ++i)
+    {
+        for (int j = 0; j < 6; ++j)
+        {
+            index = i*6 + j;
+
+            truthTableCells[index].setSize(sf::Vector2f(26, 26.f));
+            truthTableCells[index].setOutlineColor(sf::Color(127, 127, 127));
+            truthTableCells[index].setOutlineThickness(2.f);
+            truthTableCells[index].setPosition(
+                truthTableWidthOffset + j*28, 
+                truthTableHeightOffset + i*28);
+
+            window.draw(truthTableCells[index]);
+        }
+        
+    }
+
+    for (int i = 0; i < 6; ++i)
+    {
+        truthTableHeaderText[i].setString(truthTableHeader[i]);
+        truthTableHeaderText[i].setCharacterSize(20);
+        truthTableHeaderText[i].setFillColor(sf::Color::Black);
+        bounds = truthTableHeaderText[i].getLocalBounds();
+        truthTableHeaderText[i].setPosition(
+            truthTableWidthOffset + (26 - bounds.width) / 2 + i*28 - bounds.left,
+            truthTableHeightOffset);
+
+        window.draw(truthTableHeaderText[i]);
+    }
+
+    for (int i = 1; i < 17; ++i)
+    {
+        std::bitset<4> x(value);
+
+        for (int j = 0; j < 4; ++j)
+        {
+            index = (i-1)*4 + j;
+            bit = '0' + x[3-j];
+
+            truthTableVariablesValues[index].setString(bit);
+            truthTableVariablesValues[index].setCharacterSize(20);
+            truthTableVariablesValues[index].setFillColor(sf::Color::Black);
+            bounds = truthTableVariablesValues[index].getLocalBounds();
+            truthTableVariablesValues[index].setPosition(
+                truthTableWidthOffset + (26 - bounds.width) / 2 + j*28 - bounds.left,
+                truthTableHeightOffset + i*28);
+
+            window.draw(truthTableVariablesValues[index]);
+        }
+
+        ++value;
+    }
+
+}
+
 void MapInterface::loop()
 {
     window.create(sf::VideoMode(windowWidth, windowHeight), "Karnaugh map simulator!");
-    
+    window.setVerticalSyncEnabled(true);
 
     // sf::RectangleShape rectangle(sf::Vector2f(242, 242.f));
     // window.clear(sf::Color::White);
@@ -558,6 +630,7 @@ void MapInterface::loop()
         drawGroups();
         drawCellValues();
         drawAlgebraicMinterms();
+        drawTruthTable();
         window.display();
     }
 }

@@ -13,8 +13,11 @@ class MapInterface
     sf::Text grayCodeText[8];
     sf::Text variablesText[2];
     sf::Text algebraicMintermsText[17];
+    sf::RectangleShape truthTableCells[102];
+    sf::Text truthTableHeaderText[6];
+    sf::Text truthTableVariablesValues[64];
     Map4x4 kmapObject;
-    int currentColorIndex{0}; 
+    int currentColorIndex{0};
 
     void fillCellsWithWhiteColor();
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
@@ -31,6 +34,7 @@ class MapInterface
     void draw4x2Groups();
     void drawGroups();
     void drawAlgebraicMinterms();
+    void drawTruthTable();
 
 public:
     MapInterface(sf::Font&, Map4x4& kmapObject);
