@@ -28,6 +28,8 @@ sf::Color colors[8] = {
     sf::Color::Cyan, sf::Color::Green,
     sf::Color::Magenta};
 constexpr std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 1}}};
+constexpr int truthTableToKmap[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
+constexpr Value intToValue[] = {Value::zero, Value::one, Value::dont_care};
 
 MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
     : kmapObject(kmapObject)
@@ -588,6 +590,29 @@ void MapInterface::drawTruthTable()
 
 }
 
+void MapInterface::handleMouseButtonPressedOnTruthTable(
+    sf::Event::MouseButtonEvent& mouseButtonEvent)
+{
+    if (mouseButtonEvent.x <= truthTableWidthOffset + 28*4
+        or mouseButtonEvent.x >= truthTableWidthOffset + 28*6)
+    {
+        return;
+    } 
+
+    if (mouseButtonEvent.y <= truthTableHeightOffset + 28
+        or mouseButtonEvent.y >= truthTableHeightOffset + 28*17)
+    {
+        return;
+    }
+
+    int x = (mouseButtonEvent.x - (truthTableWidthOffset + 28*4)) / 28;
+    int y = (mouseButtonEvent.y - (truthTableHeightOffset + 28)) / 28;
+    int row = truthTableToKmap[y] / 4;
+    int col = truthTableToKmap[y] % 4;
+
+    kmapObject.changeCellValue(row, col, intToValue[x]);
+}
+
 void MapInterface::loop()
 {
     window.create(sf::VideoMode(windowWidth, windowHeight), "Karnaugh map simulator!");
@@ -615,6 +640,7 @@ void MapInterface::loop()
                     break;
                 case sf::Event::MouseButtonPressed:
                     handleMouseButtonPressed(event.mouseButton);
+                    handleMouseButtonPressedOnTruthTable(event.mouseButton);
                     break;
                 case sf::Event::MouseMoved:
                     cellHover(event.mouseMove);

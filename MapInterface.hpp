@@ -35,6 +35,7 @@ class MapInterface
     void drawGroups();
     void drawAlgebraicMinterms();
     void drawTruthTable();
+    void handleMouseButtonPressedOnTruthTable(sf::Event::MouseButtonEvent& mouseButtonEvent);
 
 public:
     MapInterface(sf::Font&, Map4x4& kmapObject);
