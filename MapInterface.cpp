@@ -29,6 +29,7 @@ sf::Color colors[8] = {
     sf::Color::Magenta};
 constexpr std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 1}}};
 constexpr int truthTableToKmap[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
+constexpr int kmapToTruthTable[] = {1, 2, 4, 3, 5, 6, 8, 7, 13, 14, 16, 15, 9, 10, 12, 11};
 constexpr Value intToValue[] = {Value::zero, Value::one, Value::dont_care};
 
 MapInterface::MapInterface(sf::Font& font, Map4x4& kmapObject)
@@ -586,6 +587,41 @@ void MapInterface::drawTruthTable()
         }
 
         ++value;
+    }
+
+    // sf::CircleShape shape(8.f);
+    // shape.setFillColor(sf::Color(100, 250, 50));
+    // bounds = shape.getLocalBounds();
+    // shape.setPosition(
+    //     truthTableWidthOffset + (26 - bounds.width) / 2 + 4*28 - bounds.left,  
+    //     truthTableHeightOffset + 28 + (26 - bounds.height) / 2);
+    // window.draw(shape);
+
+    auto& kmap = kmapObject.getKmap();
+    truthTableStateCircle[0].setRadius(6.f);
+    bounds = truthTableStateCircle[0].getLocalBounds();
+    float stateCirclePosX, stateCirclePosY;
+
+    for (int i = 0; i < kmap.size(); ++i)
+    {
+        for (int j = 0; j < kmap[0].size(); ++j)
+        {
+            index = 4*i + j;
+            stateCirclePosY = truthTableHeightOffset + kmapToTruthTable[index]*28 + (26 - bounds.height) / 2;
+            
+            if (kmap[i][j] == Value::zero)
+            {
+                stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + 4*28 - bounds.left;
+            }
+            else if (kmap[i][j] == Value::one)
+            {
+                stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + 5*28 - bounds.left;
+            }
+            truthTableStateCircle[index].setRadius(6.f);
+            truthTableStateCircle[index].setFillColor(sf::Color(97, 157, 216));
+            truthTableStateCircle[index].setPosition(stateCirclePosX, stateCirclePosY);
+            window.draw(truthTableStateCircle[index]);
+        }
     }
 
 }

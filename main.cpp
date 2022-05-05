@@ -1,4 +1,4 @@
-#include <bitset>
+
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Map4x4.hpp"
@@ -10,8 +10,6 @@
 
 int main()
 {
-    
-    
 
 
     // Map1x2 map1x2Object;
@@ -56,13 +54,13 @@ int main()
     sf::Font font;
     if (!font.loadFromFile("fonts/segoeui.ttf"))
     {
-        __TEST__;
         std::cerr << "Can't load font from file" << std::endl;
         return -1;
     }
 
     MapInterface mapInterface(font, kmapObject);
     mapInterface.loop();
+   
     
     // for (int i = 0; i < 16; ++i)
     // {
