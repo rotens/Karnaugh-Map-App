@@ -8,6 +8,7 @@
 #include "other.hpp"
 
 class Map4x4;
+using Groups = std::vector<std::vector<int>>;
 
 class KmapCell 
 {
@@ -19,6 +20,7 @@ public:
     void decrementQuadsNumber();
     void incrementPairsNumber();
     void incrementQuadsNumber();
+    void setDone() { done = true; }
 
 private:
     Map4x4& kmapObject;
@@ -37,10 +39,17 @@ public:
     Map4x4();
     ~Map4x4();
     void printKmap();
+    void printOctets();
     void initializeElementsWithGivenValues(const std::vector<Value>& values);
+    void findOctets();
+    Groups& getOctets() { return octets; }
 
 private:
     std::vector<KmapCell*> kmap{16, nullptr};
+    Groups octets;
+
+    void findHorizontalOctets();
+    void findVerticalOctets();
 };
 
 // class Map4x4

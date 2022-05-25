@@ -1,8 +1,16 @@
 #include "Map4x4.hpp"
+#include <algorithm>
 #include <cmath>
 #include <tuple>
 
 #define __TEST__ std::cout<<"TEST"<<std::endl;
+
+int getRealIndex(int startIndex)
+{
+    int col = startIndex % 4;
+    int row = startIndex / 4;
+    return (col + 1) % 4 + row*4;
+}
 
 KmapCell::KmapCell(Map4x4& kmapObject)
         : kmapObject(kmapObject) {}
@@ -37,7 +45,6 @@ void KmapCell::incrementQuadsNumber()
     ++this->quadsNumber; 
 }
 
-
 // MAP 4x4
 
 Map4x4::Map4x4()
@@ -54,7 +61,6 @@ Map4x4::~Map4x4()
     {
         delete elem;
     }
-    __TEST__;
 }
 
 void Map4x4::printKmap()
@@ -76,6 +82,107 @@ void Map4x4::initializeElementsWithGivenValues(const std::vector<Value>& values)
     }
 }
 
+void Map4x4::findHorizontalOctets()
+{
+    bool zeroValue;
+
+    for (int i = 0; i <= 3*4; i += 4)
+    {
+        zeroValue = false;
+
+        for (int j = i; j < i+8; ++j)
+        {
+            if (kmap[j % 16]->getCellValue() == Value::zero)
+            {
+                zeroValue = true;
+                break;
+            }
+        }
+
+        if (!zeroValue)
+        {
+            std::vector<int> octet;
+            octet.reserve(8);
+            for (int k = i; k < i+8; ++k)
+            {
+                kmap[k % 16]->setDone();
+                octet.push_back(k % 16);
+            }
+            octets.push_back(std::move(octet));
+        }
+    }
+}
+
+void Map4x4::findVerticalOctets()
+{
+    bool zeroValue;
+
+
+    for (int i = 0; i < 4; ++i)
+    {
+        zeroValue = false;
+
+        for (int j = i; j <= (4*3 + i); j += 4)
+        {
+            if (kmap[j]->getCellValue() == Value::zero
+                or kmap[getRealIndex(j)]->getCellValue() == Value::zero)
+            {
+                zeroValue = true;
+                break;
+            }
+        }
+
+        if (!zeroValue)
+        {
+            std::vector<int> octet;
+            octet.reserve(8);
+            for (int k = i; k <= (4*3 + i); k += 4)
+            {
+                octet.push_back(k);
+                octet.push_back(getRealIndex(k));
+                kmap[k]->setDone();
+                kmap[getRealIndex(k)]->setDone();
+            }
+            octets.push_back(std::move(octet));
+        }
+    }
+}
+
+void Map4x4::findOctets()
+{
+    findHorizontalOctets();
+    findVerticalOctets();
+}
+
+void Map4x4::printOctets()
+{
+    for (const auto& octet : octets)
+    {
+        for (const auto& elem : octet)
+        {
+            std::cout << elem << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+// void Map4x4::addRect4x2Group(int8_t row, int8_t col, int8_t height, int8_t width)
+// {
+//     int8_t k = 0;
+//     std::array<std::pair<int8_t, int8_t>, 8> rect4x2Group;
+
+//     for (int8_t i = row; i < row+height; ++i)
+//     {
+//         for (int8_t j = col; j < col+width; ++j)
+//         {
+//             rect4x2Group[k++] = getRealIndices(i, j);
+//             cellsInGroup[translateIndices(i, j)] = 1;
+//             ++cellsNumberOfGroups[translateIndices(i, j)];
+//         }
+//     }
+
+//     rect4x2Groups.push_back(std::move(rect4x2Group));
+// }
 
 // void Map4x4::solve()
 // {
