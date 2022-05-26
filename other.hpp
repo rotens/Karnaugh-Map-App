@@ -11,3 +11,4 @@ inline std::string variables[] = {"A", "B", "C", "D"};
 
 std::pair<int8_t, int8_t> getRealIndices(int8_t, int8_t);
 int8_t translateIndices(int8_t, int8_t);
+int getCellIndex(int, int, int);

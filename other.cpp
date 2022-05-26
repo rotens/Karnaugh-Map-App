@@ -20,3 +20,17 @@ int8_t translateIndices(int8_t row, int8_t col)
     col %= 4;
     return 4*row + col;
 }
+
+int getCellIndex(int cellIndex, int rowOffset, int colOffset)
+{
+    int col = (cellIndex % 4 + colOffset) % 4;
+    int row = (cellIndex / 4 + rowOffset) % 4;
+
+    if (row < 0)
+        row = 4 + row;
+    
+    if (col < 0)
+        col = 4 + col;
+
+    return col + row*4;
+}

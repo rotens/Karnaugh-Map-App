@@ -13,21 +13,25 @@ using Groups = std::vector<std::vector<int>>;
 class KmapCell 
 {
 public:
-    KmapCell(Map4x4& kmapObject);
-    void setCellValue(Value);
-    Value getCellValue();
-    void decrementPairsNumber();
-    void decrementQuadsNumber();
-    void incrementPairsNumber();
-    void incrementQuadsNumber();
+    KmapCell(Map4x4& kmapObject, int cellIndex);
+    void setCellValue(Value cellValue) { this->cellValue = cellValue; }
+    Value getCellValue() { return this->cellValue; }
+    void decrementPairsNumber() { --this->pairsNumber; }
+    void decrementQuadsNumber() { --this->quadsNumber; }
+    void incrementPairsNumber() { ++this->pairsNumber; }
+    void incrementQuadsNumber() { ++this->quadsNumber; }
     void setDone() { done = true; }
+    bool isDone() { return this->done; }
+    void findPairs();
 
 private:
+    int cellIndex;
     Map4x4& kmapObject;
     int pairsNumber{0};
     int quadsNumber{0};
     Value cellValue{Value::zero};
     bool done{false};
+    std::vector<int> pairs;
 };
 
 
@@ -42,7 +46,10 @@ public:
     void printOctets();
     void initializeElementsWithGivenValues(const std::vector<Value>& values);
     void findOctets();
+    Value getCellValue(int cellIndex);
+    bool isCellDone(int cellIndex);
     Groups& getOctets() { return octets; }
+    void findPairs();
 
 private:
     std::vector<KmapCell*> kmap{16, nullptr};

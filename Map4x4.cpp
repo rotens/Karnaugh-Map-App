@@ -12,46 +12,38 @@ int getRealIndex(int startIndex)
     return (col + 1) % 4 + row*4;
 }
 
-KmapCell::KmapCell(Map4x4& kmapObject)
-        : kmapObject(kmapObject) {}
+KmapCell::KmapCell(Map4x4& kmapObject, int cellIndex)
+        : kmapObject(kmapObject), cellIndex(cellIndex) {}
 
-void KmapCell::setCellValue(Value cellValue)
+void KmapCell::findPairs()
 {
-    this->cellValue = cellValue;
+    for (const auto row : {-1, 1})
+    {
+        for (const auto col : {-1, 1})
+        {
+            int neighbourCellIndex = getCellIndex(this->cellIndex, row, col);
+            Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
+            bool cellDone = kmapObject.isCellDone(neighbourCellIndex);
+
+            if (cellValue == Value::one and not cellDone)
+            {
+                pairs.push_back(neighbourCellIndex);
+                ++this->pairsNumber;
+            }
+        }
+    }
 }
 
-Value KmapCell::getCellValue()
-{
-    return this->cellValue;
-}
-
-void KmapCell::decrementPairsNumber()
-{
-    --this->pairsNumber; 
-}
-
-void KmapCell::decrementQuadsNumber()
-{
-    --this->quadsNumber; 
-}
-
-void KmapCell::incrementPairsNumber()
-{
-    ++this->pairsNumber;
-}
-
-void KmapCell::incrementQuadsNumber()
-{
-    ++this->quadsNumber; 
-}
 
 // MAP 4x4
 
 Map4x4::Map4x4()
 {
+    int i = 0;
     for (auto& elem : kmap)
     {
-        elem = new KmapCell(*this);
+        elem = new KmapCell(*this, i);
+        ++i;
     }
 }
 
@@ -61,6 +53,16 @@ Map4x4::~Map4x4()
     {
         delete elem;
     }
+}
+
+Value Map4x4::getCellValue(int cellIndex)
+{ 
+    return kmap[cellIndex % 16]->getCellValue(); 
+}
+
+bool Map4x4::isCellDone(int cellIndex)
+{
+    return kmap[cellIndex % 16]->isDone();
 }
 
 void Map4x4::printKmap()
@@ -152,6 +154,23 @@ void Map4x4::findOctets()
 {
     findHorizontalOctets();
     findVerticalOctets();
+}
+
+void Map4x4::findPairs()
+{
+    for (auto& cell : kmap)
+    {
+        if (not cell->isDone())
+            cell->findPairs();
+    }
+
+    for (auto& cell : kmap)
+    {
+        if (not cell->isDone())
+        {
+            //
+        }
+    }
 }
 
 void Map4x4::printOctets()
