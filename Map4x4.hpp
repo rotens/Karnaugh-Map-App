@@ -22,7 +22,12 @@ public:
     void incrementQuadsNumber() { ++this->quadsNumber; }
     void setDone() { done = true; }
     bool isDone() { return this->done; }
+    int getPairsNumber() { return this->pairsNumber; }
+    int getIndex() { return this->cellIndex; }
+    std::vector<int>& getPairs() { return this->pairs; }
     void findPairs();
+    void findQuads();
+    void decrementPairNeighbours();
 
 private:
     int cellIndex;
@@ -44,16 +49,20 @@ public:
     ~Map4x4();
     void printKmap();
     void printOctets();
+    void printPairs();
     void initializeElementsWithGivenValues(const std::vector<Value>& values);
     void findOctets();
     Value getCellValue(int cellIndex);
     bool isCellDone(int cellIndex);
     Groups& getOctets() { return octets; }
+    Groups& getPairs() { return pairs; }
     void findPairs();
+    KmapCell& getCell(int cellIndex) { return *kmap[cellIndex]; }
 
 private:
     std::vector<KmapCell*> kmap{16, nullptr};
     Groups octets;
+    Groups pairs;
 
     void findHorizontalOctets();
     void findVerticalOctets();

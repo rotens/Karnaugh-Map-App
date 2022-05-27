@@ -17,23 +17,67 @@ KmapCell::KmapCell(Map4x4& kmapObject, int cellIndex)
 
 void KmapCell::findPairs()
 {
-    for (const auto row : {-1, 1})
+    for (const auto offset : {-1, 1})
     {
-        for (const auto col : {-1, 1})
-        {
-            int neighbourCellIndex = getCellIndex(this->cellIndex, row, col);
-            Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
-            bool cellDone = kmapObject.isCellDone(neighbourCellIndex);
+        int neighbourCellIndex = getCellIndex(this->cellIndex, offset, 0);
+        Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
+        bool cellDone = kmapObject.isCellDone(neighbourCellIndex);
 
-            if (cellValue == Value::one and not cellDone)
-            {
-                pairs.push_back(neighbourCellIndex);
-                ++this->pairsNumber;
-            }
+        if (cellValue == Value::one and not cellDone)
+        {
+            pairs.push_back(neighbourCellIndex);
+            ++this->pairsNumber;
+        }
+
+        neighbourCellIndex = getCellIndex(this->cellIndex, 0, offset);
+        cellValue = kmapObject.getCellValue(neighbourCellIndex);
+        cellDone = kmapObject.isCellDone(neighbourCellIndex);
+
+        if (cellValue == Value::one and not cellDone)
+        {
+            pairs.push_back(neighbourCellIndex);
+            ++this->pairsNumber;
         }
     }
 }
 
+void KmapCell::decrementPairNeighbours()
+{
+    for (const auto cellIndex : pairs)
+    {
+        auto& neighbourCell = kmapObject.getCell(cellIndex);
+        if (neighbourCell.getPairsNumber() > 1)
+        {
+            neighbourCell.decrementPairsNumber();
+        }
+    }
+}
+
+void KmapCell::findQuads()
+{
+    for (const auto offset : {-1, 1})
+    {
+        int neighbourCellIndex = getCellIndex(this->cellIndex, offset, 0);
+        Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
+        bool cellDone = kmapObject.isCellDone(neighbourCellIndex);
+
+        if (cellValue == Value::one and not cellDone)
+        {
+            pairs.push_back(neighbourCellIndex);
+            ++this->pairsNumber;
+        }
+
+        neighbourCellIndex = getCellIndex(this->cellIndex, 0, offset);
+        cellValue = kmapObject.getCellValue(neighbourCellIndex);
+        cellDone = kmapObject.isCellDone(neighbourCellIndex);
+
+        if (cellValue == Value::one and not cellDone)
+        {
+            pairs.push_back(neighbourCellIndex);
+            ++this->pairsNumber;
+        }
+    }
+}
 
 // MAP 4x4
 
@@ -160,16 +204,31 @@ void Map4x4::findPairs()
 {
     for (auto& cell : kmap)
     {
-        if (not cell->isDone())
+        if (not cell->isDone() and cell->getCellValue() == Value::one)
             cell->findPairs();
     }
 
+    std::vector<int> pairedSecondCells;
     for (auto& cell : kmap)
     {
-        if (not cell->isDone())
+        if (cell->isDone()) continue;
+
+        if (cell->getPairsNumber() == 1)
         {
-            //
+            cell->setDone();
+            int secondCellIndex = cell->getPairs()[0];
+            kmap[secondCellIndex]->setDone();
+            pairedSecondCells.push_back(secondCellIndex);
+            
+
+            std::vector<int> pair{cell->getIndex(), secondCellIndex};
+            pairs.push_back(std::move(pair));
         }
+    }
+
+    for (auto cellIndex : pairedSecondCells)
+    {
+        kmap[cellIndex]->decrementPairNeighbours();
     }
 }
 
@@ -178,6 +237,18 @@ void Map4x4::printOctets()
     for (const auto& octet : octets)
     {
         for (const auto& elem : octet)
+        {
+            std::cout << elem << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+void Map4x4::printPairs()
+{
+    for (const auto& pair : pairs)
+    {
+        for (const auto& elem : pair)
         {
             std::cout << elem << " ";
         }
