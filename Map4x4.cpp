@@ -21,9 +21,8 @@ void KmapCell::findPairs()
     {
         int neighbourCellIndex = getCellIndex(this->cellIndex, offset, 0);
         Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
-        bool cellDone = kmapObject.isCellDone(neighbourCellIndex);
 
-        if (cellValue == Value::one and not cellDone)
+        if (cellValue == Value::one)
         {
             pairs.push_back(neighbourCellIndex);
             ++this->pairsNumber;
@@ -31,9 +30,8 @@ void KmapCell::findPairs()
 
         neighbourCellIndex = getCellIndex(this->cellIndex, 0, offset);
         cellValue = kmapObject.getCellValue(neighbourCellIndex);
-        cellDone = kmapObject.isCellDone(neighbourCellIndex);
 
-        if (cellValue == Value::one and not cellDone)
+        if (cellValue == Value::one)
         {
             pairs.push_back(neighbourCellIndex);
             ++this->pairsNumber;
@@ -53,29 +51,27 @@ void KmapCell::decrementPairNeighbours()
     }
 }
 
-void KmapCell::findQuads()
+void KmapCell::findSquareQuads()
 {
-    for (const auto offset : {-1, 1})
+    std::vector<int> quad; 
+
+    for (const auto& quadOffsets : quadsOffsets)
     {
-        int neighbourCellIndex = getCellIndex(this->cellIndex, offset, 0);
-        Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
-        bool cellDone = kmapObject.isCellDone(neighbourCellIndex);
-
-        if (cellValue == Value::one and not cellDone)
+        for (const auto& offsetPair : quadOffsets)
         {
-            pairs.push_back(neighbourCellIndex);
-            ++this->pairsNumber;
+            int neighbourCellIndex = getCellIndex(this->cellIndex, offsetPair.first, offsetPair.second); 
+            Value neighbourCellValue = kmapObject.getCellValue(neighbourCellIndex);
+            if (neighbourCellValue == Value::zero) break;
+            quad.push_back(neighbourCellIndex);
         }
 
-        neighbourCellIndex = getCellIndex(this->cellIndex, 0, offset);
-        cellValue = kmapObject.getCellValue(neighbourCellIndex);
-        cellDone = kmapObject.isCellDone(neighbourCellIndex);
-
-        if (cellValue == Value::one and not cellDone)
+        if (quad.size() == 3)
         {
-            pairs.push_back(neighbourCellIndex);
-            ++this->pairsNumber;
+            squareQuads.push_back(quad);
+            ++this->squareQuadsNumber;
         }
+
+        quad.clear();
     }
 }
 
@@ -209,6 +205,7 @@ void Map4x4::findPairs()
     }
 
     std::vector<int> pairedSecondCells;
+    
     for (auto& cell : kmap)
     {
         if (cell->isDone()) continue;
@@ -220,7 +217,6 @@ void Map4x4::findPairs()
             kmap[secondCellIndex]->setDone();
             pairedSecondCells.push_back(secondCellIndex);
             
-
             std::vector<int> pair{cell->getIndex(), secondCellIndex};
             pairs.push_back(std::move(pair));
         }

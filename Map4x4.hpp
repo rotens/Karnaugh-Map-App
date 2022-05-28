@@ -17,26 +17,34 @@ public:
     void setCellValue(Value cellValue) { this->cellValue = cellValue; }
     Value getCellValue() { return this->cellValue; }
     void decrementPairsNumber() { --this->pairsNumber; }
-    void decrementQuadsNumber() { --this->quadsNumber; }
+    void decrementSquareQuadsNumber() { --this->squareQuadsNumber; }
+    void decrementRectQuadsNumber() { --this->rectQuadsNumber; }
     void incrementPairsNumber() { ++this->pairsNumber; }
-    void incrementQuadsNumber() { ++this->quadsNumber; }
+    void incrementSquareQuadsNumber() { ++this->squareQuadsNumber; }
+    void incrementRectQuadsNumber() { ++this->rectQuadsNumber; }
     void setDone() { done = true; }
     bool isDone() { return this->done; }
     int getPairsNumber() { return this->pairsNumber; }
+    int getSquareQuadsNumber() { return this->squareQuadsNumber; }
+    int getRectQuadsNumber() { return this->rectQuadsNumber; }
+    int getQuadsNumber() { return this->squareQuadsNumber + this->rectQuadsNumber; }
     int getIndex() { return this->cellIndex; }
     std::vector<int>& getPairs() { return this->pairs; }
     void findPairs();
-    void findQuads();
+    void findSquareQuads();
     void decrementPairNeighbours();
 
 private:
     int cellIndex;
     Map4x4& kmapObject;
     int pairsNumber{0};
-    int quadsNumber{0};
+    int squareQuadsNumber{0};
+    int rectQuadsNumber{0};
     Value cellValue{Value::zero};
     bool done{false};
     std::vector<int> pairs;
+    Groups squareQuads;
+    Groups rectQuads;
 };
 
 
