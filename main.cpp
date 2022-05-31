@@ -19,6 +19,7 @@ private:
     void testVerticalAndHorizontalOctetFinding();
     void testGetRealIndex();
     void testFindPairs();
+    void testFindSquaredQuads();
     template <typename T> 
     void assertEqual(T, T);
     void assert2dVectorsEqual(Groups&, Groups&);
@@ -120,6 +121,25 @@ void MapTest::testFindPairs()
     assertEqual(cell2.getPairsNumber(), 1);
 }
 
+void MapTest::testFindSquaredQuads()
+{
+    Map4x4 kmap;
+    kmap.initializeElementsWithGivenValues({
+        Value::zero, Value::zero, Value::one, Value::one,
+        Value::one, Value::one, Value::one, Value::one,
+        Value::one, Value::one, Value::one, Value::zero,
+        Value::zero, Value::one, Value::one, Value::zero});
+    kmap.findSquareQuads();
+
+    Groups quads = {
+        {2, 3, 7, 6},
+        {4, 5, 9, 8},
+        {13, 9, 10, 14}};
+
+    std::cout << __func__ << " ";
+    assert2dVectorsEqual(kmap.getSquareQuads(), quads);
+}
+
 template <typename T>
 void MapTest::assertEqual(T a, T b)
 {
@@ -151,11 +171,12 @@ void MapTest::assert2dVectorsEqual(Groups& vec1, Groups& vec2)
 
 void MapTest::runAllTests()
 {
-    // testHorizontalOctetFinding();
-    // testVerticalOctetFinding();
-    // testVerticalAndHorizontalOctetFinding();
-    // testGetRealIndex();
+    testHorizontalOctetFinding();
+    testVerticalOctetFinding();
+    testVerticalAndHorizontalOctetFinding();
+    testGetRealIndex();
     testFindPairs();
+    testFindSquaredQuads();
 }
 
 std::string colorize(std::string str, int color) 

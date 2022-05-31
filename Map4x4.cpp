@@ -228,6 +228,34 @@ void Map4x4::findPairs()
     }
 }
 
+void Map4x4::findSquareQuads()
+{
+    for (auto& cell : kmap)
+    {   
+        if (not cell->isDone() and cell->getCellValue() == Value::one)
+            cell->findSquareQuads();
+    }
+    
+    for (auto& cell : kmap)
+    {
+        if (cell->isDone()) continue;
+
+        if (cell->getSquareQuadsNumber() != 1) continue;
+        
+        cell->setDone();
+        auto& possibleQuad = cell->getSquareQuads()[0];
+        for (auto quadedCellIndex : possibleQuad)
+        {
+            kmap[quadedCellIndex]->setDone();
+        }
+        
+        std::vector<int> quad{possibleQuad};
+        quad.insert(quad.begin(), cell->getIndex());
+        // quad.emplace_back(possibleQuad);
+        squareQuads.push_back(quad);
+    }
+}
+
 void Map4x4::printOctets()
 {
     for (const auto& octet : octets)
@@ -245,6 +273,18 @@ void Map4x4::printPairs()
     for (const auto& pair : pairs)
     {
         for (const auto& elem : pair)
+        {
+            std::cout << elem << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+void Map4x4::printSquareQuads()
+{
+    for (const auto& quads : squareQuads)
+    {
+        for (const auto& elem : quads)
         {
             std::cout << elem << " ";
         }

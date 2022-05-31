@@ -30,8 +30,10 @@ public:
     int getQuadsNumber() { return this->squareQuadsNumber + this->rectQuadsNumber; }
     int getIndex() { return this->cellIndex; }
     std::vector<int>& getPairs() { return this->pairs; }
+    Groups& getSquareQuads() { return this->squareQuads; }
     void findPairs();
     void findSquareQuads();
+    void findRectQuads();
     void decrementPairNeighbours();
 
 private:
@@ -57,6 +59,7 @@ public:
     ~Map4x4();
     void printKmap();
     void printOctets();
+    void printSquareQuads();
     void printPairs();
     void initializeElementsWithGivenValues(const std::vector<Value>& values);
     void findOctets();
@@ -64,13 +67,16 @@ public:
     bool isCellDone(int cellIndex);
     Groups& getOctets() { return octets; }
     Groups& getPairs() { return pairs; }
+    Groups& getSquareQuads() { return squareQuads; }
     void findPairs();
+    void findSquareQuads();
     KmapCell& getCell(int cellIndex) { return *kmap[cellIndex]; }
 
 private:
     std::vector<KmapCell*> kmap{16, nullptr};
     Groups octets;
     Groups pairs;
+    Groups squareQuads;
 
     void findHorizontalOctets();
     void findVerticalOctets();
