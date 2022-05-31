@@ -75,6 +75,41 @@ void KmapCell::findSquareQuads()
     }
 }
 
+void KmapCell::findRectQuads()
+{
+    std::vector<int> verticalQuad; 
+    std::vector<int> horizontalQuad; 
+
+    for (const auto offset : {1, 2, 3})
+    {   
+        int quadCellIndex = getCellIndex(this->cellIndex, offset, 0); 
+        Value quadCellValue = kmapObject.getCellValue(quadCellIndex);
+        if (quadCellValue == Value::zero) break;
+        verticalQuad.push_back(quadCellIndex);
+
+        if (verticalQuad.size() == 3)
+        {
+            rectQuads.push_back(verticalQuad);
+            ++this->rectQuadsNumber;
+        }
+
+        verticalQuad.clear();
+
+        quadCellIndex = getCellIndex(this->cellIndex, 0, offset); 
+        quadCellValue = kmapObject.getCellValue(quadCellIndex);
+        if (quadCellValue == Value::zero) break;
+        horizontalQuad.push_back(quadCellIndex);
+
+        if (horizontalQuad.size() == 3)
+        {
+            rectQuads.push_back(horizontalQuad);
+            ++this->rectQuadsNumber;
+        }
+
+        horizontalQuad.clear();
+    }
+}
+
 // MAP 4x4
 
 Map4x4::Map4x4()
@@ -251,8 +286,34 @@ void Map4x4::findSquareQuads()
         
         std::vector<int> quad{possibleQuad};
         quad.insert(quad.begin(), cell->getIndex());
-        // quad.emplace_back(possibleQuad);
-        squareQuads.push_back(quad);
+        squareQuads.push_back(std::move(quad));
+    }
+}
+
+void Map4x4::findRectQuads()
+{
+    for (auto& cell : kmap)
+    {   
+        if (not cell->isDone() and cell->getCellValue() == Value::one)
+            cell->findRectQuads();
+    }
+    
+    for (auto& cell : kmap)
+    {
+        if (cell->isDone()) continue;
+        __TEST__;
+        if (cell->getRectQuadsNumber() != 1) continue;
+        
+        cell->setDone();
+        auto& possibleQuad = cell->getRectQuads()[0];
+        for (auto quadedCellIndex : possibleQuad)
+        {
+            kmap[quadedCellIndex]->setDone();
+        }
+        
+        std::vector<int> quad{possibleQuad};
+        quad.insert(quad.begin(), cell->getIndex());
+        rectQuads.push_back(std::move(quad));
     }
 }
 
@@ -283,6 +344,18 @@ void Map4x4::printPairs()
 void Map4x4::printSquareQuads()
 {
     for (const auto& quads : squareQuads)
+    {
+        for (const auto& elem : quads)
+        {
+            std::cout << elem << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+void Map4x4::printRectQuads()
+{
+    for (const auto& quads : rectQuads)
     {
         for (const auto& elem : quads)
         {
