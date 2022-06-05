@@ -21,6 +21,7 @@ private:
     void testFindPairs();
     void testFindSquareQuads();
     void testFindRectQuads();
+    void testFindQuads();
     template <typename T> 
     void assertEqual(T, T);
     void assert2dVectorsEqual(Groups&, Groups&);
@@ -122,44 +123,27 @@ void MapTest::testFindPairs()
     assertEqual(cell2.getPairsNumber(), 1);
 }
 
-void MapTest::testFindSquareQuads()
-{
-    Map4x4 kmap;
-    kmap.initializeElementsWithGivenValues({
-        Value::zero, Value::zero, Value::one, Value::one,
-        Value::one, Value::one, Value::one, Value::one,
-        Value::one, Value::one, Value::one, Value::zero,
-        Value::zero, Value::one, Value::one, Value::zero});
-    kmap.findSquareQuads();
-
-    Groups quads = {
-        {2, 3, 7, 6},
-        {4, 5, 9, 8},
-        {13, 9, 10, 14}};
-
-    std::cout << __func__ << " ";
-    assert2dVectorsEqual(kmap.getSquareQuads(), quads);
-}
-
-void MapTest::testFindRectQuads()
+void MapTest::testFindQuads()
 {
     Map4x4 kmap;
     kmap.initializeElementsWithGivenValues({
         Value::one, Value::one, Value::one, Value::one,
-        Value::zero, Value::one, Value::zero, Value::one,
-        Value::one, Value::one, Value::one, Value::one,
-        Value::zero, Value::one, Value::zero, Value::one});
-    kmap.findRectQuads();
+        Value::zero, Value::one, Value::zero, Value::zero,
+        Value::zero, Value::one, Value::one, Value::one,
+        Value::zero, Value::one, Value::one, Value::one});
+    kmap.findQuads();
 
-    Groups quads = {
+    Groups rectQuads = {
         {0, 1, 2, 3},
-        {5, 1, 9, 13},
-        {7, 3, 11, 15},
-        {8, 9, 10, 11}};
+        {5, 9, 13, 1}};
+
+    Groups squareQuads = {{11, 15, 14, 10}};
 
     std::cout << __func__ << " ";
-    assert2dVectorsEqual(kmap.getRectQuads(), quads);
+    assert2dVectorsEqual(kmap.getRectQuads(), rectQuads);
+    assert2dVectorsEqual(kmap.getSquareQuads(), squareQuads);
     kmap.printRectQuads();
+    kmap.printSquareQuads();
 }
 
 template <typename T>
@@ -198,8 +182,7 @@ void MapTest::runAllTests()
     testVerticalAndHorizontalOctetFinding();
     testGetRealIndex();
     testFindPairs();
-    testFindSquareQuads();
-    testFindRectQuads();
+    testFindQuads();
 }
 
 std::string colorize(std::string str, int color) 

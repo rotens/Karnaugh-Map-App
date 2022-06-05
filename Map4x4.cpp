@@ -82,31 +82,27 @@ void KmapCell::findRectQuads()
 
     for (const auto offset : {1, 2, 3})
     {   
-        int quadCellIndex = getCellIndex(this->cellIndex, offset, 0); 
+        int quadCellIndex = getCellIndex(this->cellIndex, offset, 0);
         Value quadCellValue = kmapObject.getCellValue(quadCellIndex);
-        if (quadCellValue == Value::zero) break;
-        verticalQuad.push_back(quadCellIndex);
+        if (quadCellValue == Value::one)
+            verticalQuad.push_back(quadCellIndex);
 
-        if (verticalQuad.size() == 3)
-        {
-            rectQuads.push_back(verticalQuad);
-            ++this->rectQuadsNumber;
-        }
-
-        verticalQuad.clear();
-
-        quadCellIndex = getCellIndex(this->cellIndex, 0, offset); 
+        quadCellIndex = getCellIndex(this->cellIndex, 0, offset);
         quadCellValue = kmapObject.getCellValue(quadCellIndex);
-        if (quadCellValue == Value::zero) break;
-        horizontalQuad.push_back(quadCellIndex);
+        if (quadCellValue == Value::one)
+            horizontalQuad.push_back(quadCellIndex);
+    }
 
-        if (horizontalQuad.size() == 3)
-        {
-            rectQuads.push_back(horizontalQuad);
-            ++this->rectQuadsNumber;
-        }
+    if (verticalQuad.size() == 3)
+    {
+        rectQuads.push_back(verticalQuad);
+        ++this->rectQuadsNumber;
+    }
 
-        horizontalQuad.clear();
+    if (horizontalQuad.size() == 3)
+    {
+        rectQuads.push_back(horizontalQuad);
+        ++this->rectQuadsNumber;
     }
 }
 
@@ -263,57 +259,115 @@ void Map4x4::findPairs()
     }
 }
 
-void Map4x4::findSquareQuads()
+// void Map4x4::findSquareQuads()
+// {
+//     for (auto& cell : kmap)
+//     {   
+//         if (not cell->isDone() and cell->getCellValue() == Value::one)
+//             cell->findSquareQuads();
+//     }
+    
+//     for (auto& cell : kmap)
+//     {
+//         if (cell->isDone()) continue;
+
+//         if (cell->getSquareQuadsNumber() != 1) continue;
+        
+//         cell->setDone();
+//         auto& possibleQuad = cell->getSquareQuads()[0];
+//         for (auto quadedCellIndex : possibleQuad)
+//         {
+//             kmap[quadedCellIndex]->setDone();
+//         }
+        
+//         std::vector<int> quad{possibleQuad};
+//         quad.insert(quad.begin(), cell->getIndex());
+//         squareQuads.push_back(std::move(quad));
+//     }
+// }
+
+// void Map4x4::findRectQuads()
+// {
+//     for (auto& cell : kmap)
+//     {   
+//         if (not cell->isDone() and cell->getCellValue() == Value::one)
+//         {
+//             cell->findRectQuads();
+//         }
+//     }
+    
+//     for (auto& cell : kmap)
+//     {
+//         if (cell->isDone()) continue;
+    
+//         if (cell->getRectQuadsNumber() != 1) continue;
+        
+//         cell->setDone();
+//         auto& possibleQuad = cell->getRectQuads()[0];
+//         for (auto quadedCellIndex : possibleQuad)
+//         {
+//             kmap[quadedCellIndex]->setDone();
+//         }
+        
+//         std::vector<int> quad{possibleQuad};
+//         quad.insert(quad.begin(), cell->getIndex());
+//         rectQuads.push_back(std::move(quad));
+//     }
+// }
+
+void Map4x4::findSquareQuads(KmapCell* cell)
 {
-    for (auto& cell : kmap)
-    {   
-        if (not cell->isDone() and cell->getCellValue() == Value::one)
-            cell->findSquareQuads();
+    auto& possibleQuad = cell->getSquareQuads()[0];
+    for (auto quadedCellIndex : possibleQuad)
+    {
+        kmap[quadedCellIndex]->setDone();
     }
     
-    for (auto& cell : kmap)
-    {
-        if (cell->isDone()) continue;
-
-        if (cell->getSquareQuadsNumber() != 1) continue;
-        
-        cell->setDone();
-        auto& possibleQuad = cell->getSquareQuads()[0];
-        for (auto quadedCellIndex : possibleQuad)
-        {
-            kmap[quadedCellIndex]->setDone();
-        }
-        
-        std::vector<int> quad{possibleQuad};
-        quad.insert(quad.begin(), cell->getIndex());
-        squareQuads.push_back(std::move(quad));
-    }
+    std::vector<int> quad{possibleQuad};
+    quad.insert(quad.begin(), cell->getIndex());
+    squareQuads.push_back(std::move(quad));
 }
 
-void Map4x4::findRectQuads()
+void Map4x4::findRectQuads(KmapCell* cell)
+{ 
+    auto& possibleQuad = cell->getRectQuads()[0];
+    for (const auto quadedCellIndex : possibleQuad)
+    {
+        kmap[quadedCellIndex]->setDone();
+    }
+
+    std::vector<int> quad{possibleQuad};
+    quad.insert(quad.begin(), cell->getIndex());
+    rectQuads.push_back(std::move(quad));
+}
+
+void Map4x4::findQuads()
 {
     for (auto& cell : kmap)
     {   
         if (not cell->isDone() and cell->getCellValue() == Value::one)
+        {
             cell->findRectQuads();
+            cell->findSquareQuads();
+        }
     }
     
     for (auto& cell : kmap)
     {
         if (cell->isDone()) continue;
-        __TEST__;
-        if (cell->getRectQuadsNumber() != 1) continue;
+    
+        if (cell->getQuadsNumber() != 1) continue;
         
         cell->setDone();
-        auto& possibleQuad = cell->getRectQuads()[0];
-        for (auto quadedCellIndex : possibleQuad)
+
+        if (cell->getRectQuadsNumber() == 1)
         {
-            kmap[quadedCellIndex]->setDone();
+            findRectQuads(cell);
         }
-        
-        std::vector<int> quad{possibleQuad};
-        quad.insert(quad.begin(), cell->getIndex());
-        rectQuads.push_back(std::move(quad));
+        else
+        {
+            findSquareQuads(cell);
+        }
     }
 }
 

@@ -72,8 +72,11 @@ public:
     Groups& getSquareQuads() { return squareQuads; }
     Groups& getRectQuads() { return rectQuads; }
     void findPairs();
-    void findSquareQuads();
-    void findRectQuads();
+    void findSquareQuads(KmapCell*);
+    void findRectQuads(KmapCell*);
+    // void findSquareQuads();
+    // void findRectQuads();
+    void findQuads();
     KmapCell& getCell(int cellIndex) { return *kmap[cellIndex]; }
 
 private:
