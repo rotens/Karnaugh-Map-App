@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <iostream>
 #include <numeric>
+#include <set>
 #include <utility>
 #include <vector>
 #include "other.hpp"
@@ -81,7 +82,7 @@ public:
     // void findRectQuads();
     void findQuads();
     KmapCell& getCell(int cellIndex) { return *kmap[cellIndex]; }
-    void decrementGroupingPossibilities(int);
+    void decrementGroupingPossibilities();
     
     
 private:
@@ -90,6 +91,7 @@ private:
     Groups pairs;
     Groups squareQuads;
     Groups rectQuads;
+    std::set<int> justGroupedCells;
 
     void findHorizontalOctets();
     void findVerticalOctets();

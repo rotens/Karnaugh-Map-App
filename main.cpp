@@ -22,6 +22,7 @@ private:
     void testFindSquareQuads();
     void testFindRectQuads();
     void testFindQuads();
+    void testDecrementingPossibilites();
     template <typename T> 
     void assertEqual(T, T);
     void assert2dVectorsEqual(Groups&, Groups&);
@@ -118,9 +119,11 @@ void MapTest::testFindPairs()
     assert2dVectorsEqual(kmap.getPairs(), pairs);
     // kmap.printPairs();
     auto& cell1 = kmap.getCell(8);
-    auto& cell2 = kmap.getCell(8);
+    auto& cell2 = kmap.getCell(9);
     assertEqual(cell1.getPairsNumber(), 1);
     assertEqual(cell2.getPairsNumber(), 1);
+    std::cout << cell1.getPairsNumber() << std::endl;
+    std::cout << cell2.getPairsNumber() << std::endl;
 }
 
 void MapTest::testFindQuads()
@@ -142,8 +145,30 @@ void MapTest::testFindQuads()
     std::cout << __func__ << " ";
     assert2dVectorsEqual(kmap.getRectQuads(), rectQuads);
     assert2dVectorsEqual(kmap.getSquareQuads(), squareQuads);
-    // kmap.printRectQuads();
-    // kmap.printSquareQuads();
+    kmap.printRectQuads();
+    kmap.printSquareQuads();
+}
+
+void MapTest::testDecrementingPossibilites()
+{
+    Map4x4 kmap;
+    kmap.initializeElementsWithGivenValues({
+        Value::one, Value::one, Value::zero, Value::zero,
+        Value::one, Value::one, Value::one, Value::one,
+        Value::zero, Value::zero, Value::one, Value::one,
+        Value::zero, Value::zero, Value::zero, Value::zero});
+    kmap.findPairs();
+    kmap.findQuads();
+
+    auto& cell = kmap.getCell(6);
+    auto pairsNumber = cell.getPairsNumber();
+    auto rectQuadsNumber = cell.getRectQuadsNumber();
+    auto squareQuadsNumber = cell.getSquareQuadsNumber();
+
+    std::cout << __func__ << " ";
+    assertEqual(pairsNumber, 2);
+    assertEqual(rectQuadsNumber, 1);
+    assertEqual(squareQuadsNumber, 1);
 }
 
 template <typename T>
@@ -183,6 +208,7 @@ void MapTest::runAllTests()
     testGetRealIndex();
     testFindPairs();
     testFindQuads();
+    // testDecrementingPossibilites();
 }
 
 std::string colorize(std::string str, int color) 
