@@ -35,7 +35,10 @@ public:
     void findPairs();
     void findSquareQuads();
     void findRectQuads();
-    void decrementPairNeighbours();
+    void removePairContainingGivenCellIndex(int);
+    void removeSquareQuadContainingGivenCellIndex(int);
+    void removeRectQuadContainingGivenCellIndex(int);
+
 
 private:
     int cellIndex;
@@ -78,7 +81,9 @@ public:
     // void findRectQuads();
     void findQuads();
     KmapCell& getCell(int cellIndex) { return *kmap[cellIndex]; }
-
+    void decrementGroupingPossibilities(int);
+    
+    
 private:
     std::vector<KmapCell*> kmap{16, nullptr};
     Groups octets;

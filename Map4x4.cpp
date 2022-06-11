@@ -39,18 +39,6 @@ void KmapCell::findPairs()
     }
 }
 
-void KmapCell::decrementPairNeighbours()
-{
-    for (const auto cellIndex : pairs)
-    {
-        auto& neighbourCell = kmapObject.getCell(cellIndex);
-        if (neighbourCell.getPairsNumber() > 1)
-        {
-            neighbourCell.decrementPairsNumber();
-        }
-    }
-}
-
 void KmapCell::findSquareQuads()
 {
     std::vector<int> quad; 
@@ -103,6 +91,31 @@ void KmapCell::findRectQuads()
     {
         rectQuads.push_back(horizontalQuad);
         ++this->rectQuadsNumber;
+    }
+}
+
+void KmapCell::removePairContainingGivenCellIndex(int cellIndex)
+{
+    const auto pairsLength = pairs.size();
+    std::remove(pairs.begin(), pairs.end(), cellIndex);
+    
+    if (pairs.size() != pairsLength)
+    {
+        --this->pairsNumber;
+    }
+}
+
+void KmapCell::removeSquareQuadContainingGivenCellIndex(int cellIndex)
+{
+    for (auto quadIter = squareQuads.begin(); quadIter != squareQuads.end(); ++quadIter)
+    {
+        auto iter = std::find(quadIter->begin(), quadIter->end(), cellIndex);
+        if (iter != quadIter->end())
+        {
+            std::remove(squareQuads.begin(), squareQuads.end(), quadIter);
+            --this->squareQuadsNumber;
+            break;
+        }
     }
 }
 
@@ -253,67 +266,11 @@ void Map4x4::findPairs()
         }
     }
 
-    for (auto cellIndex : pairedSecondCells)
-    {
-        kmap[cellIndex]->decrementPairNeighbours();
-    }
+    // for (auto cellIndex : pairedSecondCells)
+    // {
+    //     kmap[cellIndex]->decrementPairNeighbours();
+    // }
 }
-
-// void Map4x4::findSquareQuads()
-// {
-//     for (auto& cell : kmap)
-//     {   
-//         if (not cell->isDone() and cell->getCellValue() == Value::one)
-//             cell->findSquareQuads();
-//     }
-    
-//     for (auto& cell : kmap)
-//     {
-//         if (cell->isDone()) continue;
-
-//         if (cell->getSquareQuadsNumber() != 1) continue;
-        
-//         cell->setDone();
-//         auto& possibleQuad = cell->getSquareQuads()[0];
-//         for (auto quadedCellIndex : possibleQuad)
-//         {
-//             kmap[quadedCellIndex]->setDone();
-//         }
-        
-//         std::vector<int> quad{possibleQuad};
-//         quad.insert(quad.begin(), cell->getIndex());
-//         squareQuads.push_back(std::move(quad));
-//     }
-// }
-
-// void Map4x4::findRectQuads()
-// {
-//     for (auto& cell : kmap)
-//     {   
-//         if (not cell->isDone() and cell->getCellValue() == Value::one)
-//         {
-//             cell->findRectQuads();
-//         }
-//     }
-    
-//     for (auto& cell : kmap)
-//     {
-//         if (cell->isDone()) continue;
-    
-//         if (cell->getRectQuadsNumber() != 1) continue;
-        
-//         cell->setDone();
-//         auto& possibleQuad = cell->getRectQuads()[0];
-//         for (auto quadedCellIndex : possibleQuad)
-//         {
-//             kmap[quadedCellIndex]->setDone();
-//         }
-        
-//         std::vector<int> quad{possibleQuad};
-//         quad.insert(quad.begin(), cell->getIndex());
-//         rectQuads.push_back(std::move(quad));
-//     }
-// }
 
 void Map4x4::findSquareQuads(KmapCell* cell)
 {
@@ -369,6 +326,20 @@ void Map4x4::findQuads()
             findSquareQuads(cell);
         }
     }
+}
+
+void Map4x4::decrementGroupingPossibilities(int cellIndex)
+{
+    for (auto& cell : kmap)
+    {
+        if (cell->isDone()) 
+            continue;
+
+        if (cell->getPairsNumber() > 1)
+        {
+            cell->removePairContainingGivenCellIndex(cellIndex);
+        }
+    }  
 }
 
 void Map4x4::printOctets()

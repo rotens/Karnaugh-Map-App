@@ -142,8 +142,8 @@ void MapTest::testFindQuads()
     std::cout << __func__ << " ";
     assert2dVectorsEqual(kmap.getRectQuads(), rectQuads);
     assert2dVectorsEqual(kmap.getSquareQuads(), squareQuads);
-    kmap.printRectQuads();
-    kmap.printSquareQuads();
+    // kmap.printRectQuads();
+    // kmap.printSquareQuads();
 }
 
 template <typename T>
