@@ -27,6 +27,7 @@ public:
     bool isDone() { return this->done; }
     int getPairsNumber() { return this->pairsNumber; }
     int getSquareQuadsNumber() { return this->squareQuadsNumber; }
+    void setSquareQuadsNumber(int number) { this->squareQuadsNumber = number; }
     int getRectQuadsNumber() { return this->rectQuadsNumber; }
     int getQuadsNumber() { return this->squareQuadsNumber + this->rectQuadsNumber; }
     int getIndex() { return this->cellIndex; }
@@ -75,14 +76,17 @@ public:
     Groups& getPairs() { return pairs; }
     Groups& getSquareQuads() { return squareQuads; }
     Groups& getRectQuads() { return rectQuads; }
-    void findPairs();
-    void findSquareQuads(KmapCell*);
-    void findRectQuads(KmapCell*);
-    // void findSquareQuads();
-    // void findRectQuads();
-    void findQuads();
+    void findPossiblePairs();
+    void pairCells();
+    void findPossibleQuads();
+    void quadCells();
+    void squareQuadCells(KmapCell*);
+    void rectQuadCells(KmapCell*);
+    void findGroups();
     KmapCell& getCell(int cellIndex) { return *kmap[cellIndex]; }
     void decrementGroupingPossibilities();
+    bool hasAllCellsWithSameValue();
+    bool hasAllCellsGrouped();
     
     
 private:
@@ -92,6 +96,9 @@ private:
     Groups squareQuads;
     Groups rectQuads;
     std::set<int> justGroupedCells;
+    int ones{0};
+    std::vector<std::string> algebraicMinterms;
+    int groupedCells;
 
     void findHorizontalOctets();
     void findVerticalOctets();
