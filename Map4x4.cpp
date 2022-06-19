@@ -403,13 +403,13 @@ void Map4x4::findGroups()
 {
     if (ones == 16)
     {
-        algebraicMinterms.push_back("1");
+        // algebraicMinterms.push_back("1");
         return;
     }
 
     if (ones == 0)
     {
-        algebraicMinterms.push_back("0");
+        // algebraicMinterms.push_back("0");
         return;
     }
 
@@ -430,13 +430,9 @@ void Map4x4::findGroups()
 
 bool Map4x4::hasAllCellsGrouped()
 {
+    int groupedCells = std::count_if(
+        kmap.begin(), kmap.end(), [](KmapCell* cell) { return cell->isDone(); });
     return groupedCells == 16;
-}
-
-void Map4x4::findGroups()
-{
-    findHorizontalOctets();
-    findVerticalOctets();
 }
 
 void Map4x4::printOctets()

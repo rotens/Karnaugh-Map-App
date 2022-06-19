@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <bitset>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Map4x4.hpp"
@@ -226,13 +227,13 @@ void MapTest::assert2dVectorsEqual(Groups& vec1, Groups& vec2)
 
 void MapTest::runAllTests()
 {
-    // testHorizontalOctetFinding();
-    // testVerticalOctetFinding();
-    // testVerticalAndHorizontalOctetFinding();
-    // testGetRealIndex();
-    // testFindPairs();
-    // testFindQuads();
-    // testDecrementingPossibilites();
+    testHorizontalOctetFinding();
+    testVerticalOctetFinding();
+    testVerticalAndHorizontalOctetFinding();
+    testGetRealIndex();
+    testFindPairs();
+    testFindQuads();
+    testDecrementingPossibilites();
     testRemovingSquareQuads();
 }
 
@@ -247,6 +248,40 @@ std::string colorize(std::string str, int color)
     default:
          return str;
     }
+}
+
+int convertVariableToIndex(char var)
+{
+    return var - 65;
+}
+
+char convertIndexToVariable(int index)
+{
+    return index + 65;
+}
+
+bool calculateProduct(const std::string& product, const std::bitset<4>& arguments)
+{
+    bool calculatedProduct = true;
+
+    for (const auto variable : product)
+    { 
+        calculatedProduct = calculatedProduct && arguments[convertVariableToIndex(variable)];
+    }
+
+    return calculatedProduct;
+}
+
+bool calculateSumOfProducts(const std::vector<std::string>& products, const std::bitset<4>& arguments)
+{
+    bool sum = false;
+
+    for (const auto& product : products)
+    {
+        sum = sum || calculateProduct(product, arguments);
+    }
+
+    return sum;
 }
 
 int main()
@@ -281,13 +316,6 @@ int main()
     // }
 
 
-    // std::array<std::array<Value, 4>, 4> testKmap = {{
-    //     {Value::zero, Value::zero, Value::zero, Value::zero},
-    //     {Value::zero, Value::zero, Value::zero, Value::zero},
-    //     {Value::zero, Value::zero, Value::zero, Value::zero},
-    //     {Value::zero, Value::zero, Value::zero, Value::zero}
-    // }};
-
     // Map4x4 kmapObject;
     // kmapObject.initializeKmapWith(testKmap);
     // kmapObject.countZeroesAndOnes();
@@ -312,13 +340,21 @@ int main()
     //     Value::one, Value::one, Value::zero, Value::zero});
     // kmap.printKmap();
 
-    MapTest testObject;
-    testObject.runAllTests();
-    
-    // for (int i = 0; i < 16; ++i)
+    // MapTest testObject;
+    // testObject.runAllTests();
+    std::vector<std::bitset<4>> argumentsCombinations;
+    argumentsCombinations.reserve(16);
+    for (int i = 0; i < 16; ++i)
+    {
+        argumentsCombinations.push_back(std::bitset<4>(i));
+        for (int j = 3; j >= 0; --j)
+            std::cout << argumentsCombinations[i][j];
+        std::cout << std::endl;
+    }
+    // for (int i = 0; i < 65536; ++i)
     // {
     //     std::bitset<4> x(i);
-    //     std::cout << x[0] << x[1] << x[2] << x[3] << std::endl;
+    //     for (auto i : x)
     // }
 
     return 0;

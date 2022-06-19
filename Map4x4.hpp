@@ -98,7 +98,6 @@ private:
     std::set<int> justGroupedCells;
     int ones{0};
     std::vector<std::string> algebraicMinterms;
-    int groupedCells;
 
     void findHorizontalOctets();
     void findVerticalOctets();
