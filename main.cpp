@@ -9,6 +9,7 @@
 
 #define __TEST__ std::cout<<"TEST"<<std::endl;
 std::string colorize(std::string str, int color);
+constexpr int standardIndicesToKmapIndices[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
 
 class MapTest
 {
@@ -252,7 +253,7 @@ std::string colorize(std::string str, int color)
 
 int convertVariableToIndex(char var)
 {
-    return var - 65;
+    return 3 - (var - 65);
 }
 
 char convertIndexToVariable(int index)
@@ -263,10 +264,25 @@ char convertIndexToVariable(int index)
 bool calculateProduct(const std::string& product, const std::bitset<4>& arguments)
 {
     bool calculatedProduct = true;
+    bool negation;
 
     for (const auto variable : product)
     { 
-        calculatedProduct = calculatedProduct && arguments[convertVariableToIndex(variable)];
+        if (variable == '!')
+        {
+            negation = true;
+            continue;
+        }
+        
+        if (negation)
+        {
+            calculatedProduct = calculatedProduct && !arguments[convertVariableToIndex(variable)];
+            negation = false;
+        }
+        else
+        {
+            calculatedProduct = calculatedProduct && arguments[convertVariableToIndex(variable)];
+        } 
     }
 
     return calculatedProduct;
@@ -282,6 +298,28 @@ bool calculateSumOfProducts(const std::vector<std::string>& products, const std:
     }
 
     return sum;
+}
+
+void initializeKmapWithBitset(const std::bitset<16>& functionValues, Map4x4& kmapObject)
+{
+    std::vector<Value> kmap(16);
+
+    for (int i = 0; i < kmap.size(); ++i)
+    {
+        kmap[standardIndicesToKmapIndices[i]] = static_cast<Value>(functionValues[i]); 
+    }
+
+    kmapObject.initializeElementsWithGivenValues(kmap);
+}
+
+void testAllCombinations()
+{
+    for (int i = 0; i < 65536; ++i)
+    {
+        std::bitset<16> combination(i);
+        Map4x4 kmapObject;
+        initializeKmapWithBitset(combination, kmapObject);
+    }
 }
 
 int main()
@@ -347,10 +385,13 @@ int main()
     for (int i = 0; i < 16; ++i)
     {
         argumentsCombinations.push_back(std::bitset<4>(i));
-        for (int j = 3; j >= 0; --j)
-            std::cout << argumentsCombinations[i][j];
-        std::cout << std::endl;
+        // for (int j = 3; j >= 0; --j)
+        //     std::cout << argumentsCombinations[i][j];
+        // std::cout << std::endl;
     }
+    std::bitset<4> x(15);
+    std::cout << calculateSumOfProducts({"!AB", "C!D"}, x) << std::endl;
+
     // for (int i = 0; i < 65536; ++i)
     // {
     //     std::bitset<4> x(i);
