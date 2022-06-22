@@ -216,7 +216,7 @@ void MapTest::assert2dVectorsEqual(Groups& vec1, Groups& vec2)
          it1 != vec1.end();
          ++it1, ++it2)
     {
-        if(!std::equal(it1->begin(), it1->end(), it2->begin()))
+        if (!std::equal(it1->begin(), it1->end(), it2->begin()))
         {
             std::cout << colorize("NOT OK", 0) << std::endl;
             return;
@@ -312,13 +312,51 @@ void initializeKmapWithBitset(const std::bitset<16>& functionValues, Map4x4& kma
     kmapObject.initializeElementsWithGivenValues(kmap);
 }
 
-void testAllCombinations()
+std::vector<std::bitset<4>> createArgumentsCombinations()
 {
+    std::vector<std::bitset<4>> argumentsCombinations;
+    argumentsCombinations.reserve(16);
+
+    for (int i = 0; i < 16; ++i)
+    {
+        argumentsCombinations.push_back(std::bitset<4>(i));
+    }
+
+    return argumentsCombinations;
+}
+
+bool isMinimizationCorrect(
+    const std::vector<std::string>& minterms, 
+    const std::bitset<16>& functionValues, 
+    const std::vector<std::bitset<4>>& argumentsCombinations)
+{
+    for (int i = 0; i < functionValues.size(); ++i)
+    {
+        int sum = calculateSumOfProducts(minterms, argumentsCombinations[i]);
+        if (sum != functionValues[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void testAllFunctionValuesCombinations()
+{
+    auto argumentsCombinations = createArgumentsCombinations();
+
     for (int i = 0; i < 65536; ++i)
     {
-        std::bitset<16> combination(i);
+        std::bitset<16> valuesCombination(i);
         Map4x4 kmapObject;
-        initializeKmapWithBitset(combination, kmapObject);
+        initializeKmapWithBitset(valuesCombination, kmapObject);
+
+        std::vector<std::string> minterms; // temp
+        if (!isMinimizationCorrect(minterms, valuesCombination, argumentsCombinations))
+        {
+            //
+        }
     }
 }
 
