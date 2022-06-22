@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <bitset>
+#include <fstream>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Map4x4.hpp"
@@ -342,9 +343,31 @@ bool isMinimizationCorrect(
     return true;
 }
 
+void writeValuesCombinationToFile(
+    std::ofstream& file, 
+    const std::bitset<16>& values, 
+    const std::vector<std::string>& minterms)
+{
+    for (int i = 0; i < 16; ++i)
+    {
+        file << values[i];
+    }
+
+    file << " ";
+
+    for (const auto& minterm : minterms)
+    {
+        file << minterm;
+    }
+
+    file << "\n";
+}
+
 void testAllFunctionValuesCombinations()
 {
     auto argumentsCombinations = createArgumentsCombinations();
+    std::ofstream output("values.txt");
+    int counter = 0;
 
     for (int i = 0; i < 65536; ++i)
     {
@@ -355,8 +378,11 @@ void testAllFunctionValuesCombinations()
         std::vector<std::string> minterms; // temp
         if (!isMinimizationCorrect(minterms, valuesCombination, argumentsCombinations))
         {
-            //
+            writeValuesCombinationToFile(output, valuesCombination, minterms);
+            ++counter;
         }
+
+        output << "Total: " << counter << "\n";
     }
 }
 
