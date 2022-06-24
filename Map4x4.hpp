@@ -87,6 +87,10 @@ public:
     void decrementGroupingPossibilities();
     bool hasAllCellsWithSameValue();
     bool hasAllCellsGrouped();
+    void printEverything();
+    void findAlgebraicMinterms(const Groups& groups);
+    std::string getProduct(std::vector<std::string>& cellsBinaryNumbers);
+    void printAlgebraicMinterms();
     
     
 private:

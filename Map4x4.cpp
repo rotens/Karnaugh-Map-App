@@ -483,6 +483,83 @@ void Map4x4::printRectQuads()
     }
 }
 
+void Map4x4::printEverything()
+{
+    std::cout << "Octets: \n";
+    printOctets();
+    std::cout << "\nSquare quads: \n";
+    printSquareQuads();
+    std::cout << "\nRect quads: \n";
+    printRectQuads();
+    std::cout << "\nPrint pairs: \n";
+    printPairs();
+}
+
+void Map4x4::printAlgebraicMinterms()
+{
+    for (const auto& product : algebraicMinterms)
+    {
+        std::cout << product << "+";
+    }
+    std::cout << std::endl;
+}
+
+void Map4x4::findAlgebraicMinterms(const Groups& groups)
+{
+    std::string product;
+    std::vector<std::string> cellsBinaryNumbers;
+
+    for (const auto& group : groups)
+    {
+        for (const auto& cell : group)
+        {
+            int row = cell / 4;
+            int col = cell % 4;
+            cellsBinaryNumbers.push_back(grayCode[col] + grayCode[row]);
+        }
+
+        // for (const auto& cell : cellsBinaryNumbers)
+        // {
+        //     std::cout << cell << std::endl;
+        // }
+
+        product = getProduct(cellsBinaryNumbers);
+        algebraicMinterms.push_back(product);
+        cellsBinaryNumbers.clear();
+    }
+}
+
+std::string Map4x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
+{
+    int ones = 0;
+    std::string product = "";
+
+    for (int i = 0; i < cellsBinaryNumbers.size(); ++i)
+    {
+        for (const auto& number : cellsBinaryNumbers)
+        {
+            if (number[i] == '1')
+                ++ones; 
+        }
+
+        if (ones == cellsBinaryNumbers.size())
+        {
+            product += variables[i];
+            ones = 0;
+            continue;
+        }
+
+        if (ones == 0)
+        {
+            product += '!' + variables[i];
+        }
+
+        ones = 0;
+    }
+    
+    return product;
+}
+
 // void Map4x4::addRect4x2Group(int8_t row, int8_t col, int8_t height, int8_t width)
 // {
 //     int8_t k = 0;
