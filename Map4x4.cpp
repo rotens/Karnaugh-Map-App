@@ -192,6 +192,9 @@ void Map4x4::initializeElementsWithGivenValues(const std::vector<Value>& values)
     {
         elem->setCellValue(*valuesIt);
         ++valuesIt;
+        
+        if (*valuesIt == Value::one)
+            ++ones; 
     }
 }
 
@@ -412,7 +415,7 @@ void Map4x4::findGroups()
         // algebraicMinterms.push_back("0");
         return;
     }
-
+    __TEST__;
     findHorizontalOctets();
     if (hasAllCellsGrouped()) return;
 
@@ -504,7 +507,15 @@ void Map4x4::printAlgebraicMinterms()
     std::cout << std::endl;
 }
 
-void Map4x4::findAlgebraicMinterms(const Groups& groups)
+void Map4x4::findAlgebraicMinterms()
+{
+    findAlgebraicMintermsForGivenGroup(pairs);
+    findAlgebraicMintermsForGivenGroup(rectQuads);
+    findAlgebraicMintermsForGivenGroup(squareQuads);
+    findAlgebraicMintermsForGivenGroup(octets);
+}
+
+void Map4x4::findAlgebraicMintermsForGivenGroup(const Groups& groups)
 {
     std::string product;
     std::vector<std::string> cellsBinaryNumbers;

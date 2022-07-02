@@ -11,6 +11,7 @@
 #define __TEST__ std::cout<<"TEST"<<std::endl;
 std::string colorize(std::string str, int color);
 constexpr int standardIndicesToKmapIndices[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
+constexpr int kmapIndicesToStandardIndices[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 7, 15, 11};
 
 class MapTest
 {
@@ -27,6 +28,7 @@ private:
     void testFindQuads();
     void testDecrementingPossibilites();
     void testRemovingSquareQuads();
+    void testGroupFinding();
     template <typename T> 
     void assertEqual(T, T);
     void assert2dVectorsEqual(Groups&, Groups&);
@@ -198,6 +200,27 @@ void MapTest::testRemovingSquareQuads()
     std::cout << cell.getSquareQuadsNumber() << std::endl;
 }
 
+void MapTest::testGroupFinding()
+{
+    Map4x4 kmap;
+    kmap.initializeElementsWithGivenValues({
+        Value::zero, Value::zero, Value::one, Value::one,
+        Value::zero, Value::one, Value::one, Value::zero,
+        Value::zero, Value::one, Value::one, Value::zero,
+        Value::one, Value::one, Value::zero, Value::zero});
+    kmap.findGroups();
+    kmap.printEverything();
+
+    Map4x4 kmap2;
+    kmap2.initializeElementsWithGivenValues({
+        Value::zero, Value::one, Value::zero, Value::zero,
+        Value::zero, Value::one, Value::one, Value::one,
+        Value::one, Value::one, Value::one, Value::zero,
+        Value::zero, Value::zero, Value::one, Value::zero});
+    kmap2.findGroups();
+    kmap2.printEverything();
+}
+
 template <typename T>
 void MapTest::assertEqual(T a, T b)
 {
@@ -229,14 +252,15 @@ void MapTest::assert2dVectorsEqual(Groups& vec1, Groups& vec2)
 
 void MapTest::runAllTests()
 {
-    testHorizontalOctetFinding();
-    testVerticalOctetFinding();
-    testVerticalAndHorizontalOctetFinding();
-    testGetRealIndex();
-    testFindPairs();
-    testFindQuads();
-    testDecrementingPossibilites();
-    testRemovingSquareQuads();
+    // testHorizontalOctetFinding();
+    // testVerticalOctetFinding();
+    // testVerticalAndHorizontalOctetFinding();
+    // testGetRealIndex();
+    // testFindPairs();
+    // testFindQuads();
+    // testDecrementingPossibilites();
+    // testRemovingSquareQuads();
+    testGroupFinding();
 }
 
 std::string colorize(std::string str, int color) 
@@ -369,7 +393,7 @@ void testAllFunctionValuesCombinations()
     std::ofstream output("values.txt");
     int counter = 0;
 
-    for (int i = 0; i < 65536; ++i)
+    for (int i = 1; i < 65536-1; ++i)
     {
         std::bitset<16> valuesCombination(i);
         Map4x4 kmapObject;
@@ -380,10 +404,39 @@ void testAllFunctionValuesCombinations()
         {
             writeValuesCombinationToFile(output, valuesCombination, minterms);
             ++counter;
-        }
-
-        output << "Total: " << counter << "\n";
+        } 
     }
+
+    output << "Total: " << counter << "\n";
+    output.close();
+}
+
+std::bitset<16> createBitsetFromKmap(const std::vector<Value>& values)
+{
+    std::bitset<16> bitset(0);
+
+    for (int i = 0; i < 16; ++i)
+    {
+        if (values[i] == Value::one)
+        {
+            bitset.set(kmapIndicesToStandardIndices[i]);
+        }
+        else
+        {
+            bitset.reset(kmapIndicesToStandardIndices[i]);
+        }
+    }
+
+    return bitset;
+}
+
+void testOneCombination(const std::vector<Value>& values)
+{
+    auto combination = createBitsetFromKmap(values);
+    Map4x4 kmapObject;
+    kmapObject.initializeElementsWithGivenValues(values);
+    kmapObject.findGroups();
+    kmapObject.findAlgebraicMinterms();
 }
 
 int main()
@@ -444,17 +497,11 @@ int main()
 
     // MapTest testObject;
     // testObject.runAllTests();
-    std::vector<std::bitset<4>> argumentsCombinations;
-    argumentsCombinations.reserve(16);
-    for (int i = 0; i < 16; ++i)
-    {
-        argumentsCombinations.push_back(std::bitset<4>(i));
-        // for (int j = 3; j >= 0; --j)
-        //     std::cout << argumentsCombinations[i][j];
-        // std::cout << std::endl;
-    }
-    std::bitset<4> x(15);
-    std::cout << calculateSumOfProducts({"!AB", "C!D"}, x) << std::endl;
+ 
+    // std::bitset<4> x(15);
+    // std::cout << calculateSumOfProducts({"!AB", "C!D"}, x) << std::endl;
+
+    // testAllFunctionValuesCombinations();
 
     // for (int i = 0; i < 65536; ++i)
     // {

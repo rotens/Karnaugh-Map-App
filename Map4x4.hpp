@@ -88,7 +88,8 @@ public:
     bool hasAllCellsWithSameValue();
     bool hasAllCellsGrouped();
     void printEverything();
-    void findAlgebraicMinterms(const Groups& groups);
+    void findAlgebraicMintermsForGivenGroup(const Groups& groups);
+    void findAlgebraicMinterms();
     std::string getProduct(std::vector<std::string>& cellsBinaryNumbers);
     void printAlgebraicMinterms();
     
