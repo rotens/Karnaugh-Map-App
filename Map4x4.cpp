@@ -573,6 +573,11 @@ std::string Map4x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
     return product;
 }
 
+void Map4x4::findAlgebraicMintermOfSingleGroup(int cellIndex)
+{
+    //
+}
+
 // void Map4x4::addRect4x2Group(int8_t row, int8_t col, int8_t height, int8_t width)
 // {
 //     int8_t k = 0;

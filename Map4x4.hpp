@@ -90,6 +90,7 @@ public:
     void printEverything();
     void findAlgebraicMintermsForGivenGroup(const Groups& groups);
     void findAlgebraicMinterms();
+    void findAlgebraicMintermOfSingleGroup(int);
     std::string getProduct(std::vector<std::string>& cellsBinaryNumbers);
     void printAlgebraicMinterms();
     std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }

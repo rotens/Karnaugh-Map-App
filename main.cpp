@@ -292,7 +292,7 @@ char convertIndexToVariable(int index)
 bool calculateProduct(const std::string& product, const std::bitset<4>& arguments)
 {
     bool calculatedProduct = true;
-    bool negation;
+    bool negation = false;
 
     for (const auto variable : product)
     { 
@@ -310,7 +310,7 @@ bool calculateProduct(const std::string& product, const std::bitset<4>& argument
         else
         {
             calculatedProduct = calculatedProduct && arguments[convertVariableToIndex(variable)];
-        } 
+        }
     }
 
     return calculatedProduct;
@@ -458,8 +458,6 @@ void testOneCombination(const std::vector<Value>& values)
 
 int main()
 {
-
-
     // Map1x2 map1x2Object;
     // map1x2Object.changeValue(0, Value::one);
     // map1x2Object.findAlgebraicMinterm();
@@ -520,17 +518,19 @@ int main()
         Value::zero, Value::one, Value::one, Value::zero,
         Value::zero, Value::one, Value::one, Value::zero,
         Value::one, Value::one, Value::zero, Value::zero});
+    testOneCombination({
+        Value::zero, Value::one, Value::zero, Value::zero,
+        Value::zero, Value::one, Value::one, Value::one,
+        Value::one, Value::one, Value::one, Value::zero,
+        Value::zero, Value::zero, Value::one, Value::zero});
  
-    // std::bitset<4> x(15);
-    // std::cout << calculateSumOfProducts({"!AB", "C!D"}, x) << std::endl;
+    // std::bitset<4> x(0);
+    // std::cout << calculateSumOfProducts({"A!C!D", "!AC!D", "BD"}, x) << std::endl;
+    
 
     // testAllFunctionValuesCombinations();
 
-    // for (int i = 0; i < 65536; ++i)
-    // {
-    //     std::bitset<4> x(i);
-    //     for (auto i : x)
-    // }
+
 
     return 0;
 }
