@@ -92,6 +92,7 @@ public:
     void findAlgebraicMinterms();
     std::string getProduct(std::vector<std::string>& cellsBinaryNumbers);
     void printAlgebraicMinterms();
+    std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }
     
     
 private:

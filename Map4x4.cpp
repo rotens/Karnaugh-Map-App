@@ -415,7 +415,7 @@ void Map4x4::findGroups()
         // algebraicMinterms.push_back("0");
         return;
     }
-    __TEST__;
+    // __TEST__;
     findHorizontalOctets();
     if (hasAllCellsGrouped()) return;
 
@@ -496,6 +496,8 @@ void Map4x4::printEverything()
     printRectQuads();
     std::cout << "\nPrint pairs: \n";
     printPairs();
+    std::cout << "\nAlgebraic minterms: \n";
+    printAlgebraicMinterms();
 }
 
 void Map4x4::printAlgebraicMinterms()
@@ -545,11 +547,11 @@ std::string Map4x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
     int ones = 0;
     std::string product = "";
 
-    for (int i = 0; i < cellsBinaryNumbers.size(); ++i)
+    for (int i = 0; i < 4; ++i)
     {
-        for (const auto& number : cellsBinaryNumbers)
+        for (const auto& value : cellsBinaryNumbers)
         {
-            if (number[i] == '1')
+            if (value[i] == '1')
                 ++ones; 
         }
 

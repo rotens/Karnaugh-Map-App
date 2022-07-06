@@ -11,7 +11,8 @@
 #define __TEST__ std::cout<<"TEST"<<std::endl;
 std::string colorize(std::string str, int color);
 constexpr int standardIndicesToKmapIndices[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
-constexpr int kmapIndicesToStandardIndices[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 7, 15, 11};
+constexpr int kmapIndicesToStandardIndices[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
+// constexpr int kmapIndicesToStandardIndices[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 7, 15, 11};
 
 class MapTest
 {
@@ -209,6 +210,7 @@ void MapTest::testGroupFinding()
         Value::zero, Value::one, Value::one, Value::zero,
         Value::one, Value::one, Value::zero, Value::zero});
     kmap.findGroups();
+    kmap.findAlgebraicMinterms();
     kmap.printEverything();
 
     Map4x4 kmap2;
@@ -218,6 +220,7 @@ void MapTest::testGroupFinding()
         Value::one, Value::one, Value::one, Value::zero,
         Value::zero, Value::zero, Value::one, Value::zero});
     kmap2.findGroups();
+    kmap2.findAlgebraicMinterms();
     kmap2.printEverything();
 }
 
@@ -358,6 +361,7 @@ bool isMinimizationCorrect(
     for (int i = 0; i < functionValues.size(); ++i)
     {
         int sum = calculateSumOfProducts(minterms, argumentsCombinations[i]);
+        std::cout << sum << std::endl;
         if (sum != functionValues[i])
         {
             return false;
@@ -432,11 +436,24 @@ std::bitset<16> createBitsetFromKmap(const std::vector<Value>& values)
 
 void testOneCombination(const std::vector<Value>& values)
 {
-    auto combination = createBitsetFromKmap(values);
+    auto valuesCombination = createBitsetFromKmap(values);
     Map4x4 kmapObject;
     kmapObject.initializeElementsWithGivenValues(values);
     kmapObject.findGroups();
     kmapObject.findAlgebraicMinterms();
+    auto argumentsCombinations = createArgumentsCombinations();
+
+    if (isMinimizationCorrect(
+            kmapObject.getAlgebraicMinterms(),
+            valuesCombination,
+            argumentsCombinations))
+    {
+        std::cout << "MINIMIZATION OK" << std::endl;
+    }
+    else 
+    {
+        std::cout << "MINIMIZATION NOT OK" << std::endl;
+    }
 }
 
 int main()
@@ -497,6 +514,12 @@ int main()
 
     // MapTest testObject;
     // testObject.runAllTests();
+
+    testOneCombination({
+        Value::zero, Value::zero, Value::one, Value::one,
+        Value::zero, Value::one, Value::one, Value::zero,
+        Value::zero, Value::one, Value::one, Value::zero,
+        Value::one, Value::one, Value::zero, Value::zero});
  
     // std::bitset<4> x(15);
     // std::cout << calculateSumOfProducts({"!AB", "C!D"}, x) << std::endl;
