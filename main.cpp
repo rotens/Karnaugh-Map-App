@@ -30,9 +30,12 @@ private:
     void testDecrementingPossibilites();
     void testRemovingSquareQuads();
     void testGroupFinding();
+    void testFindingMintermsOfSingleGroup();
     template <typename T> 
     void assertEqual(T, T);
     void assert2dVectorsEqual(Groups&, Groups&);
+    template <typename T>
+    void assertVectorsEqual(std::vector<T>&, std::vector<T>&);
 };
 
 void MapTest::testHorizontalOctetFinding()
@@ -224,12 +227,42 @@ void MapTest::testGroupFinding()
     kmap2.printEverything();
 }
 
+void MapTest::testFindingMintermsOfSingleGroup()
+{
+    Map4x4 kmap;
+    kmap.findAlgebraicMintermOfSingleGroup(0); 
+    kmap.findAlgebraicMintermOfSingleGroup(4); 
+    kmap.findAlgebraicMintermOfSingleGroup(10); 
+    kmap.findAlgebraicMintermOfSingleGroup(15);
+    std::vector<std::string> minterms{"!A!B!C!D", "!A!B!CD", "ABCD", "A!BC!D"};
+    std::cout << __func__ << " ";
+    assertVectorsEqual<std::string>(kmap.getAlgebraicMinterms(), minterms);
+}
+
 template <typename T>
 void MapTest::assertEqual(T a, T b)
 {
     std::cout << (a == b ? colorize("OK", 1) : colorize("NOT OK", 0)) << std::endl;
 }
 
+template <typename T>
+void MapTest::assertVectorsEqual(std::vector<T>& vec1, std::vector<T>& vec2)
+{
+    if (vec1.size() != vec2.size())
+    {
+        std::cout << colorize("NOT OK", 0) << std::endl;
+        return;
+    }
+
+    if (!std::equal(vec1.begin(), vec1.end(), vec2.begin()))
+    {
+        std::cout << colorize("NOT OK", 0) << std::endl;
+    }
+    else
+    {
+        std::cout << colorize("OK", 1) << std::endl;
+    }
+}
 
 void MapTest::assert2dVectorsEqual(Groups& vec1, Groups& vec2)
 {
@@ -263,7 +296,8 @@ void MapTest::runAllTests()
     // testFindQuads();
     // testDecrementingPossibilites();
     // testRemovingSquareQuads();
-    testGroupFinding();
+    // testGroupFinding();
+    testFindingMintermsOfSingleGroup();
 }
 
 std::string colorize(std::string str, int color) 
@@ -510,19 +544,19 @@ int main()
     //     Value::one, Value::one, Value::zero, Value::zero});
     // kmap.printKmap();
 
-    // MapTest testObject;
-    // testObject.runAllTests();
+    MapTest testObject;
+    testObject.runAllTests();
 
-    testOneCombination({
-        Value::zero, Value::zero, Value::one, Value::one,
-        Value::zero, Value::one, Value::one, Value::zero,
-        Value::zero, Value::one, Value::one, Value::zero,
-        Value::one, Value::one, Value::zero, Value::zero});
-    testOneCombination({
-        Value::zero, Value::one, Value::zero, Value::zero,
-        Value::zero, Value::one, Value::one, Value::one,
-        Value::one, Value::one, Value::one, Value::zero,
-        Value::zero, Value::zero, Value::one, Value::zero});
+    // testOneCombination({
+    //     Value::zero, Value::zero, Value::one, Value::one,
+    //     Value::zero, Value::one, Value::one, Value::zero,
+    //     Value::zero, Value::one, Value::one, Value::zero,
+    //     Value::one, Value::one, Value::zero, Value::zero});
+    // testOneCombination({
+    //     Value::zero, Value::one, Value::zero, Value::zero,
+    //     Value::zero, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::one, Value::zero,
+    //     Value::zero, Value::zero, Value::one, Value::zero});
  
     // std::bitset<4> x(0);
     // std::cout << calculateSumOfProducts({"A!C!D", "!AC!D", "BD"}, x) << std::endl;

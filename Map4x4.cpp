@@ -575,7 +575,24 @@ std::string Map4x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
 
 void Map4x4::findAlgebraicMintermOfSingleGroup(int cellIndex)
 {
-    //
+    std::string minterm = "";
+    int row = cellIndex / 4;
+    int col = cellIndex % 4;
+    std::string argValues = grayCode[col] + grayCode[row];
+
+    for (int i = 0; i < 4; ++i)
+    {   
+        if (argValues[i] == '1')
+        {
+            minterm += variables[i];
+        }
+        else
+        {
+            minterm += "!" + variables[i];
+        }
+    }
+
+    algebraicMinterms.push_back(std::move(minterm));
 }
 
 // void Map4x4::addRect4x2Group(int8_t row, int8_t col, int8_t height, int8_t width)
