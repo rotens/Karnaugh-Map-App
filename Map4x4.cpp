@@ -15,6 +15,11 @@ int getRealIndex(int startIndex)
 KmapCell::KmapCell(Map4x4& kmapObject, int cellIndex)
         : kmapObject(kmapObject), cellIndex(cellIndex) {}
 
+bool KmapCell::hasPairsOrQuads()
+{
+    return getPairsNumber() > 0 or getQuadsNumber() > 0;
+}
+
 void KmapCell::findPairs()
 {
     for (const auto offset : {-1, 1})
@@ -278,13 +283,13 @@ void Map4x4::findPossiblePairs()
     }
 }
 
-void Map4x4::pairCells()
+void Map4x4::pairCells(int pairsNumber)
 {
     for (auto& cell : kmap)
     {
         if (cell->isDone()) continue;
 
-        if (cell->getPairsNumber() == 1)
+        if (cell->getPairsNumber() == pairsNumber)
         {
             cell->setDone();
             int secondCellIndex = cell->getPairs()[0];
@@ -337,7 +342,7 @@ void Map4x4::findPossibleQuads()
     }
 }
 
-void Map4x4::quadCells()
+void Map4x4::quadCellsWithOnePossibility()
 {
     for (auto& cell : kmap)
     {
@@ -354,6 +359,46 @@ void Map4x4::quadCells()
         else
         {
             squareQuadCells(cell);
+        }
+    }
+}
+
+void Map4x4::quadCellsWithTwoPossibilities()
+{
+    for (auto& cell : kmap)
+    {
+        if (cell->isDone()) continue;
+    
+        if (cell->getQuadsNumber() != 1) continue;
+        
+        cell->setDone();
+
+        if (cell->getQuadsNumber() == 2)
+        {
+            if (cell->getRectQuadsNumber() == 1 or cell->getRectQuadsNumber() == 2)
+            {
+                rectQuadCells(cell);
+            }
+            else
+            {
+                squareQuadCells(cell);
+            }
+        }
+    }
+}
+
+void Map4x4::findSingleGroups()
+{
+    for (auto& cell : kmap)
+    {   
+        if (cell->isDone() or cell->getCellValue() == Value::zero)
+        {
+            continue;
+        }
+
+        if (not cell->hasPairsOrQuads())
+        {
+            singleGroups.push_back(cell->getIndex());
         }
     }
 }
@@ -423,11 +468,20 @@ void Map4x4::findGroups()
     if (hasAllCellsGrouped()) return;
 
     findPossiblePairs();
-    pairCells();
+    pairCells(1);
+    decrementGroupingPossibilities();
     if (hasAllCellsGrouped()) return;
 
     findPossibleQuads();
-    quadCells();
+    quadCellsWithOnePossibility();
+    decrementGroupingPossibilities();
+    if (hasAllCellsGrouped()) return;
+
+    quadCellsWithTwoPossibilities();
+    decrementGroupingPossibilities();
+    if (hasAllCellsGrouped()) return;
+
+    pairCells(2);
     if (hasAllCellsGrouped()) return;
 }
 
@@ -515,6 +569,11 @@ void Map4x4::findAlgebraicMinterms()
     findAlgebraicMintermsForGivenGroup(rectQuads);
     findAlgebraicMintermsForGivenGroup(squareQuads);
     findAlgebraicMintermsForGivenGroup(octets);
+
+    for (const auto cellIndex : singleGroups)
+    {
+        findAlgebraicMintermOfSingleGroup(cellIndex);
+    }
 }
 
 void Map4x4::findAlgebraicMintermsForGivenGroup(const Groups& groups)

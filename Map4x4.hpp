@@ -40,6 +40,7 @@ public:
     void removePairContainingGivenCellIndex(int);
     void removeSquareQuadContainingGivenCellIndex(int);
     void removeRectQuadContainingGivenCellIndex(int);
+    bool hasPairsOrQuads();
 
 
 private:
@@ -77,9 +78,10 @@ public:
     Groups& getSquareQuads() { return squareQuads; }
     Groups& getRectQuads() { return rectQuads; }
     void findPossiblePairs();
-    void pairCells();
+    void pairCells(int);
     void findPossibleQuads();
-    void quadCells();
+    void quadCellsWithOnePossibility();
+    void quadCellsWithTwoPossibilities();
     void squareQuadCells(KmapCell*);
     void rectQuadCells(KmapCell*);
     void findGroups();
@@ -91,6 +93,7 @@ public:
     void findAlgebraicMintermsForGivenGroup(const Groups& groups);
     void findAlgebraicMinterms();
     void findAlgebraicMintermOfSingleGroup(int);
+    void findSingleGroups();
     std::string getProduct(std::vector<std::string>& cellsBinaryNumbers);
     void printAlgebraicMinterms();
     std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }
@@ -102,6 +105,7 @@ private:
     Groups pairs;
     Groups squareQuads;
     Groups rectQuads;
+    std::vector<int> singleGroups;
     std::set<int> justGroupedCells;
     int ones{0};
     std::vector<std::string> algebraicMinterms;
