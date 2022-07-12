@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 
+using Groups = std::vector<std::vector<int>>;
 enum class Value { zero = '0', one = '1', dont_care = 'X' };
 template<int N> using VecIter = std::vector<std::array<std::pair<int8_t, int8_t>, N>>::iterator;
 inline std::string grayCode[] = {"00", "01", "11", "10"};

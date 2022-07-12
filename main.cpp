@@ -7,6 +7,7 @@
 #include "Map1x2.hpp"
 #include "Map2x2.hpp"
 #include "MapInterface.hpp"
+#include "KmapCell.hpp"
 
 #define __TEST__ std::cout<<"TEST"<<std::endl;
 std::string colorize(std::string str, int color);
