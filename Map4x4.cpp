@@ -44,6 +44,30 @@ void KmapCell::findPairs()
     }
 }
 
+void KmapCell::findPairsWithSharing()
+{
+    for (const auto offset : {-1, 1})
+    {
+        int neighbourCellIndex = getCellIndex(this->cellIndex, offset, 0);
+        Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
+
+        if (cellValue == Value::one)
+        {
+            pairsWithSharing.push_back(neighbourCellIndex);
+            ++this->numberOfPairsWithSharing;
+        }
+
+        neighbourCellIndex = getCellIndex(this->cellIndex, 0, offset);
+        cellValue = kmapObject.getCellValue(neighbourCellIndex);
+
+        if (cellValue == Value::one)
+        {
+            pairsWithSharing.push_back(neighbourCellIndex);
+            ++this->numberOfPairsWithSharing;
+        }
+    }
+}
+
 void KmapCell::findSquareQuads()
 {
     std::vector<int> quad; 
@@ -384,6 +408,8 @@ void Map4x4::quadCellsWithTwoPossibilities()
                 squareQuadCells(cell);
             }
         }
+
+        decrementGroupingPossibilities();
     }
 }
 
@@ -478,7 +504,6 @@ void Map4x4::findGroups()
     if (hasAllCellsGrouped()) return;
 
     quadCellsWithTwoPossibilities();
-    decrementGroupingPossibilities();
     if (hasAllCellsGrouped()) return;
 
     pairCells(2);

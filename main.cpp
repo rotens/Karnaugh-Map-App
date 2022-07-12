@@ -122,7 +122,7 @@ void MapTest::testFindPairs()
         Value::one, Value::one, Value::zero, Value::zero,
         Value::zero, Value::one, Value::zero, Value::zero});
     kmap.findPossiblePairs();
-    kmap.pairCells();
+    kmap.pairCells(1);
 
     Groups pairs{{4, 8}, {13, 9}};
 
@@ -146,7 +146,7 @@ void MapTest::testFindQuads()
         Value::zero, Value::one, Value::one, Value::one,
         Value::zero, Value::one, Value::one, Value::one});
     kmap.findPossibleQuads();
-    kmap.quadCells();
+    kmap.quadCellsWithOnePossibility();
 
     Groups rectQuads = {
         {0, 1, 2, 3},
@@ -170,7 +170,7 @@ void MapTest::testDecrementingPossibilites()
         Value::zero, Value::one, Value::one, Value::one,
         Value::zero, Value::zero, Value::zero, Value::one});
     kmap.findPossiblePairs();
-    kmap.pairCells();
+    kmap.pairCells(1);
     // kmap.findQuads();
     kmap.decrementGroupingPossibilities();
 
