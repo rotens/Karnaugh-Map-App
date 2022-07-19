@@ -37,6 +37,7 @@ public:
     Groups& getRectQuads() { return this->rectQuads; }
     void findPairs();
     void findPairsWithSharing();
+    void findPairsWithoutSharing();
     void findSquareQuads();
     void findSquareQuadsWithSharing();
     void findRectQuads();

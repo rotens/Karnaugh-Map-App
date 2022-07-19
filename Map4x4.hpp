@@ -29,10 +29,12 @@ public:
     Groups& getSquareQuads() { return squareQuads; }
     Groups& getRectQuads() { return rectQuads; }
     void findPossiblePairs();
+    void findPossiblePairsWithoutSharing();
     void pairCells(int);
     void findPossibleQuads();
     void quadCellsWithOnePossibility();
     void quadCellsWithTwoPossibilities();
+    void repeatQuadingCellsWithTwoPossibilities();
     void squareQuadCells(KmapCell*);
     void rectQuadCells(KmapCell*);
     void findGroups();
@@ -60,6 +62,7 @@ private:
     std::set<int> justGroupedCells;
     int ones{0};
     std::vector<std::string> algebraicMinterms;
+    bool quadFound{false};
 
     void findHorizontalOctets();
     void findVerticalOctets();

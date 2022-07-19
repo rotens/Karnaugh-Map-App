@@ -245,10 +245,21 @@ void Map4x4::quadCellsWithTwoPossibilities()
             {
                 squareQuadCells(cell);
             }
+
+            quadFound = true;
         }
 
         decrementGroupingPossibilities();
     }
+}
+
+void Map4x4::repeatQuadingCellsWithTwoPossibilities()
+{
+    do
+    {
+        quadFound = false;
+        quadCellsWithTwoPossibilities();
+    } while (quadFound);
 }
 
 void Map4x4::findSingleGroups()
@@ -325,28 +336,42 @@ void Map4x4::findGroups()
         return;
     }
     // __TEST__;
+
+    // STEP 1
     findHorizontalOctets();
     if (hasAllCellsGrouped()) return;
 
     findVerticalOctets();
     if (hasAllCellsGrouped()) return;
 
+    // STEP 2
     findPossiblePairs();
     pairCells(1);
     decrementGroupingPossibilities();
     if (hasAllCellsGrouped()) return;
 
+    // STEP 3
     findPossibleQuads();
     quadCellsWithOnePossibility();
     decrementGroupingPossibilities();
     if (hasAllCellsGrouped()) return;
 
-    quadCellsWithTwoPossibilities();
+    pairCells(1);
+    decrementGroupingPossibilities();
+    if (hasAllCellsGrouped()) return;
+
+    quadCellsWithOnePossibility();
+    decrementGroupingPossibilities();
+    if (hasAllCellsGrouped()) return;
+
+    // STEP 4
+    repeatQuadingCellsWithTwoPossibilities();
     if (hasAllCellsGrouped()) return;
 
     pairCells(2);
     if (hasAllCellsGrouped()) return;
 }
+
 
 bool Map4x4::hasAllCellsGrouped()
 {
