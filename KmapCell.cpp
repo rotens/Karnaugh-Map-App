@@ -119,17 +119,24 @@ void KmapCell::findSquareQuadsWithSharing()
         {
             int neighbourCellIndex = getCellIndex(this->cellIndex, offsetPair.first, offsetPair.second); 
             Value neighbourCellValue = kmapObject.getCellValue(neighbourCellIndex);
+
             if (neighbourCellValue == Value::zero) 
                 break;
+
+            if (kmapObject.isCellDone(neighbourCellIndex))
+                ++sharingCounter;
+
             quad.push_back(neighbourCellIndex);
         }
 
-        if (quad.size() == 3)
+        if (quad.size() == 3 and sharingCounter > 0)
         {
+            squareQuadsSharingCounters.push_back(sharingCounter);
             squareQuadsWithSharing.push_back(quad);
             ++this->numberOfSquareQuadsWithSharing;
         }
 
+        sharingCounter = 0;
         quad.clear();
     }
 }
@@ -162,6 +169,49 @@ void KmapCell::findRectQuads()
     {
         rectQuads.push_back(horizontalQuad);
         ++this->rectQuadsNumber;
+    }
+}
+
+void KmapCell::findRectQuads()
+{
+    std::vector<int> verticalQuad; 
+    std::vector<int> horizontalQuad;
+    int horizontalSharingCounter = 0; 
+    int verticalSharingCounter = 0; 
+
+    for (const auto offset : {1, 2, 3})
+    {   
+        int quadCellIndex = getCellIndex(this->cellIndex, offset, 0);
+        Value quadCellValue = kmapObject.getCellValue(quadCellIndex);
+
+        if (quadCellValue == Value::one)
+            verticalQuad.push_back(quadCellIndex);
+
+        if (kmapObject.isCellDone(quadCellIndex))
+            ++verticalSharingCounter;   
+
+        quadCellIndex = getCellIndex(this->cellIndex, 0, offset);
+        quadCellValue = kmapObject.getCellValue(quadCellIndex);
+
+        if (quadCellValue == Value::one)
+            horizontalQuad.push_back(quadCellIndex);
+
+        if (kmapObject.isCellDone(quadCellIndex))
+            ++horizontalSharingCounter;
+    }
+
+    if (verticalQuad.size() == 3 and verticalSharingCounter > 0)
+    {
+        rectQuadsSharingCounters.push_back(verticalSharingCounter);
+        rectQuadsWithSharing.push_back(verticalQuad);
+        ++this->numberOfRectQuadsWithSharing;
+    }
+
+    if (horizontalQuad.size() == 3 and horizontalSharingCounter > 0)
+    {
+        rectQuadsSharingCounters.push_back(horizontalSharingCounter);
+        rectQuadsWithSharing.push_back(horizontalQuad);
+        ++this->numberOfRectQuadsWithSharing;
     }
 }
 

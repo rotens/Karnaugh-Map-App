@@ -34,6 +34,7 @@ public:
     void findPossibleQuads();
     void quadCellsWithOnePossibility();
     void quadCellsWithTwoPossibilities();
+    void quadCellsWithTwoPossibilitiesAndWithSharing();
     void repeatQuadingCellsWithTwoPossibilities();
     void squareQuadCells(KmapCell*);
     void rectQuadCells(KmapCell*);
@@ -43,11 +44,11 @@ public:
     bool hasAllCellsWithSameValue();
     bool hasAllCellsGrouped();
     void printEverything();
-    void findAlgebraicMintermsForGivenGroup(const Groups& groups);
+    void findAlgebraicMintermsForGivenGroup(const Groups&);
     void findAlgebraicMinterms();
     void findAlgebraicMintermOfSingleGroup(int);
     void findSingleGroups();
-    std::string getProduct(std::vector<std::string>& cellsBinaryNumbers);
+    std::string getProduct(std::vector<std::string>&);
     void printAlgebraicMinterms();
     std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }
     

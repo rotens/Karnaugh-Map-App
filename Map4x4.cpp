@@ -231,23 +231,20 @@ void Map4x4::quadCellsWithTwoPossibilities()
     {
         if (cell->isDone()) continue;
     
-        if (cell->getQuadsNumber() != 1) continue;
+        if (cell->getQuadsNumber() != 2) continue;
         
         cell->setDone();
 
-        if (cell->getQuadsNumber() == 2)
+        if (cell->getRectQuadsNumber() == 1 or cell->getRectQuadsNumber() == 2)
         {
-            if (cell->getRectQuadsNumber() == 1 or cell->getRectQuadsNumber() == 2)
-            {
-                rectQuadCells(cell);
-            }
-            else
-            {
-                squareQuadCells(cell);
-            }
-
-            quadFound = true;
+            rectQuadCells(cell);
         }
+        else
+        {
+            squareQuadCells(cell);
+        }
+
+        quadFound = true;
 
         decrementGroupingPossibilities();
     }
@@ -260,6 +257,29 @@ void Map4x4::repeatQuadingCellsWithTwoPossibilities()
         quadFound = false;
         quadCellsWithTwoPossibilities();
     } while (quadFound);
+}
+
+void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
+{
+    for (auto& cell : kmap)
+    {
+        if (cell->isDone()) continue;
+    
+        if (cell->getNumberOfQuadsWithSharing() != 2) continue;
+        
+        cell->setDone();
+
+        if (cell->getRectQuadsNumber() == 1 or cell->getRectQuadsNumber() == 2)
+        {
+            rectQuadCells(cell);
+        }
+        else
+        {
+            squareQuadCells(cell);
+        }
+
+        quadFound = true;
+    }
 }
 
 void Map4x4::findSingleGroups()
