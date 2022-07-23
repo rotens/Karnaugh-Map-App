@@ -51,6 +51,8 @@ public:
     std::string getProduct(std::vector<std::string>&);
     void printAlgebraicMinterms();
     std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }
+    void addRectQuadWithSharing(KmapCell*, int);
+    void addSquareQuadWithSharing(KmapCell*, int);
     
     
 private:

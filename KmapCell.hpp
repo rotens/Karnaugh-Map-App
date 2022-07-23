@@ -35,6 +35,10 @@ public:
     std::vector<int>& getPairs() { return this->pairs; }
     Groups& getSquareQuads() { return this->squareQuads; }
     Groups& getRectQuads() { return this->rectQuads; }
+    Groups& getSquareQuadsWithSharing() { return this->squareQuadsWithSharing; }
+    Groups& getRectQuadsWithSharing() { return this->rectQuadsWithSharing; }
+    int getRectQuadsSharingCounter(int index) { return this->rectQuadsSharingCounters[index]; }
+    int getSquareQuadsSharingCounter(int index) { return this->squareQuadsSharingCounters[index]; }
     void findPairs();
     void findPairsWithSharing();
     void findPairsWithoutSharing();
@@ -46,6 +50,10 @@ public:
     void removeSquareQuadContainingGivenCellIndex(int);
     void removeRectQuadContainingGivenCellIndex(int);
     bool hasPairsOrQuads();
+    int getIndexOfRectQuadWithMinimalSharing();
+    static int getIndexOfQuadWithMinimalSharing(std::vector<int>&);
+    int getIndexOfRectQuadWithMinimalSharing();
+    int getIndexOfSquareQuadWithMinimalSharing();
 
 private:
     int cellIndex;

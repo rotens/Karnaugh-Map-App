@@ -266,3 +266,20 @@ void KmapCell::removeRectQuadContainingGivenCellIndex(int cellIndex)
         }
     }
 }
+
+/* static */
+int KmapCell::getIndexOfQuadWithMinimalSharing(std::vector<int>& quadsWithSharing)
+{
+    auto minIndexIter = std::min_element(quadsWithSharing.begin(), quadsWithSharing.end());
+    return quadsWithSharing.end() - minIndexIter;
+}
+
+int KmapCell::getIndexOfRectQuadWithMinimalSharing()
+{
+    return getIndexOfQuadWithMinimalSharing(rectQuadsSharingCounters);
+}
+
+int KmapCell::getIndexOfSquareQuadWithMinimalSharing()
+{
+    return getIndexOfQuadWithMinimalSharing(squareQuadsSharingCounters);
+}

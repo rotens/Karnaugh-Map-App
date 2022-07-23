@@ -178,6 +178,19 @@ void Map4x4::squareQuadCells(KmapCell* cell)
     squareQuads.push_back(std::move(quad));
 }
 
+void Map4x4::addSquareQuadWithSharing(KmapCell* cell, int index)
+{
+    auto& possibleQuad = cell->getSquareQuadsWithSharing()[index];
+    for (auto quadedCellIndex : possibleQuad)
+    {
+        kmap[quadedCellIndex]->setDone();
+    }
+    
+    std::vector<int> quad{possibleQuad};
+    quad.insert(quad.begin(), cell->getIndex());
+    squareQuads.push_back(std::move(quad));
+}
+
 void Map4x4::rectQuadCells(KmapCell* cell)
 { 
     auto& possibleQuad = cell->getRectQuads()[0];
@@ -189,6 +202,19 @@ void Map4x4::rectQuadCells(KmapCell* cell)
     std::vector<int> quad{possibleQuad};
     quad.insert(quad.begin(), cell->getIndex());
     justGroupedCells.insert(quad.begin(), quad.end());
+    rectQuads.push_back(std::move(quad));
+}
+
+void Map4x4::addRectQuadWithSharing(KmapCell* cell, int index)
+{ 
+    auto& possibleQuad = cell->getRectQuadsWithSharing()[index];
+    for (const auto quadedCellIndex : possibleQuad)
+    {
+        kmap[quadedCellIndex]->setDone();
+    }
+
+    std::vector<int> quad{possibleQuad};
+    quad.insert(quad.begin(), cell->getIndex());
     rectQuads.push_back(std::move(quad));
 }
 
@@ -269,13 +295,32 @@ void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
         
         cell->setDone();
 
-        if (cell->getRectQuadsNumber() == 1 or cell->getRectQuadsNumber() == 2)
+        if (cell->getNumberOfRectQuadsWithSharing() == 2)
         {
-            rectQuadCells(cell);
+            auto index = cell->getIndexOfRectQuadWithMinimalSharing();
+            addRectQuadWithSharing(cell, index);
+        } 
+        else if (cell->getNumberOfSquareQuadsWithSharing() == 2)
+        {
+            auto index = cell->getIndexOfSquareQuadWithMinimalSharing();
+            addSquareQuadWithSharing(cell, index);
         }
         else
         {
-            squareQuadCells(cell);
+            auto rectIndex = cell->getIndexOfRectQuadWithMinimalSharing();
+            auto rectCounter = cell->getRectQuadsSharingCounter(rectIndex);
+
+            auto squareIndex = cell->getIndexOfSquareQuadWithMinimalSharing();
+            auto squareCounter = cell->getSquareQuadsSharingCounter(squareIndex);
+
+            if (rectCounter >= squareCounter)
+            {
+                addRectQuadWithSharing(cell, rectIndex);
+            }
+            else
+            {
+                addSquareQuadWithSharing(cell, squareIndex);
+            }
         }
 
         quadFound = true;
