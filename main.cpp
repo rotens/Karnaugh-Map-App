@@ -37,6 +37,8 @@ private:
     void assert2dVectorsEqual(Groups&, Groups&);
     template <typename T>
     void assertVectorsEqual(std::vector<T>&, std::vector<T>&);
+    void testFindSquareQuadsWithSharing();
+    void testFindQuadsWithSharing();
 };
 
 void MapTest::testHorizontalOctetFinding()
@@ -240,6 +242,62 @@ void MapTest::testFindingMintermsOfSingleGroup()
     assertVectorsEqual<std::string>(kmap.getAlgebraicMinterms(), minterms);
 }
 
+void MapTest::testFindSquareQuadsWithSharing()
+{
+    Map4x4 kmap;
+    kmap.initializeElementsWithGivenValues({
+        Value::one, Value::one, Value::one, Value::zero,
+        Value::one, Value::one, Value::one, Value::zero,
+        Value::zero, Value::one, Value::one, Value::zero,
+        Value::zero, Value::zero, Value::zero, Value::zero});
+
+    auto& cell1 = kmap.getCell(0);
+    cell1.setDone();
+    auto& cell2 = kmap.getCell(1);
+    cell2.setDone();
+    auto& cell3 = kmap.getCell(4);
+    cell3.setDone();
+    auto& cell4 = kmap.getCell(5);
+    cell4.setDone();
+
+    std::vector<int> quad{6, 10, 9, 5};
+
+    kmap.findPossibleQuadsWithSharing();
+    kmap.quadCellsWithTwoPossibilitiesAndWithSharing();
+
+    std::cout << __func__ << " ";
+    assertVectorsEqual<int>(quad, kmap.getSquareQuads()[0]);
+    // kmap.printEverything();
+}
+
+void MapTest::testFindQuadsWithSharing()
+{
+    Map4x4 kmap;
+    kmap.initializeElementsWithGivenValues({
+        Value::one, Value::one, Value::one, Value::one,
+        Value::one, Value::zero, Value::zero, Value::one,
+        Value::one, Value::zero, Value::zero, Value::zero,
+        Value::one, Value::zero, Value::zero, Value::zero});
+
+    auto& cell1 = kmap.getCell(0);
+    cell1.setDone();
+    auto& cell2 = kmap.getCell(1);
+    cell2.setDone();
+    auto& cell3 = kmap.getCell(2);
+    cell3.setDone();
+    auto& cell4 = kmap.getCell(3);
+    cell4.setDone();
+
+    std::vector<int> quad{4, 8, 12, 0};
+
+    kmap.findPossibleQuadsWithSharing();
+    kmap.quadCellsWithTwoPossibilitiesAndWithSharing();
+
+    std::cout << __func__ << " ";
+    assertVectorsEqual<int>(quad, kmap.getRectQuads()[0]);
+    // kmap.printEverything();
+}   
+
 template <typename T>
 void MapTest::assertEqual(T a, T b)
 {
@@ -298,7 +356,9 @@ void MapTest::runAllTests()
     // testDecrementingPossibilites();
     // testRemovingSquareQuads();
     // testGroupFinding();
-    testFindingMintermsOfSingleGroup();
+    // testFindingMintermsOfSingleGroup();
+    testFindSquareQuadsWithSharing();
+    testFindQuadsWithSharing();
 }
 
 std::string colorize(std::string str, int color) 

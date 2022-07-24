@@ -251,6 +251,18 @@ void Map4x4::quadCellsWithOnePossibility()
     }
 }
 
+void Map4x4::findPossibleQuadsWithSharing()
+{
+    for (auto& cell : kmap)
+    {   
+        if (not cell->isDone() and cell->getCellValue() == Value::one)
+        {
+            cell->findRectQuadsWithSharing();
+            cell->findSquareQuadsWithSharing();
+        }
+    }
+}
+
 void Map4x4::quadCellsWithTwoPossibilities()
 {
     for (auto& cell : kmap)
@@ -307,13 +319,18 @@ void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
         }
         else
         {
-            auto rectIndex = cell->getIndexOfRectQuadWithMinimalSharing();
+            auto rectIndex = cell->getIndexOfRectQuadWithMinimalSharing() - 1;
             auto rectCounter = cell->getRectQuadsSharingCounter(rectIndex);
 
-            auto squareIndex = cell->getIndexOfSquareQuadWithMinimalSharing();
+            auto squareIndex = cell->getIndexOfSquareQuadWithMinimalSharing() - 1;
             auto squareCounter = cell->getSquareQuadsSharingCounter(squareIndex);
 
-            if (rectCounter >= squareCounter)
+            // std::cout << "Rect index " << rectIndex << std::endl;
+            // std::cout << "Rect counter " << rectCounter << std::endl;
+            // std::cout << "Square index " << squareIndex << std::endl;
+            // std::cout << "Square counter " << squareCounter << std::endl;
+
+            if (rectCounter <= squareCounter)
             {
                 addRectQuadWithSharing(cell, rectIndex);
             }
@@ -322,7 +339,7 @@ void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
                 addSquareQuadWithSharing(cell, squareIndex);
             }
         }
-
+       
         quadFound = true;
     }
 }

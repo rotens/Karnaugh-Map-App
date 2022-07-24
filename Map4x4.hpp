@@ -32,6 +32,7 @@ public:
     void findPossiblePairsWithoutSharing();
     void pairCells(int);
     void findPossibleQuads();
+    void findPossibleQuadsWithSharing();
     void quadCellsWithOnePossibility();
     void quadCellsWithTwoPossibilities();
     void quadCellsWithTwoPossibilitiesAndWithSharing();
@@ -53,7 +54,8 @@ public:
     std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }
     void addRectQuadWithSharing(KmapCell*, int);
     void addSquareQuadWithSharing(KmapCell*, int);
-    
+
+    friend class MapTest;
     
 private:
     std::vector<KmapCell*> kmap{16, nullptr};

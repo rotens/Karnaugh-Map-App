@@ -6,6 +6,7 @@
 #include "other.hpp"
 
 class Map4x4;
+class MapTest;
 
 class KmapCell
 {
@@ -50,10 +51,11 @@ public:
     void removeSquareQuadContainingGivenCellIndex(int);
     void removeRectQuadContainingGivenCellIndex(int);
     bool hasPairsOrQuads();
-    int getIndexOfRectQuadWithMinimalSharing();
     static int getIndexOfQuadWithMinimalSharing(std::vector<int>&);
     int getIndexOfRectQuadWithMinimalSharing();
     int getIndexOfSquareQuadWithMinimalSharing();
+
+    friend class MapTest;
 
 private:
     int cellIndex;

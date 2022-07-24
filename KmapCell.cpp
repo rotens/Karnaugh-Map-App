@@ -41,7 +41,7 @@ void KmapCell::findPairsWithSharing()
         int neighbourCellIndex = getCellIndex(this->cellIndex, offset, 0);
         Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
 
-        if (cellValue == Value::one)
+        if (cellValue == Value::one and kmapObject.isCellDone(neighbourCellIndex))
         {
             pairsWithSharing.push_back(neighbourCellIndex);
             ++this->numberOfPairsWithSharing;
@@ -50,7 +50,7 @@ void KmapCell::findPairsWithSharing()
         neighbourCellIndex = getCellIndex(this->cellIndex, 0, offset);
         cellValue = kmapObject.getCellValue(neighbourCellIndex);
 
-        if (cellValue == Value::one)
+        if (cellValue == Value::one and kmapObject.isCellDone(neighbourCellIndex))
         {
             pairsWithSharing.push_back(neighbourCellIndex);
             ++this->numberOfPairsWithSharing;
@@ -92,7 +92,8 @@ void KmapCell::findSquareQuads()
     {
         for (const auto& offsetPair : quadOffsets)
         {
-            int neighbourCellIndex = getCellIndex(this->cellIndex, offsetPair.first, offsetPair.second); 
+            int neighbourCellIndex = getCellIndex(
+                this->cellIndex, offsetPair.first, offsetPair.second); 
             Value neighbourCellValue = kmapObject.getCellValue(neighbourCellIndex);
             if (neighbourCellValue == Value::zero) break;
             quad.push_back(neighbourCellIndex);
@@ -117,7 +118,8 @@ void KmapCell::findSquareQuadsWithSharing()
     {
         for (const auto& offsetPair : quadOffsets)
         {
-            int neighbourCellIndex = getCellIndex(this->cellIndex, offsetPair.first, offsetPair.second); 
+            int neighbourCellIndex = getCellIndex(
+                this->cellIndex, offsetPair.first, offsetPair.second); 
             Value neighbourCellValue = kmapObject.getCellValue(neighbourCellIndex);
 
             if (neighbourCellValue == Value::zero) 
@@ -172,7 +174,7 @@ void KmapCell::findRectQuads()
     }
 }
 
-void KmapCell::findRectQuads()
+void KmapCell::findRectQuadsWithSharing()
 {
     std::vector<int> verticalQuad; 
     std::vector<int> horizontalQuad;
