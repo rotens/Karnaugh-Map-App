@@ -29,14 +29,18 @@ public:
     Groups& getSquareQuads() { return squareQuads; }
     Groups& getRectQuads() { return rectQuads; }
     void findPossiblePairs();
-    void findPossiblePairsWithoutSharing();
+    void findPossiblePairsWithSharing();
     void pairCells(int);
+    void pairCellsWithSharing();
     void findPossibleQuads();
     void findPossibleQuadsWithSharing();
     void quadCellsWithOnePossibility();
     void quadCellsWithTwoPossibilities();
     void quadCellsWithTwoPossibilitiesAndWithSharing();
     void repeatQuadingCellsWithTwoPossibilities();
+    void repeatPairingCellsWithTwoPossibilities();
+    void repeatPairingCellsWithTwoPossibilitiesAndSharing();
+    void repeatPairingCellsWithOnePossibility();
     void squareQuadCells(KmapCell*);
     void rectQuadCells(KmapCell*);
     void findGroups();
@@ -54,6 +58,7 @@ public:
     std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }
     void addRectQuadWithSharing(KmapCell*, int);
     void addSquareQuadWithSharing(KmapCell*, int);
+    void insertJustGroupedCells(std::vector<int>&);
 
     friend class MapTest;
     
@@ -68,6 +73,8 @@ private:
     int ones{0};
     std::vector<std::string> algebraicMinterms;
     bool quadFound{false};
+    bool pairFound1{false};
+    bool pairFound2{false};
 
     void findHorizontalOctets();
     void findVerticalOctets();

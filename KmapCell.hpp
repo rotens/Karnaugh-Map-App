@@ -34,6 +34,7 @@ public:
         return this->numberOfSquareQuadsWithSharing + this->numberOfRectQuadsWithSharing; }
     int getIndex() { return this->cellIndex; }
     std::vector<int>& getPairs() { return this->pairs; }
+    std::vector<int>& getPairsWithSharing() { return this->pairsWithSharing; }
     Groups& getSquareQuads() { return this->squareQuads; }
     Groups& getRectQuads() { return this->rectQuads; }
     Groups& getSquareQuadsWithSharing() { return this->squareQuadsWithSharing; }
