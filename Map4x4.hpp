@@ -46,8 +46,10 @@ public:
     void findGroups();
     KmapCell& getCell(int cellIndex) { return *kmap[cellIndex]; }
     void decrementGroupingPossibilities();
+    void setGroupingPossibilitiesToTwo();
     bool hasAllCellsWithSameValue();
     bool hasAllCellsGrouped();
+    bool hasCellsWithMoreThanTwoPossibilitiesToQuad();
     void printEverything();
     void findAlgebraicMintermsForGivenGroup(const Groups&);
     void findAlgebraicMinterms();

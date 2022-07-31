@@ -24,7 +24,6 @@ public:
     bool isDone() { return this->done; }
     int getPairsNumber() { return this->pairsNumber; }
     int getSquareQuadsNumber() { return this->squareQuadsNumber; }
-    void setSquareQuadsNumber(int number) { this->squareQuadsNumber = number; }
     int getNumberOfPairsWithSharing() { return this->numberOfPairsWithSharing; }
     int getNumberOfSquareQuadsWithSharing() { return this->numberOfSquareQuadsWithSharing; }
     int getNumberOfRectQuadsWithSharing() { return this->numberOfRectQuadsWithSharing; }
@@ -41,6 +40,8 @@ public:
     Groups& getRectQuadsWithSharing() { return this->rectQuadsWithSharing; }
     int getRectQuadsSharingCounter(int index) { return this->rectQuadsSharingCounters[index]; }
     int getSquareQuadsSharingCounter(int index) { return this->squareQuadsSharingCounters[index]; }
+    void setSquareQuadsNumber(int number) { this->squareQuadsNumber = number; }
+    void setRectQuadsNumber(int number) { this->rectQuadsNumber = number; }
     void findPairs();
     void findPairsWithSharing();
     void findPairsWithoutSharing();

@@ -429,10 +429,13 @@ void initializeKmapWithBitset(const std::bitset<16>& functionValues, Map4x4& kma
 
     for (int i = 0; i < kmap.size(); ++i)
     {
-        kmap[standardIndicesToKmapIndices[i]] = static_cast<Value>(functionValues[i]); 
+        kmap[standardIndicesToKmapIndices[i]] = functionValues[i] == 0
+                                                ? Value::zero
+                                                : Value::one;
     }
 
     kmapObject.initializeElementsWithGivenValues(kmap);
+    // kmapObject.printKmap();
 }
 
 std::vector<std::bitset<4>> createArgumentsCombinations()
@@ -456,7 +459,7 @@ bool isMinimizationCorrect(
     for (int i = 0; i < functionValues.size(); ++i)
     {
         int sum = calculateSumOfProducts(minterms, argumentsCombinations[i]);
-        std::cout << sum << std::endl;
+        // std::cout << sum << std::endl;
         if (sum != functionValues[i])
         {
             return false;
@@ -493,12 +496,15 @@ void testAllFunctionValuesCombinations()
     int counter = 0;
 
     for (int i = 1; i < 65536-1; ++i)
+    // for (int i = 1; i < 2; ++i)
     {
         std::bitset<16> valuesCombination(i);
         Map4x4 kmapObject;
         initializeKmapWithBitset(valuesCombination, kmapObject);
+        kmapObject.findGroups();
+        kmapObject.findAlgebraicMinterms();
+        const auto& minterms = kmapObject.getAlgebraicMinterms();
 
-        std::vector<std::string> minterms; // temp
         if (!isMinimizationCorrect(minterms, valuesCombination, argumentsCombinations))
         {
             writeValuesCombinationToFile(output, valuesCombination, minterms);
@@ -551,6 +557,31 @@ void testOneCombination(const std::vector<Value>& values)
     }
 }
 
+void printKmap(std::string functionValues)
+{
+    if (functionValues.size() != 16)
+    {
+        std::cout << "Wrong length" << std::endl;
+        return;
+    }
+
+    for (int i = 0; i < functionValues.size(); ++i)
+    {
+        std::cout << functionValues[kmapIndicesToStandardIndices[i]] << " ";
+
+        if (i % 4 == 3)
+            std::cout << "\n";
+    }
+}
+
+void printBitset16(std::bitset<16>& bitset)
+{
+    for (int i = 0; i < bitset.size(); ++i)
+    {
+        std::cout << bitset[i] << std::endl;
+    }
+}
+
 int main()
 {
     // Map1x2 map1x2Object;
@@ -594,19 +625,35 @@ int main()
 
     // MapInterface mapInterface(font, kmapObject);
     // mapInterface.loop();
-   
+
+    // kmap.initializeElementsWithGivenValues({
+    //     Value::one, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one});
 
     // Map4x4 kmap;
-    // kmap.printKmap();
     // kmap.initializeElementsWithGivenValues({
-    //     Value::one, Value::one, Value::zero, Value::zero,
-    //     Value::one, Value::one, Value::zero, Value::zero,
-    //     Value::one, Value::one, Value::zero, Value::zero,
-    //     Value::one, Value::one, Value::zero, Value::zero});
+    //     Value::zero, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::zero, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one});
+    // kmap.findGroups();
+    // kmap.findAlgebraicMinterms();
     // kmap.printKmap();
+    // kmap.printEverything();
 
-    MapTest testObject;
-    testObject.runAllTests();
+    // MapTest testObject;
+    // testObject.runAllTests();
+
+    // printKmap("0111111111111110");
+    // testAllFunctionValuesCombinations();
+    // testOneCombination({
+    //     Value::one, Value::zero, Value::zero, Value::zero,
+    //     Value::zero, Value::zero, Value::zero, Value::zero,
+    //     Value::zero, Value::zero, Value::zero, Value::zero,
+    //     Value::zero, Value::zero, Value::zero, Value::zero});
+
 
     // testOneCombination({
     //     Value::zero, Value::zero, Value::one, Value::one,
