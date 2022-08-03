@@ -353,7 +353,7 @@ void Map4x4::quadCellsWithTwoPossibilities()
         if (cell->isDone()) continue;
     
         if (cell->getQuadsNumber() != 2) continue;
-
+        std::cout << "index " << cell->getIndex() << std::endl;
         if (cell->getRectQuadsNumber() == 1 or cell->getRectQuadsNumber() == 2)
         {
             rectQuadCells(cell);
@@ -363,6 +363,7 @@ void Map4x4::quadCellsWithTwoPossibilities()
             squareQuadCells(cell);
         }
 
+        decrementGroupingPossibilities();
         quadFound = true;
     }
 }
@@ -373,7 +374,6 @@ void Map4x4::repeatQuadingCellsWithTwoPossibilities()
     {
         quadFound = false;
         quadCellsWithTwoPossibilities();
-        decrementGroupingPossibilities();
     } while (quadFound);
 }
 

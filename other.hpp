@@ -16,6 +16,16 @@ inline std::vector<std::vector<std::pair<int, int>>> quadsOffsets{
     {{0, 1}, {1, 1}, {1, 0}},
     {{1, 0}, {1, -1}, {0, -1}}};
 
+inline std::array<std::array<int, 4>, 14> properlySortedQuadsIndicesMap{{
+    {0, 1, 12, 13}, {12, 13, 0, 1},
+    {1, 2, 13, 14}, {13, 14, 1, 2},
+    {2, 3, 14, 15}, {14, 15, 2, 3},
+    {0, 3, 4, 7}, {3, 0, 7, 4},
+    {4, 7, 8, 11}, {7, 4, 11, 8},
+    {8, 11, 12, 15}, {11, 8, 15, 12},
+    {0, 3, 12, 15}, {15, 12, 3, 0}
+}};
+
 std::pair<int8_t, int8_t> getRealIndices(int8_t, int8_t);
 int8_t translateIndices(int8_t, int8_t);
 int getCellIndex(int, int, int);

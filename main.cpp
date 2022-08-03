@@ -632,16 +632,16 @@ int main()
     //     Value::one, Value::one, Value::one, Value::one,
     //     Value::one, Value::one, Value::one, Value::one});
 
-    // Map4x4 kmap;
-    // kmap.initializeElementsWithGivenValues({
-    //     Value::zero, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::zero, Value::one,
-    //     Value::one, Value::one, Value::one, Value::one});
-    // kmap.findGroups();
-    // kmap.findAlgebraicMinterms();
-    // kmap.printKmap();
-    // kmap.printEverything();
+    Map4x4 kmap;
+    kmap.initializeElementsWithGivenValues({
+        Value::zero, Value::zero, Value::one, Value::one,
+        Value::one, Value::one, Value::one, Value::one,
+        Value::one, Value::one, Value::zero, Value::one,
+        Value::one, Value::one, Value::one, Value::one});
+    kmap.findGroups();
+    kmap.findAlgebraicMinterms();
+    kmap.printKmap();
+    kmap.printEverything();
 
     // MapTest testObject;
     // testObject.runAllTests();
