@@ -46,6 +46,7 @@ public:
     void findGroups();
     KmapCell& getCell(int cellIndex) { return *kmap[cellIndex]; }
     void decrementGroupingPossibilities();
+    void decrementGroupingPossibilities2(std::vector<int>&);
     void setGroupingPossibilitiesToTwo();
     bool hasAllCellsWithSameValue();
     bool hasAllCellsGrouped();
@@ -77,6 +78,8 @@ private:
     bool quadFound{false};
     bool pairFound1{false};
     bool pairFound2{false};
+    bool findingQuadsWithSharingDone{false};
+    bool findingPairsWithSharingDone{false};
 
     void findHorizontalOctets();
     void findVerticalOctets();
