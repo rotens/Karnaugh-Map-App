@@ -38,6 +38,7 @@ public:
     void quadCellsWithTwoPossibilities();
     void quadCellsWithTwoPossibilitiesAndWithSharing();
     void repeatQuadingCellsWithTwoPossibilities();
+    void repeatQuadingCellsWithOnePossibility();
     void repeatPairingCellsWithTwoPossibilities();
     void repeatPairingCellsWithTwoPossibilitiesAndSharing();
     void repeatPairingCellsWithOnePossibility();
@@ -75,7 +76,8 @@ private:
     std::set<int> justGroupedCells;
     int ones{0};
     std::vector<std::string> algebraicMinterms;
-    bool quadFound{false};
+    bool quadFound1{false};
+    bool quadFound2{false};
     bool pairFound1{false};
     bool pairFound2{false};
     bool findingQuadsWithSharingDone{false};

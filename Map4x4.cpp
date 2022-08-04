@@ -176,6 +176,8 @@ void Map4x4::pairCells(int pairsNumber)
             pairFound1 = true;
             pairFound2 = true;
             decrementGroupingPossibilities();
+
+            std::cout << "PAIRING WITHOUT SHARING" << std::endl;
         }
     }
 }
@@ -320,7 +322,8 @@ void Map4x4::quadCellsWithOnePossibility()
         {
             squareQuadCells(cell);
         }
-
+        
+        quadFound1 = true;
         decrementGroupingPossibilities();
     }
 }
@@ -346,7 +349,7 @@ void Map4x4::quadCellsWithTwoPossibilities()
         if (cell->isDone()) continue;
     
         if (cell->getQuadsNumber() != 2) continue;
-        std::cout << "index " << cell->getIndex() << std::endl;
+        // std::cout << "index " << cell->getIndex() << std::endl;
         if (cell->getRectQuadsNumber() == 1 or cell->getRectQuadsNumber() == 2)
         {
             rectQuadCells(cell);
@@ -357,7 +360,9 @@ void Map4x4::quadCellsWithTwoPossibilities()
         }
 
         decrementGroupingPossibilities();
-        quadFound = true;
+        quadFound2 = true;
+
+        std::cout << "QUADING CELL= " << cell->getIndex() << std::endl;
     }
 }
 
@@ -365,9 +370,19 @@ void Map4x4::repeatQuadingCellsWithTwoPossibilities()
 {
     do
     {
-        quadFound = false;
+        quadFound2 = false;
         quadCellsWithTwoPossibilities();
-    } while (quadFound);
+        repeatQuadingCellsWithOnePossibility();
+    } while (quadFound2);
+}
+
+void Map4x4::repeatQuadingCellsWithOnePossibility()
+{
+    do
+    {
+        quadFound1 = false;
+        quadCellsWithOnePossibility();
+    } while (quadFound1);
 }
 
 void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
@@ -412,9 +427,10 @@ void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
                 addSquareQuadWithSharing(cell, squareIndex);
             }
         }
-       
+               std::cout << "QUADING CELL= " << cell->getIndex() << std::endl;
+
         decrementGroupingPossibilities();
-        quadFound = true;
+        quadFound2 = true;
     }
 }
 
@@ -453,24 +469,34 @@ void Map4x4::decrementGroupingPossibilities()
 
             if (cell->getQuadsNumber() > 1)
             {
-                if (cell->getSquareQuadsNumber() == 0)
-                {
-                    cell->removeRectQuadContainingGivenCellIndex(cellIndex);
-                    continue;
-                }
+                
+                cell->removeSquareQuadContainingGivenCellIndex(cellIndex);
+                cell->removeRectQuadContainingGivenCellIndex(cellIndex);
+                // if (cell->getSquareQuadsNumber() == 0)
+                // {
+                //     cell->removeRectQuadContainingGivenCellIndex(cellIndex);
+                //     continue;
+                // }
 
-                if (cell->getRectQuadsNumber() == 0)
-                {
-                    cell->removeSquareQuadContainingGivenCellIndex(cellIndex);
-                    continue;
-                }
+                // if (cell->getRectQuadsNumber() == 0)
+                // {
+                //     cell->removeSquareQuadContainingGivenCellIndex(cellIndex);
+                //     continue;
+                // }
 
-                // TODO
-                if (cell->getRectQuadsNumber() == 1 and cell->getSquareQuadsNumber() == 1)
-                {
-                    cell->removeSquareQuadContainingGivenCellIndex(cellIndex);
-                    continue;
-                }
+                // // TODO
+                // if (cell->getRectQuadsNumber() == 1 and cell->getSquareQuadsNumber() == 1)
+                // {
+                //     cell->removeSquareQuadContainingGivenCellIndex(cellIndex);
+                //     continue;
+                // }
+
+                // if (cell->getRectQuadsNumber() == 2 and cell->getSquareQuadsNumber() == 1)
+                // {
+
+                //     cell->removeSquareQuadContainingGivenCellIndex(cellIndex);
+                //     continue;
+                // }
 
                 // if (cell->getRectQuadsNumber() >= 1 and cell->getSquareQuadsNumber() >= 1)
             }
@@ -602,8 +628,11 @@ void Map4x4::findGroups()
 
     // STEP 3
     findPossibleQuads();
+
+    int iter = 1;
     while (true)
     {
+        std::cout << "ITERATION " << iter++ << "\n";
         quadCellsWithOnePossibility();
         if (hasAllCellsGrouped()) return;
 
@@ -649,7 +678,7 @@ bool Map4x4::hasAllCellsGrouped()
 {
     int groupedCells = std::count_if(
         kmap.begin(), kmap.end(), [](KmapCell* cell) { return cell->isDone(); });
-    return groupedCells == 16;
+    return groupedCells == ones;
 }
 
 bool Map4x4::hasCellsWithMoreThanTwoPossibilitiesToQuad()

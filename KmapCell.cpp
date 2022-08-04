@@ -240,7 +240,7 @@ void KmapCell::removeSquareQuadContainingGivenCellIndex(int cellIndex)
     for (auto quadIter = squareQuads.begin(); quadIter != squareQuads.end();)
     {
         auto iter = std::find(quadIter->begin(), quadIter->end(), cellIndex);
-        if (iter != quadIter->end() and squareQuads.size() > 1)
+        if (iter != quadIter->end() and this->getQuadsNumber() > 1)
         {
             quadIter = squareQuads.erase(quadIter);
             --this->squareQuadsNumber;
@@ -257,7 +257,7 @@ void KmapCell::removeRectQuadContainingGivenCellIndex(int cellIndex)
     for (auto quadIter = rectQuads.begin(); quadIter != rectQuads.end();)
     {
         auto iter = std::find(quadIter->begin(), quadIter->end(), cellIndex);
-        if (iter != quadIter->end() and rectQuads.size() > 1)
+        if (iter != quadIter->end() and this->getQuadsNumber() > 1)
         {
             quadIter = rectQuads.erase(quadIter);
             --this->rectQuadsNumber;
