@@ -14,12 +14,6 @@ public:
     KmapCell(Map4x4& kmapObject, int cellIndex);
     void setCellValue(Value cellValue) { this->cellValue = cellValue; }
     Value getCellValue() { return this->cellValue; }
-    void decrementPairsNumber() { --this->pairsNumber; }
-    void decrementSquareQuadsNumber() { --this->squareQuadsNumber; }
-    void decrementRectQuadsNumber() { --this->rectQuadsNumber; }
-    void incrementPairsNumber() { ++this->pairsNumber; }
-    void incrementSquareQuadsNumber() { ++this->squareQuadsNumber; }
-    void incrementRectQuadsNumber() { ++this->rectQuadsNumber; }
     void setDone() { done = true; }
     bool isDone() { return this->done; }
     int getPairsNumber() { return this->pairsNumber; }
@@ -44,7 +38,6 @@ public:
     void setRectQuadsNumber(int number) { this->rectQuadsNumber = number; }
     void findPairs();
     void findPairsWithSharing();
-    void findPairsWithoutSharing();
     void findSquareQuads();
     void findSquareQuadsWithSharing();
     void findRectQuads();
@@ -56,6 +49,7 @@ public:
     static int getIndexOfQuadWithMinimalSharing(std::vector<int>&);
     int getIndexOfRectQuadWithMinimalSharing();
     int getIndexOfSquareQuadWithMinimalSharing();
+    void cleanQuadsWithSharing();
 
     friend class MapTest;
 

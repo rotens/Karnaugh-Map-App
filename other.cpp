@@ -34,3 +34,10 @@ int getCellIndex(int cellIndex, int rowOffset, int colOffset)
 
     return col + row*4;
 }
+
+int getRealIndex(int startIndex)
+{
+    int col = startIndex % 4;
+    int row = startIndex / 4;
+    return (col + 1) % 4 + row*4;
+}

@@ -58,32 +58,6 @@ void KmapCell::findPairsWithSharing()
     }
 }
 
-void KmapCell::findPairsWithoutSharing()
-{
-    for (const auto offset : {-1, 1})
-    {
-        int neighbourCellIndex = getCellIndex(this->cellIndex, offset, 0);
-        Value cellValue = kmapObject.getCellValue(neighbourCellIndex);
-        bool cellDone = kmapObject.isCellDone(neighbourCellIndex);
-
-        if (cellValue == Value::one and not cellDone)
-        {
-            pairs.push_back(neighbourCellIndex);
-            ++this->numberOfPairsWithSharing;
-        }
-
-        neighbourCellIndex = getCellIndex(this->cellIndex, 0, offset);
-        cellValue = kmapObject.getCellValue(neighbourCellIndex);
-
-        if (cellValue == Value::one)
-        {
-            pairsWithSharing.push_back(neighbourCellIndex);
-            ++this->numberOfPairsWithSharing;
-        }
-    }
-}
-
-
 void KmapCell::findSquareQuads()
 {
     std::vector<int> quad; 
@@ -267,6 +241,16 @@ void KmapCell::removeRectQuadContainingGivenCellIndex(int cellIndex)
             ++quadIter;
         }
     }
+}
+
+void KmapCell::cleanQuadsWithSharing()
+{
+    rectQuadsWithSharing.clear();
+    squareQuadsWithSharing.clear();
+    rectQuadsSharingCounters.clear();
+    squareQuadsSharingCounters.clear();
+    this->numberOfRectQuadsWithSharing = 0;
+    this->numberOfSquareQuadsWithSharing = 0;
 }
 
 /* static */

@@ -29,3 +29,4 @@ inline std::array<std::array<int, 4>, 14> properlySortedQuadsIndicesMap{{
 std::pair<int8_t, int8_t> getRealIndices(int8_t, int8_t);
 int8_t translateIndices(int8_t, int8_t);
 int getCellIndex(int, int, int);
+int getRealIndex(int);

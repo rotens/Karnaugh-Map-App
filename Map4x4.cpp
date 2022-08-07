@@ -6,15 +6,6 @@
 
 #define __TEST__ std::cout<<"TEST"<<std::endl;
 
-int getRealIndex(int startIndex)
-{
-    int col = startIndex % 4;
-    int row = startIndex / 4;
-    return (col + 1) % 4 + row*4;
-}
-
-// MAP 4x4
-
 Map4x4::Map4x4()
 {
     int i = 0;
@@ -177,7 +168,7 @@ void Map4x4::pairCells(int pairsNumber)
             pairFound2 = true;
             decrementGroupingPossibilities();
 
-            std::cout << "PAIRING WITHOUT SHARING" << std::endl;
+            std::cout << "PAIRING WITHOUT SHARING AND " << pairsNumber << " POSSIBILITIES" << std::endl;
         }
     }
 }
@@ -199,6 +190,8 @@ void Map4x4::pairCellsWithSharing()
             pairs.push_back(std::move(pair));
 
             decrementGroupingPossibilities();
+
+            std::cout << "PAIRING WITH SHARING AND 2 POSSIBILITIES" << std::endl;
         }  
     }
 }
@@ -325,6 +318,8 @@ void Map4x4::quadCellsWithOnePossibility()
         
         quadFound1 = true;
         decrementGroupingPossibilities();
+
+        std::cout << "QUADING CELL WITH 1 POSSIBILITY = " << cell->getIndex() << std::endl;
     }
 }
 
@@ -361,8 +356,10 @@ void Map4x4::quadCellsWithTwoPossibilities()
 
         decrementGroupingPossibilities();
         quadFound2 = true;
+        
 
-        std::cout << "QUADING CELL= " << cell->getIndex() << std::endl;
+        std::cout << "QUADING CELL WITH 2 POSSIBILITIES = " << cell->getIndex() << std::endl;
+        break;
     }
 }
 
@@ -394,6 +391,9 @@ void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
         if (cell->getNumberOfQuadsWithSharing() != 2) continue;
         
         // cell->setDone();
+        // std::cout << "Rect Quads with sharing: " << cell->getNumberOfRectQuadsWithSharing() << std::endl;
+        // std::cout << "Square Quads with sharing: " << cell->getNumberOfSquareQuadsWithSharing() << std::endl;
+        
 
         if (cell->getNumberOfRectQuadsWithSharing() == 2)
         {
@@ -413,11 +413,6 @@ void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
             auto squareIndex = cell->getIndexOfSquareQuadWithMinimalSharing() - 1;
             auto squareCounter = cell->getSquareQuadsSharingCounter(squareIndex);
 
-            // std::cout << "Rect index " << rectIndex << std::endl;
-            // std::cout << "Rect counter " << rectCounter << std::endl;
-            // std::cout << "Square index " << squareIndex << std::endl;
-            // std::cout << "Square counter " << squareCounter << std::endl;
-
             if (rectCounter <= squareCounter)
             {
                 addRectQuadWithSharing(cell, rectIndex);
@@ -427,7 +422,7 @@ void Map4x4::quadCellsWithTwoPossibilitiesAndWithSharing()
                 addSquareQuadWithSharing(cell, squareIndex);
             }
         }
-               std::cout << "QUADING CELL= " << cell->getIndex() << std::endl;
+        std::cout << "QUADING CELL WITH 2 POSSIBILITIES AND SHARING = " << cell->getIndex() << std::endl;
 
         decrementGroupingPossibilities();
         quadFound2 = true;

@@ -6,6 +6,7 @@
 #include "Map4x4.hpp"
 #include "Map1x2.hpp"
 #include "Map2x2.hpp"
+#include "Map2x4.hpp"
 #include "MapInterface.hpp"
 #include "KmapCell.hpp"
 
@@ -39,6 +40,8 @@ private:
     void assertVectorsEqual(std::vector<T>&, std::vector<T>&);
     void testFindSquareQuadsWithSharing();
     void testFindQuadsWithSharing();
+
+    void testFindQuads_Map2x4();
 };
 
 void MapTest::testHorizontalOctetFinding()
@@ -296,7 +299,21 @@ void MapTest::testFindQuadsWithSharing()
     std::cout << __func__ << " ";
     assertVectorsEqual<int>(quad, kmap.getRectQuads()[0]);
     // kmap.printEverything();
-}   
+}
+
+void MapTest::testFindQuads_Map2x4()
+{
+    Map2x4 kmap;
+    kmap.initializeElementsWithGivenValues({
+        Value::one, Value::one, Value::one, Value::one,
+        Value::one, Value::one, Value::one, Value::zero});
+    kmap.findRectQuads();
+    __TEST__;
+    kmap.findSquareQuads();
+    __TEST__;
+    kmap.printRectQuads();
+    kmap.printSquareQuads();
+}
 
 template <typename T>
 void MapTest::assertEqual(T a, T b)
@@ -357,8 +374,10 @@ void MapTest::runAllTests()
     // testRemovingSquareQuads();
     // testGroupFinding();
     // testFindingMintermsOfSingleGroup();
-    testFindSquareQuadsWithSharing();
-    testFindQuadsWithSharing();
+    // testFindSquareQuadsWithSharing();
+    // testFindQuadsWithSharing();
+    
+    testFindQuads_Map2x4();
 }
 
 std::string colorize(std::string str, int color) 
@@ -626,12 +645,6 @@ int main()
     // MapInterface mapInterface(font, kmapObject);
     // mapInterface.loop();
 
-    // kmap.initializeElementsWithGivenValues({
-    //     Value::one, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::one, Value::one});
-
     // Map4x4 kmap;
     // kmap.initializeElementsWithGivenValues({
     //     Value::zero, Value::zero, Value::one, Value::one,
@@ -643,19 +656,30 @@ int main()
     // kmap.printKmap();
     // kmap.printEverything();
 
-    Map4x4 kmap;
-    kmap.initializeElementsWithGivenValues({
-        Value::zero, Value::one, Value::one, Value::one,
-        Value::one, Value::one, Value::one, Value::one,
-        Value::one, Value::one, Value::zero, Value::one,
-        Value::one, Value::one, Value::one, Value::one});
-    kmap.findGroups();
-    kmap.findAlgebraicMinterms();
-    kmap.printKmap();
-    kmap.printEverything();
+    // Map4x4 kmap;
+    // kmap.initializeElementsWithGivenValues({
+    //     Value::one, Value::one, Value::one, Value::one,
+    //     Value::zero, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::zero, Value::one});
+    // kmap.findGroups();
+    // kmap.findAlgebraicMinterms();
+    // kmap.printKmap();
+    // kmap.printEverything();
 
-    // MapTest testObject;
-    // testObject.runAllTests();
+    // Map4x4 kmap;
+    // kmap.initializeElementsWithGivenValues({
+    //     Value::zero, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::zero, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one});
+    // kmap.findGroups();
+    // kmap.findAlgebraicMinterms();
+    // kmap.printKmap();
+    // kmap.printEverything();
+
+    MapTest testObject;
+    testObject.runAllTests();
 
     // printKmap("0111111111111110");
     // testAllFunctionValuesCombinations();
@@ -664,26 +688,6 @@ int main()
     //     Value::zero, Value::zero, Value::zero, Value::zero,
     //     Value::zero, Value::zero, Value::zero, Value::zero,
     //     Value::zero, Value::zero, Value::zero, Value::zero});
-
-
-    // testOneCombination({
-    //     Value::zero, Value::zero, Value::one, Value::one,
-    //     Value::zero, Value::one, Value::one, Value::zero,
-    //     Value::zero, Value::one, Value::one, Value::zero,
-    //     Value::one, Value::one, Value::zero, Value::zero});
-    // testOneCombination({
-    //     Value::zero, Value::one, Value::zero, Value::zero,
-    //     Value::zero, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::one, Value::zero,
-    //     Value::zero, Value::zero, Value::one, Value::zero});
- 
-    // std::bitset<4> x(0);
-    // std::cout << calculateSumOfProducts({"A!C!D", "!AC!D", "BD"}, x) << std::endl;
-    
-
-    // testAllFunctionValuesCombinations();
-
-
 
     return 0;
 }
