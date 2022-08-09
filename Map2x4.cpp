@@ -1,6 +1,7 @@
 #include "Map2x4.hpp"
 #include "Kmap2x4Cell.hpp"
 #include <numeric>
+#include <string>
 
 Map2x4::Map2x4()
 {
@@ -33,7 +34,7 @@ void Map2x4::findSquareQuads()
 
         for (const auto offset : {1, 4, 5})
         {
-            if (kmap[getRealIndex(cellIndex + offset)]->getCellValue() == Value::one)
+            if (kmap[getRealIndex_Map2x4(cellIndex, offset)]->getCellValue() == Value::one)
             {
                 ++oneValues;
             }
@@ -51,7 +52,7 @@ void Map2x4::findSquareQuads()
 
         for (const auto offset : {1, 4, 5})
         {   
-            quad.push_back(getRealIndex(cellIndex + offset));
+            quad.push_back(getRealIndex_Map2x4(cellIndex, offset));
         }
 
         squareQuads.push_back(std::move(quad));
@@ -86,8 +87,159 @@ void Map2x4::findRectQuads()
         }
         std::vector<int> quad(4);
         std::iota(quad.begin(), quad.end(), kmap[cellIndex]->getIndex());
-        squareQuads.push_back(std::move(quad));
+        rectQuads.push_back(std::move(quad));
         oneValues = 0;
+    }
+}
+
+void Map2x4::findPossiblePairs()
+{
+    for (auto& cell : kmap)
+    {   
+        if (not cell->isDone() and cell->getCellValue() == Value::one)
+        {
+            cell->findPairs();
+        }
+    }
+}
+
+void Map2x4::pairCells(int pairsNumber)
+{
+    for (auto& cell : kmap)
+    {
+        if (cell->isDone()) continue;
+
+        if (cell->getPairsNumber() == pairsNumber)
+        {
+            cell->setDone();
+            int index = pairsNumber == 1 ? 0 : 1;
+            int secondCellIndex = cell->getPairs()[index];
+            kmap[secondCellIndex]->setDone();
+            
+            std::vector<int> pair{cell->getIndex(), secondCellIndex};   
+            justGroupedCells.insert({cell->getIndex(), secondCellIndex});         
+            pairs.push_back(std::move(pair));
+
+            decrementGroupingPossibilities();
+        }
+    }
+}
+
+void Map2x4::decrementGroupingPossibilities()
+{
+    for (auto cellIndex : justGroupedCells)
+    {
+        for (auto& cell : kmap)
+        {
+            if (cell->isDone() or cell->getCellValue() == Value::zero) 
+                continue;
+
+            if (cell->getPairsNumber() > 1)
+            {
+                cell->removePairContainingGivenCellIndex(cellIndex);
+            }
+        } 
+    }
+
+    justGroupedCells.clear();
+}
+
+void Map2x4::findSingleGroups()
+{
+    for (auto& cell : kmap)
+    {   
+        if (cell->isDone() or cell->getCellValue() == Value::zero)
+        {
+            continue;
+        }
+
+        if (not cell->hasPairs())
+        {
+            singleGroups.push_back(cell->getIndex());
+        }
+    }
+}
+
+void Map2x4::findAlgebraicMintermOfSingleGroup(int cellIndex)
+{
+    std::string minterm = "";
+    int row = cellIndex / 4;
+    int col = cellIndex % 4;
+    std::string argValues = grayCode[col] + std::to_string(row);
+
+    for (int i = 0; i < 4; ++i)
+    {   
+        if (argValues[i] == '1')
+        {
+            minterm += variables[i];
+        }
+        else
+        {
+            minterm += "!" + variables[i];
+        }
+    }
+
+    algebraicMinterms.push_back(std::move(minterm));
+}
+
+void Map2x4::findAlgebraicMintermsForGivenGroup(const Groups& groups)
+{
+    std::string product;
+    std::vector<std::string> cellsBinaryNumbers;
+
+    for (const auto& group : groups)
+    {
+        for (const auto& cell : group)
+        {
+            int row = cell / 4;
+            int col = cell % 4;
+            cellsBinaryNumbers.push_back(grayCode[col] + std::to_string(row));
+        }
+
+        product = getProduct(cellsBinaryNumbers);
+        algebraicMinterms.push_back(product);
+        cellsBinaryNumbers.clear();
+    }
+}
+
+std::string Map2x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
+{
+    int ones = 0;
+    std::string product = "";
+
+    for (int i = 0; i < 3; ++i)
+    {
+        for (const auto& value : cellsBinaryNumbers)
+        {
+            if (value[i] == '1')
+                ++ones; 
+        }
+
+        if (ones == cellsBinaryNumbers.size())
+        {
+            product += variables[i];
+            ones = 0;
+            continue;
+        }
+
+        if (ones == 0)
+        {
+            product += '!' + variables[i];
+        }
+
+        ones = 0;
+    }
+    
+    return product;
+}
+
+void Map2x4::findAlgebraicMinterms()
+{
+    findAlgebraicMintermsForGivenGroup(pairs);
+    
+    for (const auto cellIndex : singleGroups)
+    {
+        findAlgebraicMintermOfSingleGroup(cellIndex);
     }
 }
 
@@ -127,4 +279,21 @@ void Map2x4::printRectQuads()
         }
         std::cout << "\n";
     }
+}
+
+void Map2x4::printPairs()
+{
+    for (const auto& pair : pairs)
+    {
+        for (const auto& elem : pair)
+        {
+            std::cout << elem << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+Value Map2x4::getCellValue(int cellIndex)
+{ 
+    return kmap[cellIndex % 8]->getCellValue(); 
 }

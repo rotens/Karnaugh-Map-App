@@ -785,11 +785,6 @@ void Map4x4::findAlgebraicMintermsForGivenGroup(const Groups& groups)
             cellsBinaryNumbers.push_back(grayCode[col] + grayCode[row]);
         }
 
-        // for (const auto& cell : cellsBinaryNumbers)
-        // {
-        //     std::cout << cell << std::endl;
-        // }
-
         product = getProduct(cellsBinaryNumbers);
         algebraicMinterms.push_back(product);
         cellsBinaryNumbers.clear();

@@ -2,6 +2,7 @@
 #include <bitset>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <SFML/Graphics.hpp>
 #include "Map4x4.hpp"
 #include "Map1x2.hpp"
@@ -42,6 +43,8 @@ private:
     void testFindQuadsWithSharing();
 
     void testFindQuads_Map2x4();
+    void testFindPairs_Map2x4();
+    void testGetCellIndex_Map2x4();
 };
 
 void MapTest::testHorizontalOctetFinding()
@@ -306,13 +309,39 @@ void MapTest::testFindQuads_Map2x4()
     Map2x4 kmap;
     kmap.initializeElementsWithGivenValues({
         Value::one, Value::one, Value::one, Value::one,
-        Value::one, Value::one, Value::one, Value::zero});
+        Value::one, Value::zero, Value::one, Value::one});
     kmap.findRectQuads();
-    __TEST__;
     kmap.findSquareQuads();
-    __TEST__;
-    kmap.printRectQuads();
-    kmap.printSquareQuads();
+
+    std::vector<int> quad1{0, 1, 2, 3};
+    std::vector<int> quad2{2, 3, 6, 7};
+    std::vector<int> quad3{3, 0, 7, 4};
+
+    std::cout << __func__ << " ";
+    assertVectorsEqual<int>(kmap.getRectQuads()[0], quad1);
+    assertVectorsEqual<int>(kmap.getSquareQuads()[0], quad2);
+    assertVectorsEqual<int>(kmap.getSquareQuads()[1], quad3);
+    // kmap.printRectQuads();
+    // kmap.printSquareQuads();
+}
+
+void MapTest::testFindPairs_Map2x4()
+{
+    Map2x4 kmap;
+    kmap.initializeElementsWithGivenValues({
+        Value::one, Value::zero, Value::one, Value::one,
+        Value::one, Value::one, Value::one, Value::zero});
+    kmap.findPossiblePairs();
+    kmap.pairCells(2);
+    kmap.pairCells(1);
+    kmap.printPairs();
+}
+
+void MapTest::testGetCellIndex_Map2x4()
+{
+    std::cout << getCellIndex_Map2x4(0, 0, 1) << std::endl;
+    std::cout << getCellIndex_Map2x4(0, 0, -1) << std::endl;
+    std::cout << getCellIndex_Map2x4(0, 1, 0) << std::endl;
 }
 
 template <typename T>
@@ -378,6 +407,8 @@ void MapTest::runAllTests()
     // testFindQuadsWithSharing();
     
     testFindQuads_Map2x4();
+    testFindPairs_Map2x4();
+    // testGetCellIndex_Map2x4();
 }
 
 std::string colorize(std::string str, int color) 

@@ -21,7 +21,7 @@ public:
     std::vector<int>& getPairs() { return this->pairs; }
     void findPairs();
     void removePairContainingGivenCellIndex(int);
-    bool hasPairs();
+    bool hasPairs() { return not pairs.empty(); }
 
     friend class MapTest;
 

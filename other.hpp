@@ -26,7 +26,7 @@ inline std::array<std::array<int, 4>, 14> properlySortedQuadsIndicesMap{{
     {0, 3, 12, 15}, {15, 12, 3, 0}
 }};
 
-std::pair<int8_t, int8_t> getRealIndices(int8_t, int8_t);
-int8_t translateIndices(int8_t, int8_t);
 int getCellIndex(int, int, int);
+int getCellIndex_Map2x4(int, int, int);
 int getRealIndex(int);
+int getRealIndex_Map2x4(int, int);
