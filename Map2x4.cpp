@@ -1,5 +1,6 @@
 #include "Map2x4.hpp"
 #include "Kmap2x4Cell.hpp"
+#include <algorithm>
 #include <numeric>
 #include <string>
 
@@ -19,6 +20,45 @@ Map2x4::~Map2x4()
     {
         delete elem;
     }
+}
+
+void Map2x4::findGroups()
+{
+    if (ones == 8)
+    {
+        return;
+    }
+
+    if (ones == 0)
+    {
+        return;
+    }
+
+    findSquareQuads();
+    if (hasAllCellsGrouped()) return;
+
+    findRectQuads();
+    if (hasAllCellsGrouped()) return;
+
+    findPossiblePairs();
+    pairCells(1);
+    if (hasAllCellsGrouped()) return;
+
+    pairCells(1);
+    if (hasAllCellsGrouped()) return;
+
+    pairCells(2);
+    pairCells(1);
+    if (hasAllCellsGrouped()) return;
+
+    findSingleGroups();
+}
+
+bool Map2x4::hasAllCellsGrouped()
+{
+    int groupedCells = std::count_if(
+        kmap.begin(), kmap.end(), [](Kmap2x4Cell* cell) { return cell->isDone(); });
+    return groupedCells == ones;
 }
 
 void Map2x4::findSquareQuads()
@@ -120,7 +160,9 @@ void Map2x4::pairCells(int pairsNumber)
             justGroupedCells.insert({cell->getIndex(), secondCellIndex});         
             pairs.push_back(std::move(pair));
 
+            pairFound = true;
             decrementGroupingPossibilities();
+            if (pairsNumber == 2) break;
         }
     }
 }
@@ -291,6 +333,24 @@ void Map2x4::printPairs()
         }
         std::cout << "\n";
     }
+}
+
+void Map2x4::printKmap()
+{
+    for (int i = 0; i < kmap.size(); ++i)
+    {
+         std::cout << static_cast<char>(kmap[i]->getCellValue()) << " ";
+         if (i % 4 == 3) std::cout << "\n";
+    }
+}
+
+void Map2x4::printAlgebraicMinterms()
+{
+    for (const auto& product : algebraicMinterms)
+    {
+        std::cout << product << "+";
+    }
+    std::cout << std::endl;
 }
 
 Value Map2x4::getCellValue(int cellIndex)

@@ -331,10 +331,11 @@ void MapTest::testFindPairs_Map2x4()
     kmap.initializeElementsWithGivenValues({
         Value::one, Value::zero, Value::one, Value::one,
         Value::one, Value::one, Value::one, Value::zero});
-    kmap.findPossiblePairs();
-    kmap.pairCells(2);
-    kmap.pairCells(1);
+    kmap.findGroups();
+    kmap.findAlgebraicMinterms();
+    kmap.printKmap();
     kmap.printPairs();
+    kmap.printAlgebraicMinterms();
 }
 
 void MapTest::testGetCellIndex_Map2x4()
