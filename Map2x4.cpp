@@ -89,10 +89,13 @@ void Map2x4::findSquareQuads()
         std::vector<int> quad;
         quad.reserve(4);
         quad.push_back(kmap[cellIndex]->getIndex());
+        kmap[cellIndex]->setDone();
 
         for (const auto offset : {1, 4, 5})
         {   
-            quad.push_back(getRealIndex_Map2x4(cellIndex, offset));
+            int index = getRealIndex_Map2x4(cellIndex, offset);
+            quad.push_back(index);
+            kmap[index]->setDone();
         }
 
         squareQuads.push_back(std::move(quad));
@@ -125,8 +128,10 @@ void Map2x4::findRectQuads()
             oneValues = 0;
             continue;
         }
+        
         std::vector<int> quad(4);
         std::iota(quad.begin(), quad.end(), kmap[cellIndex]->getIndex());
+        std::for_each(quad.begin(), quad.end(), [this](int index) { kmap[index]->setDone(); });
         rectQuads.push_back(std::move(quad));
         oneValues = 0;
     }

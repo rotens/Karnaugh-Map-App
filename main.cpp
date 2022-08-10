@@ -435,9 +435,10 @@ std::string colorize(std::string str, int color)
     }
 }
 
+template<int N>
 int convertVariableToIndex(char var)
 {
-    return 3 - (var - 65);
+    return N - (var - 65);
 }
 
 char convertIndexToVariable(int index)
@@ -460,12 +461,12 @@ bool calculateProduct(const std::string& product, const std::bitset<4>& argument
         
         if (negation)
         {
-            calculatedProduct = calculatedProduct && !arguments[convertVariableToIndex(variable)];
+            calculatedProduct = calculatedProduct && !arguments[convertVariableToIndex<3>(variable)];
             negation = false;
         }
         else
         {
-            calculatedProduct = calculatedProduct && arguments[convertVariableToIndex(variable)];
+            calculatedProduct = calculatedProduct && arguments[convertVariableToIndex<3>(variable)];
         }
     }
 
@@ -488,12 +489,12 @@ bool calculateProduct2(const std::string& product, const std::bitset<N>& argumen
         
         if (negation)
         {
-            calculatedProduct = calculatedProduct && !arguments[convertVariableToIndex(variable)];
+            calculatedProduct = calculatedProduct && !arguments[convertVariableToIndex<N-1>(variable)];
             negation = false;
         }
         else
         {
-            calculatedProduct = calculatedProduct && arguments[convertVariableToIndex(variable)];
+            calculatedProduct = calculatedProduct && arguments[convertVariableToIndex<N-1>(variable)];
         }
     }
 
@@ -516,10 +517,11 @@ template<int N>
 bool calculateSumOfProducts2(const std::vector<std::string>& products, const std::bitset<N>& arguments)
 {
     bool sum = false;
-
+    // std::cout << "calculate sum of products" << std::endl;
     for (const auto& product : products)
     {
         sum = sum || calculateProduct2<N>(product, arguments);
+        // std::cout << sum << std::endl;
     }
 
     return sum;
@@ -693,13 +695,15 @@ void testAllFunctionValuesCombinations_Map2x4()
     int counter = 0;
 
     // for (int i = 1; i < 256-1; ++i)
-    for (int i = 1; i < 2; ++i)
+    for (int i = 254; i <= 255-1; ++i)
     {
         std::bitset<8> valuesCombination(i);
         Map2x4 kmapObject;
         initializeKmap2x4WithBitset(valuesCombination, kmapObject);
         kmapObject.findGroups();
         kmapObject.findAlgebraicMinterms();
+        kmapObject.printKmap();
+        kmapObject.printAlgebraicMinterms();
         const auto& minterms = kmapObject.getAlgebraicMinterms();
 
         if (!isMinimizationCorrect2<8, 3>(minterms, valuesCombination, argumentsCombinations))
@@ -883,11 +887,11 @@ int main()
     // kmap.printAlgebraicMinterms();
     // kmap.printEverything();
 
-    // MapTest testObject;
-    // testObject.runAllTests();
+    MapTest testObject;
+    testObject.runAllTests();
 
     // printKmap("0111111111111110");
-    testAllFunctionValuesCombinations_Map2x4();
+    // testAllFunctionValuesCombinations_Map2x4();
     // testAllFunctionValuesCombinations();
     // testOneCombination({
     //     Value::one, Value::zero, Value::zero, Value::zero,
