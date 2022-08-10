@@ -209,7 +209,7 @@ void Map2x4::findAlgebraicMintermOfSingleGroup(int cellIndex)
     int col = cellIndex % 4;
     std::string argValues = grayCode[col] + std::to_string(row);
 
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 3; ++i)
     {   
         if (argValues[i] == '1')
         {
