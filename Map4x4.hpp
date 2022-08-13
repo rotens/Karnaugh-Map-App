@@ -58,6 +58,7 @@ public:
     void addRectQuadWithSharing(KmapCell*, int);
     void addSquareQuadWithSharing(KmapCell*, int);
     void insertJustGroupedCells(std::vector<int>&);
+    void reset();
 
     friend class MapTest;
     

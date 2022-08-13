@@ -269,3 +269,22 @@ int KmapCell::getIndexOfSquareQuadWithMinimalSharing()
 {
     return getIndexOfQuadWithMinimalSharing(squareQuadsSharingCounters);
 }
+
+void KmapCell::reset()
+{
+    done = false;
+    pairsNumber = 0;
+    squareQuadsNumber = 0;
+    rectQuadsNumber = 0;
+    numberOfPairsWithSharing = 0;
+    numberOfSquareQuadsWithSharing = 0;
+    numberOfRectQuadsWithSharing = 0;
+    squareQuadsSharingCounters.clear();
+    rectQuadsSharingCounters.clear();
+    pairs.clear();
+    squareQuads.clear();
+    rectQuads.clear();
+    pairsWithSharing.clear();
+    squareQuadsWithSharing.clear();
+    rectQuadsWithSharing.clear();
+}

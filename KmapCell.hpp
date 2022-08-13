@@ -50,6 +50,7 @@ public:
     int getIndexOfRectQuadWithMinimalSharing();
     int getIndexOfSquareQuadWithMinimalSharing();
     void cleanQuadsWithSharing();
+    void reset();
 
     friend class MapTest;
 

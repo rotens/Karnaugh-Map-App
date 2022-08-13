@@ -42,6 +42,7 @@ private:
     void assertVectorsEqual(std::vector<T>&, std::vector<T>&);
     void testFindSquareQuadsWithSharing();
     void testFindQuadsWithSharing();
+    void testGetSortedQuad();
 
     void testFindQuads_Map2x4();
     void testFindPairs_Map2x4();
@@ -355,6 +356,18 @@ void MapTest::testGetCellIndex_Map2x4()
     std::cout << getCellIndex_Map2x4(0, 1, 0) << std::endl;
 }
 
+void MapTest::testGetSortedQuad()
+{
+    std::vector<int> quad{3, 2, 14, 15};
+    const auto& sortedQuad = getSortedQuad(quad);
+    for (const auto index : sortedQuad)
+    {
+        std::cout << index << " ";
+    }
+
+    std::cout << std::endl;
+}
+
 template <typename T>
 void MapTest::assertEqual(T a, T b)
 {
@@ -416,9 +429,10 @@ void MapTest::runAllTests()
     // testFindingMintermsOfSingleGroup();
     // testFindSquareQuadsWithSharing();
     // testFindQuadsWithSharing();
+    testGetSortedQuad();
     
-    testFindQuads_Map2x4();
-    testFindPairs_Map2x4();
+    // testFindQuads_Map2x4();
+    // testFindPairs_Map2x4();
     // testGetCellIndex_Map2x4();
 }
 
@@ -446,35 +460,8 @@ char convertIndexToVariable(int index)
     return index + 65;
 }
 
-bool calculateProduct(const std::string& product, const std::bitset<4>& arguments)
-{
-    bool calculatedProduct = true;
-    bool negation = false;
-
-    for (const auto variable : product)
-    { 
-        if (variable == '!')
-        {
-            negation = true;
-            continue;
-        }
-        
-        if (negation)
-        {
-            calculatedProduct = calculatedProduct && !arguments[convertVariableToIndex<3>(variable)];
-            negation = false;
-        }
-        else
-        {
-            calculatedProduct = calculatedProduct && arguments[convertVariableToIndex<3>(variable)];
-        }
-    }
-
-    return calculatedProduct;
-}
-
 template<int N>
-bool calculateProduct2(const std::string& product, const std::bitset<N>& arguments)
+bool calculateProduct(const std::string& product, const std::bitset<N>& arguments)
 {
     bool calculatedProduct = true;
     bool negation = false;
@@ -501,26 +488,14 @@ bool calculateProduct2(const std::string& product, const std::bitset<N>& argumen
     return calculatedProduct;
 }
 
-bool calculateSumOfProducts(const std::vector<std::string>& products, const std::bitset<4>& arguments)
-{
-    bool sum = false;
-
-    for (const auto& product : products)
-    {
-        sum = sum || calculateProduct(product, arguments);
-    }
-
-    return sum;
-}
-
 template<int N>
-bool calculateSumOfProducts2(const std::vector<std::string>& products, const std::bitset<N>& arguments)
+bool calculateSumOfProducts(const std::vector<std::string>& products, const std::bitset<N>& arguments)
 {
     bool sum = false;
     // std::cout << "calculate sum of products" << std::endl;
     for (const auto& product : products)
     {
-        sum = sum || calculateProduct2<N>(product, arguments);
+        sum = sum || calculateProduct<N>(product, arguments);
         // std::cout << sum << std::endl;
     }
 
@@ -583,33 +558,15 @@ std::vector<std::bitset<3>> createArgumentsCombinations_Map2x4()
     return argumentsCombinations;
 }
 
-bool isMinimizationCorrect(
-    const std::vector<std::string>& minterms, 
-    const std::bitset<16>& functionValues, 
-    const std::vector<std::bitset<4>>& argumentsCombinations)
-{
-    for (int i = 0; i < functionValues.size(); ++i)
-    {
-        int sum = calculateSumOfProducts(minterms, argumentsCombinations[i]);
-        // std::cout << sum << std::endl;
-        if (sum != functionValues[i])
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 template<int N, int M>
-bool isMinimizationCorrect2(
+bool isMinimizationCorrect(
     const std::vector<std::string>& minterms, 
     const std::bitset<N>& functionValues, 
     const std::vector<std::bitset<M>>& argumentsCombinations)
 {
     for (int i = 0; i < functionValues.size(); ++i)
     {
-        int sum = calculateSumOfProducts2<M>(minterms, argumentsCombinations[i]);
+        int sum = calculateSumOfProducts<M>(minterms, argumentsCombinations[i]);
         std::cout << sum << std::endl;
         if (sum != functionValues[i])
         {
@@ -620,28 +577,8 @@ bool isMinimizationCorrect2(
     return true;
 }
 
-void writeValuesCombinationToFile(
-    std::ofstream& file, 
-    const std::bitset<16>& values, 
-    const std::vector<std::string>& minterms)
-{
-    for (int i = 0; i < 16; ++i)
-    {
-        file << values[i];
-    }
-
-    file << " ";
-
-    for (const auto& minterm : minterms)
-    {
-        file << minterm;
-    }
-
-    file << "\n";
-}
-
 template<int N>
-void writeValuesCombinationToFile2(
+void writeValuesCombinationToFile(
     std::ofstream& file, 
     const std::bitset<N>& values, 
     const std::vector<std::string>& minterms)
@@ -677,9 +614,9 @@ void testAllFunctionValuesCombinations()
         kmapObject.findAlgebraicMinterms();
         const auto& minterms = kmapObject.getAlgebraicMinterms();
 
-        if (!isMinimizationCorrect2<16, 4>(minterms, valuesCombination, argumentsCombinations))
+        if (!isMinimizationCorrect<16, 4>(minterms, valuesCombination, argumentsCombinations))
         {
-            writeValuesCombinationToFile2<16>(output, valuesCombination, minterms);
+            writeValuesCombinationToFile<16>(output, valuesCombination, minterms);
             ++counter;
         } 
     }
@@ -706,9 +643,9 @@ void testAllFunctionValuesCombinations_Map2x4()
         kmapObject.printAlgebraicMinterms();
         const auto& minterms = kmapObject.getAlgebraicMinterms();
 
-        if (!isMinimizationCorrect2<8, 3>(minterms, valuesCombination, argumentsCombinations))
+        if (!isMinimizationCorrect<8, 3>(minterms, valuesCombination, argumentsCombinations))
         {
-            writeValuesCombinationToFile2<8>(output, valuesCombination, minterms);
+            writeValuesCombinationToFile<8>(output, valuesCombination, minterms);
             ++counter;
         } 
     }
@@ -745,7 +682,7 @@ void testOneCombination(const std::vector<Value>& values)
     kmapObject.findAlgebraicMinterms();
     auto argumentsCombinations = createArgumentsCombinations();
 
-    if (isMinimizationCorrect(
+    if (isMinimizationCorrect<16, 4>(
             kmapObject.getAlgebraicMinterms(),
             valuesCombination,
             argumentsCombinations))
@@ -799,6 +736,8 @@ void printBitset16(std::bitset<16>& bitset)
         std::cout << bitset[i] << std::endl;
     }
 }
+
+int& test(int& test2) { return test2; }
 
 int main()
 {
@@ -879,8 +818,8 @@ int main()
 
     // Map2x4 kmap;
     // kmap.initializeElementsWithGivenValues({
-    //     Value::zero, Value::zero, Value::zero, Value::zero,
-    //     Value::zero, Value::zero, Value::one, Value::zero});
+    //     Value::zero, Value::one, Value::one, Value::one,
+    //     Value::one, Value::one, Value::one, Value::one});
     // kmap.findGroups();
     // kmap.findAlgebraicMinterms();
     // kmap.printKmap();

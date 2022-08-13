@@ -282,6 +282,8 @@ std::string Map2x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
 
 void Map2x4::findAlgebraicMinterms()
 {
+    findAlgebraicMintermsForGivenGroup(rectQuads);
+    findAlgebraicMintermsForGivenGroup(squareQuads);
     findAlgebraicMintermsForGivenGroup(pairs);
     
     for (const auto cellIndex : singleGroups)

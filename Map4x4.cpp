@@ -843,3 +843,21 @@ void Map4x4::findAlgebraicMintermOfSingleGroup(int cellIndex)
 
     algebraicMinterms.push_back(std::move(minterm));
 }
+
+void Map4x4::reset()
+{
+    octets.clear();
+    squareQuads.clear();
+    rectQuads.clear();
+    singleGroups.clear();
+    justGroupedCells.clear();
+    algebraicMinterms.clear();
+    quadFound1 = false;
+    quadFound2 = false;
+    pairFound1 = false;
+    pairFound2 = false;
+    findingQuadsWithSharingDone = false;
+    findingPairsWithSharingDone = false;
+
+    std::for_each(kmap.begin(), kmap.end(), [](KmapCell* cell) { cell->reset(); });
+}
