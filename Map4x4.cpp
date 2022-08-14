@@ -760,6 +760,18 @@ void Map4x4::printAlgebraicMinterms()
 
 void Map4x4::findAlgebraicMinterms()
 {
+    if (ones == 16)
+    {
+        algebraicMinterms.push_back("1");
+        return;
+    }
+
+    if (ones == 0)
+    {
+        algebraicMinterms.push_back("0");
+        return;
+    }
+
     findAlgebraicMintermsForGivenGroup(pairs);
     findAlgebraicMintermsForGivenGroup(rectQuads);
     findAlgebraicMintermsForGivenGroup(squareQuads);
@@ -874,6 +886,27 @@ void Map4x4::changeCellValue(int cellIndex)
     else
     {
         kmap[cellIndex]->setCellValue(Value::zero);
+        --ones;
+    }
+}
+
+void Map4x4::changeCellValue(int cellIndex, Value valueToSet)
+{
+    Value cellValue = getCellValue(cellIndex);
+
+    if (cellValue == valueToSet)
+    {
+        return;
+    }
+    
+    if (valueToSet == Value::one)
+    {
+        kmap[cellIndex]->setCellValue(valueToSet);
+        ++ones;
+    }
+    else
+    {
+        kmap[cellIndex]->setCellValue(valueToSet);
         --ones;
     }
 }

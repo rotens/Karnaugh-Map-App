@@ -8,7 +8,7 @@ class MapInterface
     sf::RenderWindow window;
     sf::RectangleShape rectangles[16];
     sf::RectangleShape rectangles4x1Groups[4];
-    sf::RectangleShape rectangle4x2Group;
+    sf::RectangleShape mapBorder;
     sf::Text cellValues[16];
     sf::Text grayCodeText[8];
     sf::Text variablesText[2];
@@ -28,11 +28,11 @@ class MapInterface
     void drawGrayCode();
     void drawVariables();
     void draw4x4Group();
-    void draw2x2Groups();
-    void draw1x1Groups();
-    void draw2x1Groups();
-    void draw4x1Groups();
-    void draw4x2Groups();
+    void drawSquareQuads();
+    void drawSingleGroups();
+    void drawPairs();
+    void drawRectQuads();
+    void drawOctets();
     void drawGroups();
     void drawAlgebraicMinterms();
     void drawTruthTable();
@@ -40,7 +40,7 @@ class MapInterface
         sf::Event::MouseButtonEvent& mouseButtonEvent);
 
 public:
-    MapInterface(sf::Font&, Map4x4& kmapObject);
+    MapInterface(sf::Font&);
     void loop();
 
 };

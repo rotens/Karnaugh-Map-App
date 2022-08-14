@@ -24,6 +24,7 @@ public:
     Groups& getPairs() { return pairs; }
     Groups& getSquareQuads() { return squareQuads; }
     Groups& getRectQuads() { return rectQuads; }
+    std::vector<int>& getSingleGroups() { return singleGroups; }
     void findPossiblePairs();
     void findPossiblePairsWithSharing();
     void pairCells(int);
@@ -60,6 +61,9 @@ public:
     void insertJustGroupedCells(std::vector<int>&);
     void reset();
     void changeCellValue(int cellIndex);
+    void changeCellValue(int cellIndex, Value valueToSet);
+    int getOnes() { return ones; }
+    std::vector<KmapCell*>& getKmap() { return kmap; }
 
     friend class MapTest;
     

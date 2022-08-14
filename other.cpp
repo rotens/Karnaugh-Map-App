@@ -73,7 +73,7 @@ std::vector<int>& getSortedQuad(std::vector<int>& unsortedQuad)
     return unsortedQuad;
 }
 
-std::pair<int, int> getSortedPair(std::vector<int>& pair)
+std::pair<int, int> getSortedPair(const std::vector<int>& pair)
 {
     int difference = abs(pair[0] - pair[1]);
 
