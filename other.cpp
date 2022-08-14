@@ -1,5 +1,6 @@
 #include "other.hpp"
 #include <algorithm>
+#include <cmath>
 
 int getCellIndex(int cellIndex, int rowOffset, int colOffset)
 {
@@ -70,4 +71,22 @@ std::vector<int>& getSortedQuad(std::vector<int>& unsortedQuad)
     }
 
     return unsortedQuad;
+}
+
+std::pair<int, int> getSortedPair(std::vector<int>& pair)
+{
+    int difference = abs(pair[0] - pair[1]);
+
+    if (difference == 1)
+    {
+        return std::make_pair(
+            *std::min_element(pair.begin(), pair.end()),
+            *std::max_element(pair.begin(), pair.end()));
+    }
+    else
+    {
+        return std::make_pair(
+            *std::max_element(pair.begin(), pair.end()), 
+            *std::min_element(pair.begin(), pair.end()));
+    }
 }

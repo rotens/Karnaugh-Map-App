@@ -31,3 +31,4 @@ int getCellIndex_Map2x4(int, int, int);
 int getRealIndex(int);
 int getRealIndex_Map2x4(int, int);
 std::vector<int>& getSortedQuad(std::vector<int>&);
+std::pair<int, int> getSortedPair(std::vector<int>&);

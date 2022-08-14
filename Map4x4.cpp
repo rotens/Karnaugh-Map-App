@@ -861,3 +861,19 @@ void Map4x4::reset()
 
     std::for_each(kmap.begin(), kmap.end(), [](KmapCell* cell) { cell->reset(); });
 }
+
+void Map4x4::changeCellValue(int cellIndex)
+{
+    Value cellValue = getCellValue(cellIndex);
+
+    if (cellValue == Value::zero)
+    {
+        kmap[cellIndex]->setCellValue(Value::one);
+        ++ones;
+    }
+    else
+    {
+        kmap[cellIndex]->setCellValue(Value::zero);
+        --ones;
+    }
+}
