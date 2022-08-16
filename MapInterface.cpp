@@ -26,13 +26,14 @@ constexpr char truthTableHeader[] = {'A', 'B', 'C', 'D', '0', '1'};
 sf::Color colors[8] = {
     sf::Color::Red, sf::Color::Blue, 
     sf::Color::Cyan, sf::Color::Green,
-    sf::Color::Magenta};
+    sf::Color::Magenta, sf::Color::Yellow};
 constexpr std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 1}}};
 constexpr int truthTableToKmap[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
 constexpr int kmapToTruthTable[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 7, 15, 11};
 constexpr Value intToValue[] = {Value::zero, Value::one, Value::dont_care};
 
 MapInterface::MapInterface(sf::Font& font)
+    : font(font)
 {
     for (auto& text : cellValues)
         text.setFont(font);
@@ -51,6 +52,8 @@ MapInterface::MapInterface(sf::Font& font)
 
     variablesText[0].setFont(font);
     variablesText[1].setFont(font);
+
+    performMap4x4Minimizing();
 }
 
 void MapInterface::fillCellsWithWhiteColor()
@@ -256,7 +259,7 @@ void MapInterface::drawOctets()
         lines[5].setRotation(180.f);
         window.draw(lines[5]);
       
-       ++currentColorIndex;
+       incrementCurrentColorIndex();
     }
 }
 
@@ -294,7 +297,7 @@ void MapInterface::drawSquareQuads()
             ++l;
         }
 
-        ++currentColorIndex;
+        incrementCurrentColorIndex();
     }
 }
 
@@ -306,7 +309,7 @@ void MapInterface::drawRectQuads()
     std::pair<int, int> firstCell;
     std::pair<int, int> lastCell;
 
-    for (const auto& quad : kmapObject.getRectQuads())
+    for (auto& quad : kmapObject.getRectQuads())
     {
         std::sort(quad.begin(), quad.end());
 
@@ -338,7 +341,7 @@ void MapInterface::drawRectQuads()
 
         window.draw(rectangles4x1Groups[k]);
         ++k;
-        ++currentColorIndex;
+        incrementCurrentColorIndex();
     }
 }
 
@@ -423,7 +426,7 @@ void MapInterface::drawPairs()
         lines[5].setRotation(180.f);
         window.draw(lines[5]);
        
-        ++currentColorIndex;
+        incrementCurrentColorIndex();
     }
 }
 
@@ -431,8 +434,9 @@ void MapInterface::drawSingleGroups()
 {
     for (const auto cellIndex : kmapObject.getSingleGroups())
     {
-        rectangles[cellIndex].setOutlineColor(colors[currentColorIndex++]);
+        rectangles[cellIndex].setOutlineColor(colors[currentColorIndex]);
         window.draw(rectangles[cellIndex]);
+        incrementCurrentColorIndex();
     }
 }
 
@@ -452,7 +456,8 @@ void MapInterface::drawAlgebraicMinterms()
     int i = 1;
     int colorIndex = 0;
     int currentWidthOffset = mintermsWidthOffset;
-
+    const auto& minterms = kmapObject.getAlgebraicMinterms();
+    
     algebraicMintermsText[0].setString("y = ");
     algebraicMintermsText[0].setCharacterSize(24);
     algebraicMintermsText[0].setFillColor(sf::Color::Black);
@@ -462,13 +467,16 @@ void MapInterface::drawAlgebraicMinterms()
     sf::FloatRect bounds = algebraicMintermsText[0].getLocalBounds();
     currentWidthOffset += bounds.width;
 
-    for (const auto& minterm : kmapObject.getAlgebraicMinterms())
+    for (const auto& minterm : minterms)
     {
         algebraicMintermsText[i].setString(minterm);
         algebraicMintermsText[i].setCharacterSize(24);
         algebraicMintermsText[i].setFillColor(colors[colorIndex]);
         algebraicMintermsText[i].setPosition(currentWidthOffset, mintermsHeightOffset);
         window.draw(algebraicMintermsText[i]);
+
+        if (i == minterms.size()) 
+            break;
 
         bounds = algebraicMintermsText[i].getLocalBounds();
         currentWidthOffset += bounds.width + 8;
@@ -484,7 +492,7 @@ void MapInterface::drawAlgebraicMinterms()
         currentWidthOffset += bounds.width + 12;
         ++i;
 
-        ++colorIndex;
+        colorIndex = colorIndex + 1 > 7 ? 0 : ++colorIndex;
     }
 }
 
@@ -525,7 +533,9 @@ void MapInterface::handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseBu
     int col = (mouseButtonEvent.x - mapWidthOffset) / 60;
     int row = (mouseButtonEvent.y - mapHeightOffset) / 60;
     int index = row*4 + col;
+
     kmapObject.changeCellValue(index);
+    performMap4x4Minimizing();
 }
 
 void MapInterface::drawTruthTable()
@@ -642,6 +652,26 @@ void MapInterface::handleMouseButtonPressedOnTruthTable(
     int col = truthTableToKmap[y] % 4;
     int index = row*4 + col;
     kmapObject.changeCellValue(index, intToValue[x]);
+    performMap4x4Minimizing();
+}
+
+void MapInterface::performMap4x4Minimizing()
+{
+    kmapObject.reset();
+    kmapObject.findGroups();
+    kmapObject.findAlgebraicMinterms();
+}
+
+void MapInterface::incrementCurrentColorIndex()
+{
+    if (currentColorIndex + 1 > 7)
+    {
+        currentColorIndex = 0;
+    }
+    else
+    {
+        ++currentColorIndex;
+    }
 }
 
 void MapInterface::loop()

@@ -77,7 +77,7 @@ std::pair<int, int> getSortedPair(const std::vector<int>& pair)
 {
     int difference = abs(pair[0] - pair[1]);
 
-    if (difference == 1)
+    if (difference == 1 or difference == 4)
     {
         return std::make_pair(
             *std::min_element(pair.begin(), pair.end()),

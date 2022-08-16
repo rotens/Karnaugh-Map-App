@@ -19,6 +19,7 @@ class MapInterface
     Map4x4 kmapObject;
     int currentColorIndex{0};
     sf::CircleShape truthTableStateCircle[16];
+    sf::Font& font;
 
     void fillCellsWithWhiteColor();
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
@@ -38,6 +39,8 @@ class MapInterface
     void drawTruthTable();
     void handleMouseButtonPressedOnTruthTable(
         sf::Event::MouseButtonEvent& mouseButtonEvent);
+    void performMap4x4Minimizing();
+    void incrementCurrentColorIndex();
 
 public:
     MapInterface(sf::Font&);

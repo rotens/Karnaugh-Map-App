@@ -769,19 +769,15 @@ int main()
     // }
 
 
-    // Map4x4 kmapObject;
-    // kmapObject.initializeKmapWith(testKmap);
-    // kmapObject.countZeroesAndOnes();
+    sf::Font font;
+    if (!font.loadFromFile("fonts/segoeui.ttf"))
+    {
+        std::cerr << "Can't load font from file" << std::endl;
+        return -1;
+    }
 
-    // sf::Font font;
-    // if (!font.loadFromFile("fonts/segoeui.ttf"))
-    // {
-    //     std::cerr << "Can't load font from file" << std::endl;
-    //     return -1;
-    // }
-
-    // MapInterface mapInterface(font, kmapObject);
-    // mapInterface.loop();
+    MapInterface mapInterface(font);
+    mapInterface.loop();
 
     // Map4x4 kmap;
     // kmap.initializeElementsWithGivenValues({
@@ -796,10 +792,10 @@ int main()
 
     // Map4x4 kmap;
     // kmap.initializeElementsWithGivenValues({
-    //     Value::one, Value::one, Value::one, Value::one,
-    //     Value::zero, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::zero, Value::one});
+    //     Value::one, Value::one, Value::zero, Value::zero,
+    //     Value::zero, Value::one, Value::one, Value::zero,
+    //     Value::zero, Value::zero, Value::zero, Value::zero,
+    //     Value::zero, Value::zero, Value::zero, Value::zero});
     // kmap.findGroups();
     // kmap.findAlgebraicMinterms();
     // kmap.printKmap();
@@ -826,8 +822,8 @@ int main()
     // kmap.printAlgebraicMinterms();
     // kmap.printEverything();
 
-    MapTest testObject;
-    testObject.runAllTests();
+    // MapTest testObject;
+    // testObject.runAllTests();
 
     // printKmap("0111111111111110");
     // testAllFunctionValuesCombinations_Map2x4();

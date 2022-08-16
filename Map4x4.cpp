@@ -861,6 +861,7 @@ void Map4x4::reset()
     octets.clear();
     squareQuads.clear();
     rectQuads.clear();
+    pairs.clear();
     singleGroups.clear();
     justGroupedCells.clear();
     algebraicMinterms.clear();
