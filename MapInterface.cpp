@@ -18,7 +18,7 @@ constexpr int ABVariablesWidthOffset = mapWidthOffset + 101;
 constexpr int ABVariablesHeightOffset = mapHeightOffset - 68;
 constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
-constexpr int mintermsWidthOffset = mapWidthOffset - 74;
+constexpr int mintermsWidthOffset = mapWidthOffset - 230;
 constexpr int mintermsHeightOffset = mapHeightOffset + 240 + 50;
 constexpr int truthTableWidthOffset = 70;
 constexpr int truthTableHeightOffset = 80; 
@@ -26,7 +26,8 @@ constexpr char truthTableHeader[] = {'A', 'B', 'C', 'D', '0', '1'};
 sf::Color colors[8] = {
     sf::Color::Red, sf::Color::Blue, 
     sf::Color::Cyan, sf::Color::Green,
-    sf::Color::Magenta, sf::Color::Yellow};
+    sf::Color::Magenta, sf::Color(242, 213, 2),
+    sf::Color(185, 122, 87)};
 constexpr std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 1}}};
 constexpr int truthTableToKmap[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
 constexpr int kmapToTruthTable[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 7, 15, 11};
@@ -454,14 +455,16 @@ void MapInterface::drawGroups()
 void MapInterface::drawAlgebraicMinterms()
 {
     int i = 1;
+    int mintermCounter = 1;
     int colorIndex = 0;
     int currentWidthOffset = mintermsWidthOffset;
+    int currentHeightOffset = mintermsHeightOffset;
     const auto& minterms = kmapObject.getAlgebraicMinterms();
     
     algebraicMintermsText[0].setString("y = ");
     algebraicMintermsText[0].setCharacterSize(24);
     algebraicMintermsText[0].setFillColor(sf::Color::Black);
-    algebraicMintermsText[0].setPosition(mintermsWidthOffset, mintermsHeightOffset);
+    algebraicMintermsText[0].setPosition(mintermsWidthOffset, currentHeightOffset);
     window.draw(algebraicMintermsText[0]);
 
     sf::FloatRect bounds = algebraicMintermsText[0].getLocalBounds();
@@ -472,20 +475,27 @@ void MapInterface::drawAlgebraicMinterms()
         algebraicMintermsText[i].setString(minterm);
         algebraicMintermsText[i].setCharacterSize(24);
         algebraicMintermsText[i].setFillColor(colors[colorIndex]);
-        algebraicMintermsText[i].setPosition(currentWidthOffset, mintermsHeightOffset);
+        algebraicMintermsText[i].setPosition(currentWidthOffset, currentHeightOffset);
         window.draw(algebraicMintermsText[i]);
 
-        if (i == minterms.size()) 
+        if (mintermCounter == minterms.size())
             break;
 
         bounds = algebraicMintermsText[i].getLocalBounds();
         currentWidthOffset += bounds.width + 8;
         ++i;
+        ++mintermCounter;
+
+        if (currentWidthOffset > windowWidth - 110)
+        {
+            currentWidthOffset = mintermsWidthOffset;
+            currentHeightOffset += 40;
+        }
 
         algebraicMintermsText[i].setString("+");
         algebraicMintermsText[i].setCharacterSize(24);
         algebraicMintermsText[i].setFillColor(sf::Color::Black);
-        algebraicMintermsText[i].setPosition(currentWidthOffset, mintermsHeightOffset);
+        algebraicMintermsText[i].setPosition(currentWidthOffset, currentHeightOffset);
         window.draw(algebraicMintermsText[i]);
 
         bounds = algebraicMintermsText[i].getLocalBounds();
