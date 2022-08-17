@@ -23,6 +23,7 @@ constexpr int ABVariablesWidthOffset = mapWidthOffset + 101;
 constexpr int ABVariablesHeightOffset = mapHeightOffset - 68;
 constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
+constexpr int CVariableHeightOffset = mapHeightOffset + 69;
 constexpr int mintermsWidthOffset = mapWidthOffset - 230;
 constexpr int mintermsHeightOffset = mapHeightOffset + 240 + 50;
 constexpr int truthTableWidthOffset = 70;
@@ -61,6 +62,12 @@ MapInterface::MapInterface(sf::Font& font)
     currentMapHeight = map2x4Height;
     currentMapWidth = map2x4Width;
     currentMapType = MapType::map2x4;
+    currentVariables1 = "AB";
+    currentVariables2 = "C";
+    currentVariables1HeightOffset = ABVariablesHeightOffset;
+    currentVariables1WidthOffset = ABVariablesWidthOffset;
+    currentVariables2HeightOffset = CVariableHeightOffset;
+    currentVariables2WidthOffset = CDVariablesWidthOffset;
     // performMap4x4Minimizing();
 }
 
@@ -179,25 +186,24 @@ void MapInterface::drawGrayCodeMap2x4()
     }
 }
 
-
 void MapInterface::drawVariables()
 {
-    variablesText[0].setString("AB");
+    variablesText[0].setString(currentVariables1);
     variablesText[0].setCharacterSize(30); 
     variablesText[0].setFillColor(sf::Color::Black);
     variablesText[0].setPosition(
-        ABVariablesWidthOffset,
-        ABVariablesHeightOffset);
+        currentVariables1WidthOffset,
+        currentVariables1HeightOffset);
 
     window.draw(variablesText[0]);
 
-    variablesText[1].setString("CD");
+    variablesText[1].setString(currentVariables2);
     variablesText[1].setCharacterSize(30); 
     variablesText[1].setFillColor(sf::Color::Black);
     variablesText[1].setRotation(-90.f);
     variablesText[1].setPosition(
-        CDVariablesWidthOffset,
-        CDVariablesHeightOffset);
+        currentVariables2WidthOffset,
+        currentVariables2HeightOffset);
 
     window.draw(variablesText[1]);
 }
@@ -556,13 +562,13 @@ void MapInterface::drawAlgebraicMinterms()
 
 void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
 {
-    if (mouseMove.x <= mapWidthOffset or mouseMove.x >= mapWidthOffset + 4*58 + 6)
+    if (mouseMove.x <= mapWidthOffset or mouseMove.x >= mapWidthOffset + currentMapWidth*58 + 6)
     {
         fillCellsWithWhiteColor();
         return;
     } 
 
-    if (mouseMove.y <= mapHeightOffset or mouseMove.y >= mapHeightOffset + 4*58 + 6)
+    if (mouseMove.y <= mapHeightOffset or mouseMove.y >= mapHeightOffset + currentMapHeight*58 + 6)
     {
         fillCellsWithWhiteColor();
         return;
@@ -578,12 +584,12 @@ void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
 
 void MapInterface::handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseButtonEvent)
 {
-    if (mouseButtonEvent.x <= mapWidthOffset or mouseButtonEvent.x >= mapWidthOffset + 4*58 + 6)
+    if (mouseButtonEvent.x <= mapWidthOffset or mouseButtonEvent.x >= mapWidthOffset + currentMapWidth*58 + 6)
     {
         return;
     } 
 
-    if (mouseButtonEvent.y <= mapHeightOffset or mouseButtonEvent.y >= mapHeightOffset + 4*58 + 6)
+    if (mouseButtonEvent.y <= mapHeightOffset or mouseButtonEvent.y >= mapHeightOffset + currentMapHeight*58 + 6)
     {
         return;
     }

@@ -24,6 +24,12 @@ class MapInterface
 
     int currentMapWidth;
     int currentMapHeight;
+    int currentVariables1WidthOffset;
+    int currentVariables1HeightOffset;
+    int currentVariables2WidthOffset;
+    int currentVariables2HeightOffset;
+    std::string currentVariables1;
+    std::string currentVariables2;
     MapType currentMapType;
 
     void fillCellsWithWhiteColor();
