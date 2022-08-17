@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Map4x4.hpp"
+#include "Map2x4.hpp"
 
 
 class MapInterface
@@ -17,9 +18,13 @@ class MapInterface
     sf::Text truthTableHeaderText[6];
     sf::Text truthTableVariablesValues[64];
     Map4x4 kmapObject;
+    Map2x4 kmap2x4Object;
     int currentColorIndex{0};
     sf::CircleShape truthTableStateCircle[16];
-    sf::Font& font;
+
+    int currentMapWidth;
+    int currentMapHeight;
+    MapType currentMapType;
 
     void fillCellsWithWhiteColor();
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
@@ -27,8 +32,10 @@ class MapInterface
     void drawMap();
     void drawCellValues();
     void drawGrayCode();
+    void drawGrayCodeMap4x4();
+    void drawGrayCodeMap2x4();
     void drawVariables();
-    void draw4x4Group();
+    void drawMapBorder();
     void drawSquareQuads();
     void drawSingleGroups();
     void drawPairs();
@@ -41,6 +48,7 @@ class MapInterface
         sf::Event::MouseButtonEvent& mouseButtonEvent);
     void performMap4x4Minimizing();
     void incrementCurrentColorIndex();
+    Value getCellValue(int cellIndex);
 
 public:
     MapInterface(sf::Font&);

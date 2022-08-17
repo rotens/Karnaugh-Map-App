@@ -4,6 +4,11 @@
 #include <cmath>
 #include <bitset>
 
+constexpr int map4x4Height = 4;
+constexpr int map4x4Width = 4;
+constexpr int map2x4Height = 2;
+constexpr int map2x4Width = 4;
+
 constexpr int windowWidth = 800;
 constexpr int windowHeight = 640;
 constexpr int mapWidthOffset = 500;
@@ -34,7 +39,6 @@ constexpr int kmapToTruthTable[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 
 constexpr Value intToValue[] = {Value::zero, Value::one, Value::dont_care};
 
 MapInterface::MapInterface(sf::Font& font)
-    : font(font)
 {
     for (auto& text : cellValues)
         text.setFont(font);
@@ -54,7 +58,10 @@ MapInterface::MapInterface(sf::Font& font)
     variablesText[0].setFont(font);
     variablesText[1].setFont(font);
 
-    performMap4x4Minimizing();
+    currentMapHeight = map2x4Height;
+    currentMapWidth = map2x4Width;
+    currentMapType = MapType::map2x4;
+    // performMap4x4Minimizing();
 }
 
 void MapInterface::fillCellsWithWhiteColor()
@@ -68,9 +75,9 @@ void MapInterface::fillCellsWithWhiteColor()
 void MapInterface::drawMap()
 {
     int k = 0;
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < currentMapHeight; ++i)
     {
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < currentMapWidth; ++j)
         {
             rectangles[k].setSize(sf::Vector2f(58, 58.f));
             rectangles[k].setOutlineColor(sf::Color(127, 127, 127));
@@ -90,12 +97,12 @@ void MapInterface::drawCellValues()
     int k = 0;
     int cellIndex;
 
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < currentMapHeight; ++i)
     {
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < currentMapWidth; ++j)
         {
             cellIndex = 4*i + j;
-            cellValues[k].setString(static_cast<char>(kmapObject.getCellValue(cellIndex)));
+            cellValues[k].setString(static_cast<char>(getCellValue(cellIndex)));
             cellValues[k].setCharacterSize(30); 
             cellValues[k].setFillColor(sf::Color::Black);
             cellValues[k].setPosition(
@@ -109,6 +116,19 @@ void MapInterface::drawCellValues()
 }
 
 void MapInterface::drawGrayCode()
+{
+    switch (currentMapType)
+    {
+        case MapType::map4x4:
+            drawGrayCodeMap4x4();
+            break;
+        case MapType::map2x4:
+            drawGrayCodeMap2x4();
+            break;
+    }
+}
+
+void MapInterface::drawGrayCodeMap4x4()
 {
     for (int i = 0; i < 4; ++i)
     {
@@ -132,6 +152,34 @@ void MapInterface::drawGrayCode()
     }
 }
 
+void MapInterface::drawGrayCodeMap2x4()
+{
+    for (int i = 0; i < map2x4Width; ++i)
+    {
+        grayCodeText[i].setString(grayCode[i]);
+        grayCodeText[i].setCharacterSize(24); 
+        grayCodeText[i].setFillColor(sf::Color::Black);
+        grayCodeText[i].setPosition(
+            horizontalGrayCodeWidthOffset + i * 60,
+            horizontalGrayCodeHeightOffset);
+
+        window.draw(grayCodeText[i]);
+    }
+
+    for (int i = 0; i < map2x4Height; ++i)
+    {
+        grayCodeText[i+4].setString(grayCode[1][i]);
+        grayCodeText[i+4].setCharacterSize(24); 
+        grayCodeText[i+4].setFillColor(sf::Color::Black);
+        grayCodeText[i+4].setPosition(
+            verticalGrayCodeWidthOffset + 12,
+            verticalGrayCodeHeightOffset + i * 60);
+
+        window.draw(grayCodeText[i+4]);
+    }
+}
+
+
 void MapInterface::drawVariables()
 {
     variablesText[0].setString("AB");
@@ -154,7 +202,7 @@ void MapInterface::drawVariables()
     window.draw(variablesText[1]);
 }
 
-void MapInterface::draw4x4Group()
+void MapInterface::drawMapBorder()
 {
     if (kmapObject.getOnes() != 16)
         return;
@@ -444,7 +492,7 @@ void MapInterface::drawSingleGroups()
 void MapInterface::drawGroups() 
 {
     currentColorIndex = 0;
-    draw4x4Group();
+    drawMapBorder();
     drawOctets();
     drawRectQuads();
     drawSquareQuads();
@@ -672,6 +720,19 @@ void MapInterface::performMap4x4Minimizing()
     kmapObject.findAlgebraicMinterms();
 }
 
+Value MapInterface::getCellValue(int cellIndex)
+{
+    switch (currentMapType)
+    {
+        case MapType::map4x4:
+            return kmapObject.getCellValue(cellIndex);
+        case MapType::map2x4:
+            return kmap2x4Object.getCellValue(cellIndex);
+        default:
+            return Value::zero;
+    }
+}
+
 void MapInterface::incrementCurrentColorIndex()
 {
     if (currentColorIndex + 1 > 7)
@@ -688,16 +749,6 @@ void MapInterface::loop()
 {
     window.create(sf::VideoMode(windowWidth, windowHeight), "Karnaugh map simulator!");
     window.setVerticalSyncEnabled(true);
-
-    // sf::RectangleShape rectangle(sf::Vector2f(242, 242.f));
-    // window.clear(sf::Color::White);
-    // rectangle.setFillColor(sf::Color::White);
-    // rectangle.setOutlineThickness(2.f);
-    // rectangle.setOutlineColor(sf::Color(127, 127, 127));
-    // rectangle.setPosition(500, mapHeightOffset);
-
-    
-    
 
     while (window.isOpen())
     {
@@ -726,8 +777,8 @@ void MapInterface::loop()
         drawVariables();
         drawGroups();
         drawCellValues();
-        drawAlgebraicMinterms();
-        drawTruthTable();
+        // drawAlgebraicMinterms();
+        // drawTruthTable();
         window.display();
     }
 }

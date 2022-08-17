@@ -6,6 +6,7 @@
 
 using Groups = std::vector<std::vector<int>>;
 enum class Value { zero = '0', one = '1', dont_care = 'X' };
+enum class MapType { map1x1, map1x2, map2x4, map4x4 };
 template<int N> using VecIter = std::vector<std::array<std::pair<int8_t, int8_t>, N>>::iterator;
 inline std::string grayCode[] = {"00", "01", "11", "10"};
 inline std::string variables[] = {"A", "B", "C", "D"};
