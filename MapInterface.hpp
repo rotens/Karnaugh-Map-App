@@ -21,6 +21,8 @@ class MapInterface
     Map2x4 kmap2x4Object;
     int currentColorIndex{0};
     sf::CircleShape truthTableStateCircle[16];
+    sf::Text switchMapText;
+    sf::Text switchMapVariablesText[4];
 
     int currentNumberOfOnes;
     int currentCellsNumber;
@@ -64,6 +66,7 @@ class MapInterface
     void drawMap2x4Groups();
     void drawAlgebraicMinterms();
     void drawTruthTable();
+    void drawSwitchMapText();
     void handleMouseButtonPressedOnTruthTable(
         sf::Event::MouseButtonEvent& mouseButtonEvent);
     void performMapMinimizing();

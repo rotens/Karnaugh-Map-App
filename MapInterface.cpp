@@ -32,6 +32,9 @@ constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
 constexpr int CVariableHeightOffset = mapHeightOffset + 69;
 
+constexpr int switchMapWidthOffset = 400;
+constexpr int switchMapHeightOffset = 50;
+
 constexpr int mintermsWidthOffset = mapWidthOffset - 230;
 constexpr int mintermsHeightOffset = mapHeightOffset + 240 + 50;
 
@@ -49,7 +52,7 @@ constexpr std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 
 constexpr int truthTableToKmap[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
 constexpr int kmapToTruthTable[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 7, 15, 11};
 constexpr int truthTableToKmap2x4[] = {0, 4, 1, 5, 3, 7, 2, 6};
-constexpr int kmap2x4ToTruthTable[] = {1, 5, 2, 6, 4, 8, 3, 7};
+constexpr int kmap2x4ToTruthTable[] = {1, 3, 7, 5, 2, 4, 8, 6};
 constexpr Value intToValue[] = {Value::zero, Value::one, Value::dont_care};
 
 MapInterface::MapInterface(sf::Font& font)
@@ -69,8 +72,12 @@ MapInterface::MapInterface(sf::Font& font)
     for (auto& text : truthTableVariablesValues)
         text.setFont(font);
 
+    for (auto& text : switchMapVariablesText)
+        text.setFont(font);
+
     variablesText[0].setFont(font);
     variablesText[1].setFont(font);
+    switchMapText.setFont(font);
 
     setUpMap2x4();
 }
@@ -210,6 +217,35 @@ void MapInterface::drawVariables()
         currentVariables2HeightOffset);
 
     window.draw(variablesText[1]);
+}
+
+void MapInterface::drawSwitchMapText()
+{
+    switchMapText.setString("Variables:");
+    switchMapText.setCharacterSize(24); 
+    switchMapText.setFillColor(sf::Color::Black);
+    switchMapText.setPosition(switchMapWidthOffset, switchMapHeightOffset);
+    window.draw(switchMapText);
+
+    sf::FloatRect bounds = switchMapText.getLocalBounds();
+
+    std::cout << bounds.width << std::endl;
+
+    switchMapVariablesText[2].setString("3");
+    switchMapVariablesText[2].setCharacterSize(24); 
+    switchMapVariablesText[2].setFillColor(sf::Color::Black);
+    switchMapVariablesText[2].setPosition(
+        switchMapWidthOffset + bounds.width + 10, 
+        switchMapHeightOffset);
+    window.draw(switchMapVariablesText[2]);
+
+    switchMapVariablesText[3].setString("4");
+    switchMapVariablesText[3].setCharacterSize(24); 
+    switchMapVariablesText[3].setFillColor(sf::Color::Black);
+    switchMapVariablesText[3].setPosition(
+        switchMapWidthOffset + bounds.width + 20, 
+        switchMapHeightOffset);
+    window.draw(switchMapVariablesText[3]);
 }
 
 void MapInterface::drawMapBorder()
@@ -697,7 +733,6 @@ void MapInterface::drawTruthTable()
 
     for (int i = 0; i < currentCellsNumber; ++i)
     {
-         
         stateCirclePosY = truthTableHeightOffset + currentKmapToTruthTable[i]*28 + (26 - bounds.height) / 2;
         
         if (getCellValue(i) == Value::zero)
@@ -888,7 +923,7 @@ void MapInterface::loop()
 {
     window.create(sf::VideoMode(windowWidth, windowHeight), "Karnaugh map simulator!");
     window.setVerticalSyncEnabled(true);
-
+    
     while (window.isOpen())
     {
         sf::Event event;
@@ -911,6 +946,7 @@ void MapInterface::loop()
         }
 
         window.clear(sf::Color::White);
+        drawSwitchMapText();
         drawMap();
         drawGrayCode();
         drawVariables();
