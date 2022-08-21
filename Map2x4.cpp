@@ -383,3 +383,53 @@ void Map2x4::fillMapWithZeroValues()
         [](Kmap2x4Cell* cell) { cell->setCellValue(Value::zero); });
     ones = 0;
 }
+
+void Map2x4::reset()
+{
+    squareQuads.clear();
+    rectQuads.clear();
+    pairs.clear();
+    singleGroups.clear();
+    justGroupedCells.clear();
+    algebraicMinterms.clear();
+    pairFound = false;
+
+    std::for_each(kmap.begin(), kmap.end(), [](Kmap2x4Cell* cell) { cell->reset(); });
+}
+
+void Map2x4::changeCellValue(int cellIndex)
+{
+    Value cellValue = getCellValue(cellIndex);
+
+    if (cellValue == Value::zero)
+    {
+        kmap[cellIndex]->setCellValue(Value::one);
+        ++ones;
+    }
+    else
+    {
+        kmap[cellIndex]->setCellValue(Value::zero);
+        --ones;
+    }
+}
+
+void Map2x4::changeCellValue(int cellIndex, Value valueToSet)
+{
+    Value cellValue = getCellValue(cellIndex);
+
+    if (cellValue == valueToSet)
+    {
+        return;
+    }
+    
+    if (valueToSet == Value::one)
+    {
+        kmap[cellIndex]->setCellValue(valueToSet);
+        ++ones;
+    }
+    else
+    {
+        kmap[cellIndex]->setCellValue(valueToSet);
+        --ones;
+    }
+}

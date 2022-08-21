@@ -22,6 +22,7 @@ public:
     void findPairs();
     void removePairContainingGivenCellIndex(int);
     bool hasPairs() { return not pairs.empty(); }
+    void reset();
 
     friend class MapTest;
 

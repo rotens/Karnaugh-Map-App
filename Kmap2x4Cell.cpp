@@ -42,3 +42,10 @@ void Kmap2x4Cell::removePairContainingGivenCellIndex(int cellIndex)
         --this->pairsNumber;
     }
 }
+
+void Kmap2x4Cell::reset()
+{
+    done = false;
+    pairsNumber = 0;
+    pairs.clear();
+}

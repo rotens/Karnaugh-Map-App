@@ -60,8 +60,8 @@ public:
     void addSquareQuadWithSharing(KmapCell*, int);
     void insertJustGroupedCells(std::vector<int>&);
     void reset();
-    void changeCellValue(int cellIndex);
-    void changeCellValue(int cellIndex, Value valueToSet);
+    void changeCellValue(int);
+    void changeCellValue(int, Value);
     int getOnes() { return ones; }
     std::vector<KmapCell*>& getKmap() { return kmap; }
     void fillMapWithZeroValues();

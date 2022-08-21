@@ -40,7 +40,10 @@ public:
     std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }
     void fillMapWithZeroValues();
     void reset();
-    
+    void changeCellValue(int);
+    void changeCellValue(int, Value);
+    int getOnes() { return ones; }
+
     friend class MapTest;
     
 private:

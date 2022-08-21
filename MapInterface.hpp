@@ -22,6 +22,8 @@ class MapInterface
     int currentColorIndex{0};
     sf::CircleShape truthTableStateCircle[16];
 
+    int currentNumberOfOnes;
+    int currentCellsNumber;
     int currentMapWidth;
     int currentMapHeight;
     int currentVariables1WidthOffset;
@@ -31,11 +33,12 @@ class MapInterface
     std::string currentVariables1;
     std::string currentVariables2;
     MapType currentMapType;
-    Groups& const octets;
-    Groups& const squareQuads;
-    Groups& const rectQuads;
-    Groups& const pairs;
-    std::vector<int>& const singleGroups;
+    Groups* octets;
+    Groups* squareQuads;
+    Groups* rectQuads;
+    Groups* pairs;
+    std::vector<int>* singleGroups;
+    std::vector<std::string>* minterms;
 
     void fillCellsWithWhiteColor();
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
@@ -59,14 +62,18 @@ class MapInterface
     void drawTruthTable();
     void handleMouseButtonPressedOnTruthTable(
         sf::Event::MouseButtonEvent& mouseButtonEvent);
+    void performMapMinimizing();
     void performMap4x4Minimizing();
+    void performMap2x4Minimizing();
     void incrementCurrentColorIndex();
-    Value getCellValue(int cellIndex);
-    void setMap2x4Variables();
-    void setMap4x4Variables();
+    Value getCellValue(int);
+    void changeCellValue(int);
+    void changeCellValue(int, Value);
+    void setUpMap2x4();
+    void setUpMap4x4();
+    int getOnes();
 
 public:
     MapInterface(sf::Font&);
     void loop();
-
 };

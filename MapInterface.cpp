@@ -16,6 +16,9 @@ constexpr int mapHeightOffset = 197;
 constexpr int textRelativeHeightOffset = 19 - 10;
 constexpr int textRelativeWidthOffset = 24 - 3;
 
+constexpr int map2x4CellsNumber = 8;
+constexpr int map4x4CellsNumber = 16;
+
 constexpr int horizontalGrayCodeHeightOffset = mapHeightOffset - 34;
 constexpr int horizontalGrayCodeWidthOffset = mapWidthOffset + 17 - 1; // 1 = text's left bound
 constexpr int verticalGrayCodeHeightOffset = mapHeightOffset + 21 - 8;
@@ -64,7 +67,7 @@ MapInterface::MapInterface(sf::Font& font)
     variablesText[0].setFont(font);
     variablesText[1].setFont(font);
 
-    // performMap4x4Minimizing();
+    setUpMap2x4();
 }
 
 void MapInterface::fillCellsWithWhiteColor()
@@ -206,13 +209,16 @@ void MapInterface::drawVariables()
 
 void MapInterface::drawMapBorder()
 {
-    if (kmapObject.getOnes() != 16)
+    if (getOnes() != currentCellsNumber)
         return;
     
     mapBorder.setOutlineColor(sf::Color::Red);
     mapBorder.setOutlineThickness(2.f);
     mapBorder.setFillColor(sf::Color::Transparent);
-    mapBorder.setSize(sf::Vector2f(238, 238));
+    mapBorder.setSize(
+        sf::Vector2f(
+            currentMapWidth*58 + 2*(currentMapWidth-1),
+            currentMapHeight*58 + 2*(currentMapHeight-1)));
     mapBorder.setPosition(sf::Vector2f(mapWidthOffset, mapHeightOffset));
 
     window.draw(mapBorder);
@@ -228,7 +234,7 @@ void MapInterface::drawOctets()
     int shorterLinesHeight;
     std::pair<int, int> firstCell, fourthCell, lastCell;
 
-    for (const auto& octet : kmapObject.getOctets())
+    for (const auto& octet : *octets)
     {
         firstCell = std::make_pair(octet[0] / 4, octet[0] % 4);
         fourthCell = std::make_pair(octet[3] / 4, octet[3] % 4);
@@ -319,7 +325,7 @@ void MapInterface::drawSquareQuads()
     std::pair<int, int> cell;
     int l;
 
-    for (auto& quad : kmapObject.getSquareQuads())
+    for (auto& quad : *squareQuads)
     {
         l = 0;
         quad = getSortedQuad(quad);
@@ -360,7 +366,7 @@ void MapInterface::drawRectQuads()
     std::pair<int, int> firstCell;
     std::pair<int, int> lastCell;
 
-    for (auto& quad : kmapObject.getRectQuads())
+    for (auto& quad : *rectQuads)
     {
         std::sort(quad.begin(), quad.end());
 
@@ -402,7 +408,7 @@ void MapInterface::drawPairs()
     int height;
     std::pair<int, int> firstCell, lastCell;
 
-    for (const auto& pair : kmapObject.getPairs())
+    for (const auto& pair : *pairs)
     {
         auto sortedPair = getSortedPair(pair);
         firstCell = std::make_pair(sortedPair.first / 4, sortedPair.first % 4);
@@ -483,7 +489,7 @@ void MapInterface::drawPairs()
 
 void MapInterface::drawSingleGroups()
 {
-    for (const auto cellIndex : kmapObject.getSingleGroups())
+    for (const auto cellIndex : *singleGroups)
     {
         rectangles[cellIndex].setOutlineColor(colors[currentColorIndex]);
         window.draw(rectangles[cellIndex]);
@@ -530,7 +536,6 @@ void MapInterface::drawAlgebraicMinterms()
     int colorIndex = 0;
     int currentWidthOffset = mintermsWidthOffset;
     int currentHeightOffset = mintermsHeightOffset;
-    const auto& minterms = kmapObject.getAlgebraicMinterms();
     
     algebraicMintermsText[0].setString("y = ");
     algebraicMintermsText[0].setCharacterSize(24);
@@ -541,7 +546,7 @@ void MapInterface::drawAlgebraicMinterms()
     sf::FloatRect bounds = algebraicMintermsText[0].getLocalBounds();
     currentWidthOffset += bounds.width;
 
-    for (const auto& minterm : minterms)
+    for (const auto& minterm : *minterms)
     {
         algebraicMintermsText[i].setString(minterm);
         algebraicMintermsText[i].setCharacterSize(24);
@@ -549,7 +554,7 @@ void MapInterface::drawAlgebraicMinterms()
         algebraicMintermsText[i].setPosition(currentWidthOffset, currentHeightOffset);
         window.draw(algebraicMintermsText[i]);
 
-        if (mintermCounter == minterms.size())
+        if (mintermCounter == minterms->size())
             break;
 
         bounds = algebraicMintermsText[i].getLocalBounds();
@@ -615,8 +620,8 @@ void MapInterface::handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseBu
     int row = (mouseButtonEvent.y - mapHeightOffset) / 60;
     int index = row*4 + col;
 
-    kmapObject.changeCellValue(index);
-    performMap4x4Minimizing();
+    changeCellValue(index);
+    performMapMinimizing();
 }
 
 void MapInterface::drawTruthTable()
@@ -626,7 +631,7 @@ void MapInterface::drawTruthTable()
     char bit;
     sf::FloatRect bounds;
 
-    for (int i = 0; i < 17; ++i)
+    for (int i = 0; i < currentCellsNumber+1; ++i)
     {
         for (int j = 0; j < 6; ++j)
         {
@@ -644,64 +649,64 @@ void MapInterface::drawTruthTable()
         
     }
 
-    for (int i = 0; i < 6; ++i)
-    {
-        truthTableHeaderText[i].setString(truthTableHeader[i]);
-        truthTableHeaderText[i].setCharacterSize(20);
-        truthTableHeaderText[i].setFillColor(sf::Color::Black);
-        bounds = truthTableHeaderText[i].getLocalBounds();
-        truthTableHeaderText[i].setPosition(
-            truthTableWidthOffset + (26 - bounds.width) / 2 + i*28 - bounds.left,
-            truthTableHeightOffset);
+    // for (int i = 0; i < 6; ++i)
+    // {
+    //     truthTableHeaderText[i].setString(truthTableHeader[i]);
+    //     truthTableHeaderText[i].setCharacterSize(20);
+    //     truthTableHeaderText[i].setFillColor(sf::Color::Black);
+    //     bounds = truthTableHeaderText[i].getLocalBounds();
+    //     truthTableHeaderText[i].setPosition(
+    //         truthTableWidthOffset + (26 - bounds.width) / 2 + i*28 - bounds.left,
+    //         truthTableHeightOffset);
 
-        window.draw(truthTableHeaderText[i]);
-    }
+    //     window.draw(truthTableHeaderText[i]);
+    // }
 
-    for (int i = 1; i < 17; ++i)
-    {
-        std::bitset<4> x(value);
+    // for (int i = 1; i < 17; ++i)
+    // {
+    //     std::bitset<4> x(value);
 
-        for (int j = 0; j < 4; ++j)
-        {
-            index = (i-1)*4 + j;
-            bit = '0' + x[3-j];
+    //     for (int j = 0; j < 4; ++j)
+    //     {
+    //         index = (i-1)*4 + j;
+    //         bit = '0' + x[3-j];
 
-            truthTableVariablesValues[index].setString(bit);
-            truthTableVariablesValues[index].setCharacterSize(20);
-            truthTableVariablesValues[index].setFillColor(sf::Color::Black);
-            bounds = truthTableVariablesValues[index].getLocalBounds();
-            truthTableVariablesValues[index].setPosition(
-                truthTableWidthOffset + (26 - bounds.width) / 2 + j*28 - bounds.left,
-                truthTableHeightOffset + i*28);
+    //         truthTableVariablesValues[index].setString(bit);
+    //         truthTableVariablesValues[index].setCharacterSize(20);
+    //         truthTableVariablesValues[index].setFillColor(sf::Color::Black);
+    //         bounds = truthTableVariablesValues[index].getLocalBounds();
+    //         truthTableVariablesValues[index].setPosition(
+    //             truthTableWidthOffset + (26 - bounds.width) / 2 + j*28 - bounds.left,
+    //             truthTableHeightOffset + i*28);
 
-            window.draw(truthTableVariablesValues[index]);
-        }
+    //         window.draw(truthTableVariablesValues[index]);
+    //     }
 
-        ++value;
-    }
+    //     ++value;
+    // }
 
-    truthTableStateCircle[0].setRadius(6.f);
-    bounds = truthTableStateCircle[0].getLocalBounds();
-    float stateCirclePosX, stateCirclePosY;
+    // truthTableStateCircle[0].setRadius(6.f);
+    // bounds = truthTableStateCircle[0].getLocalBounds();
+    // float stateCirclePosX, stateCirclePosY;
 
-    for (int index = 0; index < 16; ++index)
-    {
-        stateCirclePosY = truthTableHeightOffset + kmapToTruthTable[index]*28 + (26 - bounds.height) / 2;
+    // for (int index = 0; index < 16; ++index)
+    // {
+    //     stateCirclePosY = truthTableHeightOffset + kmapToTruthTable[index]*28 + (26 - bounds.height) / 2;
         
-        if (kmapObject.getCellValue(index) == Value::zero)
-        {
-            stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + 4*28 - bounds.left;
-        }
-        else if (kmapObject.getCellValue(index) == Value::one)
-        {
-            stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + 5*28 - bounds.left;
-        }
+    //     if (kmapObject.getCellValue(index) == Value::zero)
+    //     {
+    //         stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + 4*28 - bounds.left;
+    //     }
+    //     else if (kmapObject.getCellValue(index) == Value::one)
+    //     {
+    //         stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + 5*28 - bounds.left;
+    //     }
 
-        truthTableStateCircle[index].setRadius(6.f);
-        truthTableStateCircle[index].setFillColor(sf::Color(97, 157, 216));
-        truthTableStateCircle[index].setPosition(stateCirclePosX, stateCirclePosY);
-        window.draw(truthTableStateCircle[index]);
-    }
+    //     truthTableStateCircle[index].setRadius(6.f);
+    //     truthTableStateCircle[index].setFillColor(sf::Color(97, 157, 216));
+    //     truthTableStateCircle[index].setPosition(stateCirclePosX, stateCirclePosY);
+    //     window.draw(truthTableStateCircle[index]);
+    // }
 }
 
 void MapInterface::handleMouseButtonPressedOnTruthTable(
@@ -724,8 +729,8 @@ void MapInterface::handleMouseButtonPressedOnTruthTable(
     int row = truthTableToKmap[y] / 4;
     int col = truthTableToKmap[y] % 4;
     int index = row*4 + col;
-    kmapObject.changeCellValue(index, intToValue[x]);
-    performMap4x4Minimizing();
+    changeCellValue(index, intToValue[x]);
+    performMapMinimizing();
 }
 
 void MapInterface::performMap4x4Minimizing()
@@ -733,6 +738,26 @@ void MapInterface::performMap4x4Minimizing()
     kmapObject.reset();
     kmapObject.findGroups();
     kmapObject.findAlgebraicMinterms();
+}
+
+void MapInterface::performMap2x4Minimizing()
+{
+    kmap2x4Object.reset();
+    kmap2x4Object.findGroups();
+    kmap2x4Object.findAlgebraicMinterms();
+}
+
+void MapInterface::performMapMinimizing()
+{
+    switch (currentMapType)
+    {
+        case MapType::map4x4:
+            performMap4x4Minimizing();
+            break;
+        case MapType::map2x4:
+            performMap2x4Minimizing();
+            break;
+    }
 }
 
 Value MapInterface::getCellValue(int cellIndex)
@@ -748,15 +773,55 @@ Value MapInterface::getCellValue(int cellIndex)
     }
 }
 
-void MapInterface::setMap2x4Variables()
+void MapInterface::changeCellValue(int cellIndex)
+{
+    switch (currentMapType)
+    {
+        case MapType::map4x4:
+            kmapObject.changeCellValue(cellIndex);
+            break;
+        case MapType::map2x4:
+            kmap2x4Object.changeCellValue(cellIndex);
+            break;
+    }
+}
+
+void MapInterface::changeCellValue(int cellIndex, Value valueToSet)
+{
+    switch (currentMapType)
+    {
+        case MapType::map4x4:
+            kmapObject.changeCellValue(cellIndex, valueToSet);
+            break;
+        case MapType::map2x4:
+            kmap2x4Object.changeCellValue(cellIndex, valueToSet);
+            break;
+    }
+}
+
+int MapInterface::getOnes()
+{
+    switch (currentMapType)
+    {
+        case MapType::map4x4:
+            return kmapObject.getOnes();
+        case MapType::map2x4:
+            return kmap2x4Object.getOnes();
+        default:
+            return 0;
+    }
+}
+
+void MapInterface::setUpMap2x4()
 {
     kmap2x4Object.fillMapWithZeroValues();
-    // kmap2x4Object.reset();
+    kmap2x4Object.reset();
     kmap2x4Object.findAlgebraicMinterms();
-    squareQuads = kmap2x4Object.getSquareQuads();
-    rectQuads = kmap2x4Object.getRectQuads();
-    pairs = kmap2x4Object.getPairs();
-    singleGroups = kmap2x4Object.getSingleGroups();
+    squareQuads = &kmap2x4Object.getSquareQuads();
+    rectQuads = &kmap2x4Object.getRectQuads();
+    pairs = &kmap2x4Object.getPairs();
+    singleGroups = &kmap2x4Object.getSingleGroups();
+    minterms = &kmap2x4Object.getAlgebraicMinterms();
     currentMapType = MapType::map2x4;
     currentMapHeight = map2x4Height;
     currentMapWidth = map2x4Width;
@@ -766,6 +831,30 @@ void MapInterface::setMap2x4Variables()
     currentVariables1WidthOffset = ABVariablesWidthOffset;
     currentVariables2HeightOffset = CVariableHeightOffset;
     currentVariables2WidthOffset = CDVariablesWidthOffset;
+    currentCellsNumber = map2x4CellsNumber;
+}
+
+void MapInterface::setUpMap4x4()
+{
+    kmapObject.fillMapWithZeroValues();
+    kmapObject.reset();
+    kmapObject.findAlgebraicMinterms();
+    octets = &kmapObject.getOctets();
+    squareQuads = &kmapObject.getSquareQuads();
+    rectQuads = &kmapObject.getRectQuads();
+    pairs = &kmapObject.getPairs();
+    singleGroups = &kmapObject.getSingleGroups();
+    minterms = &kmapObject.getAlgebraicMinterms();
+    currentMapType = MapType::map4x4;
+    currentMapHeight = map4x4Height;
+    currentMapWidth = map4x4Width;
+    currentVariables1 = "AB";
+    currentVariables2 = "CD";
+    currentVariables1HeightOffset = ABVariablesHeightOffset;
+    currentVariables1WidthOffset = ABVariablesWidthOffset;
+    currentVariables2HeightOffset = CDVariablesHeightOffset;
+    currentVariables2WidthOffset = CDVariablesWidthOffset;
+    currentCellsNumber = map4x4CellsNumber;
 }
 
 void MapInterface::incrementCurrentColorIndex()
@@ -812,8 +901,8 @@ void MapInterface::loop()
         drawVariables();
         drawGroups();
         drawCellValues();
-        // drawAlgebraicMinterms();
-        // drawTruthTable();
+        drawAlgebraicMinterms();
+        drawTruthTable();
         window.display();
     }
 }
