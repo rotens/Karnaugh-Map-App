@@ -30,6 +30,10 @@ class MapInterface
     int currentVariables1HeightOffset;
     int currentVariables2WidthOffset;
     int currentVariables2HeightOffset;
+    int currentVariablesNumber;
+    const char* currentTableHeader;
+    const int* currentKmapToTruthTable;
+    const int* currentTruthTableToKmap;
     std::string currentVariables1;
     std::string currentVariables2;
     MapType currentMapType;

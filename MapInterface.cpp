@@ -18,6 +18,8 @@ constexpr int textRelativeWidthOffset = 24 - 3;
 
 constexpr int map2x4CellsNumber = 8;
 constexpr int map4x4CellsNumber = 16;
+constexpr int map2x4VariablesNumber = 3;
+constexpr int map4x4VariablesNumber = 4;
 
 constexpr int horizontalGrayCodeHeightOffset = mapHeightOffset - 34;
 constexpr int horizontalGrayCodeWidthOffset = mapWidthOffset + 17 - 1; // 1 = text's left bound
@@ -35,7 +37,8 @@ constexpr int mintermsHeightOffset = mapHeightOffset + 240 + 50;
 
 constexpr int truthTableWidthOffset = 70;
 constexpr int truthTableHeightOffset = 80; 
-constexpr char truthTableHeader[] = {'A', 'B', 'C', 'D', '0', '1'};
+constexpr char truthTableHeaderFourVar[] = {'A', 'B', 'C', 'D', '0', '1'};
+constexpr char truthTableHeaderThreeVar[] = {'A', 'B', 'C', '0', '1'};
 
 sf::Color colors[8] = {
     sf::Color::Red, sf::Color::Blue, 
@@ -45,6 +48,8 @@ sf::Color colors[8] = {
 constexpr std::array<std::pair<int, int>, 4> diffs{{{0, 0}, {0, 1}, {1, 0}, {1, 1}}};
 constexpr int truthTableToKmap[] = {0, 4, 12, 8, 1, 5, 13, 9, 3, 7, 15, 11, 2, 6, 14, 10};
 constexpr int kmapToTruthTable[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 7, 15, 11};
+constexpr int truthTableToKmap2x4[] = {0, 4, 1, 5, 3, 7, 2, 6};
+constexpr int kmap2x4ToTruthTable[] = {1, 5, 2, 6, 4, 8, 3, 7};
 constexpr Value intToValue[] = {Value::zero, Value::one, Value::dont_care};
 
 MapInterface::MapInterface(sf::Font& font)
@@ -630,12 +635,13 @@ void MapInterface::drawTruthTable()
     int value = 0;
     char bit;
     sf::FloatRect bounds;
+    int columns = currentVariablesNumber + 2;
 
     for (int i = 0; i < currentCellsNumber+1; ++i)
     {
-        for (int j = 0; j < 6; ++j)
+        for (int j = 0; j < columns; ++j)
         {
-            index = i*6 + j;
+            index = i*columns + j;
 
             truthTableCells[index].setSize(sf::Vector2f(26, 26.f));
             truthTableCells[index].setOutlineColor(sf::Color(127, 127, 127));
@@ -646,88 +652,89 @@ void MapInterface::drawTruthTable()
 
             window.draw(truthTableCells[index]);
         }
-        
     }
 
-    // for (int i = 0; i < 6; ++i)
-    // {
-    //     truthTableHeaderText[i].setString(truthTableHeader[i]);
-    //     truthTableHeaderText[i].setCharacterSize(20);
-    //     truthTableHeaderText[i].setFillColor(sf::Color::Black);
-    //     bounds = truthTableHeaderText[i].getLocalBounds();
-    //     truthTableHeaderText[i].setPosition(
-    //         truthTableWidthOffset + (26 - bounds.width) / 2 + i*28 - bounds.left,
-    //         truthTableHeightOffset);
+    for (int i = 0; i < columns; ++i)
+    {
+        truthTableHeaderText[i].setString(currentTableHeader[i]);
+        truthTableHeaderText[i].setCharacterSize(20);
+        truthTableHeaderText[i].setFillColor(sf::Color::Black);
+        bounds = truthTableHeaderText[i].getLocalBounds();
+        truthTableHeaderText[i].setPosition(
+            truthTableWidthOffset + (26 - bounds.width) / 2 + i*28 - bounds.left,
+            truthTableHeightOffset);
 
-    //     window.draw(truthTableHeaderText[i]);
-    // }
+        window.draw(truthTableHeaderText[i]);
+    }
 
-    // for (int i = 1; i < 17; ++i)
-    // {
-    //     std::bitset<4> x(value);
+    for (int i = 1; i < currentCellsNumber+1; ++i)
+    {
+        std::bitset<4> x(value);
 
-    //     for (int j = 0; j < 4; ++j)
-    //     {
-    //         index = (i-1)*4 + j;
-    //         bit = '0' + x[3-j];
+        for (int j = 0; j < currentVariablesNumber; ++j)
+        {
+            index = (i-1)*4 + j;
+            bit = '0' + x[(currentVariablesNumber-1)-j];
 
-    //         truthTableVariablesValues[index].setString(bit);
-    //         truthTableVariablesValues[index].setCharacterSize(20);
-    //         truthTableVariablesValues[index].setFillColor(sf::Color::Black);
-    //         bounds = truthTableVariablesValues[index].getLocalBounds();
-    //         truthTableVariablesValues[index].setPosition(
-    //             truthTableWidthOffset + (26 - bounds.width) / 2 + j*28 - bounds.left,
-    //             truthTableHeightOffset + i*28);
+            truthTableVariablesValues[index].setString(bit);
+            truthTableVariablesValues[index].setCharacterSize(20);
+            truthTableVariablesValues[index].setFillColor(sf::Color::Black);
+            bounds = truthTableVariablesValues[index].getLocalBounds();
+            truthTableVariablesValues[index].setPosition(
+                truthTableWidthOffset + (26 - bounds.width) / 2 + j*28 - bounds.left,
+                truthTableHeightOffset + i*28);
 
-    //         window.draw(truthTableVariablesValues[index]);
-    //     }
+            window.draw(truthTableVariablesValues[index]);
+        }
 
-    //     ++value;
-    // }
+        ++value;
+    }
 
-    // truthTableStateCircle[0].setRadius(6.f);
-    // bounds = truthTableStateCircle[0].getLocalBounds();
-    // float stateCirclePosX, stateCirclePosY;
+    truthTableStateCircle[0].setRadius(6.f);
+    bounds = truthTableStateCircle[0].getLocalBounds();
+    float stateCirclePosX, stateCirclePosY;
+    int& column = currentVariablesNumber;
 
-    // for (int index = 0; index < 16; ++index)
-    // {
-    //     stateCirclePosY = truthTableHeightOffset + kmapToTruthTable[index]*28 + (26 - bounds.height) / 2;
+    for (int i = 0; i < currentCellsNumber; ++i)
+    {
+         
+        stateCirclePosY = truthTableHeightOffset + currentKmapToTruthTable[i]*28 + (26 - bounds.height) / 2;
         
-    //     if (kmapObject.getCellValue(index) == Value::zero)
-    //     {
-    //         stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + 4*28 - bounds.left;
-    //     }
-    //     else if (kmapObject.getCellValue(index) == Value::one)
-    //     {
-    //         stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + 5*28 - bounds.left;
-    //     }
+        if (getCellValue(i) == Value::zero)
+        {
+            stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + column*28 - bounds.left;
+        }
+        else if (getCellValue(i) == Value::one)
+        {
+            stateCirclePosX = truthTableWidthOffset + (26 - bounds.width) / 2 + (column+1)*28 - bounds.left;
+        }
 
-    //     truthTableStateCircle[index].setRadius(6.f);
-    //     truthTableStateCircle[index].setFillColor(sf::Color(97, 157, 216));
-    //     truthTableStateCircle[index].setPosition(stateCirclePosX, stateCirclePosY);
-    //     window.draw(truthTableStateCircle[index]);
-    // }
+        truthTableStateCircle[i].setRadius(6.f);
+        truthTableStateCircle[i].setFillColor(sf::Color(97, 157, 216));
+        truthTableStateCircle[i].setPosition(stateCirclePosX, stateCirclePosY);
+        window.draw(truthTableStateCircle[i]);
+    }
 }
 
 void MapInterface::handleMouseButtonPressedOnTruthTable(
     sf::Event::MouseButtonEvent& mouseButtonEvent)
 {
-    if (mouseButtonEvent.x <= truthTableWidthOffset + 28*4
-        or mouseButtonEvent.x >= truthTableWidthOffset + 28*6)
+    if (mouseButtonEvent.x <= truthTableWidthOffset + 28*currentVariablesNumber
+        or mouseButtonEvent.x >= truthTableWidthOffset + 28*(currentVariablesNumber+2))
     {
         return;
     } 
 
     if (mouseButtonEvent.y <= truthTableHeightOffset + 28
-        or mouseButtonEvent.y >= truthTableHeightOffset + 28*17)
+        or mouseButtonEvent.y >= truthTableHeightOffset + 28*(currentCellsNumber+1))
     {
         return;
     }
 
-    int x = (mouseButtonEvent.x - (truthTableWidthOffset + 28*4)) / 28;
+    int x = (mouseButtonEvent.x - (truthTableWidthOffset + 28*currentVariablesNumber)) / 28;
     int y = (mouseButtonEvent.y - (truthTableHeightOffset + 28)) / 28;
-    int row = truthTableToKmap[y] / 4;
-    int col = truthTableToKmap[y] % 4;
+    int row = currentTruthTableToKmap[y] / 4;
+    int col = currentTruthTableToKmap[y] % 4;
     int index = row*4 + col;
     changeCellValue(index, intToValue[x]);
     performMapMinimizing();
@@ -832,6 +839,10 @@ void MapInterface::setUpMap2x4()
     currentVariables2HeightOffset = CVariableHeightOffset;
     currentVariables2WidthOffset = CDVariablesWidthOffset;
     currentCellsNumber = map2x4CellsNumber;
+    currentVariablesNumber = map2x4VariablesNumber;
+    currentTableHeader = truthTableHeaderThreeVar;
+    currentKmapToTruthTable = kmap2x4ToTruthTable;
+    currentTruthTableToKmap = truthTableToKmap2x4;
 }
 
 void MapInterface::setUpMap4x4()
@@ -855,6 +866,10 @@ void MapInterface::setUpMap4x4()
     currentVariables2HeightOffset = CDVariablesHeightOffset;
     currentVariables2WidthOffset = CDVariablesWidthOffset;
     currentCellsNumber = map4x4CellsNumber;
+    currentVariablesNumber = map4x4VariablesNumber;
+    currentTableHeader = truthTableHeaderFourVar;
+    currentKmapToTruthTable = kmapToTruthTable;
+    currentTruthTableToKmap = truthTableToKmap;
 }
 
 void MapInterface::incrementCurrentColorIndex()
