@@ -64,6 +64,7 @@ public:
     void changeCellValue(int cellIndex, Value valueToSet);
     int getOnes() { return ones; }
     std::vector<KmapCell*>& getKmap() { return kmap; }
+    void fillMapWithZeroValues();
 
     friend class MapTest;
     

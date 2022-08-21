@@ -15,20 +15,25 @@ constexpr int mapWidthOffset = 500;
 constexpr int mapHeightOffset = 197;
 constexpr int textRelativeHeightOffset = 19 - 10;
 constexpr int textRelativeWidthOffset = 24 - 3;
+
 constexpr int horizontalGrayCodeHeightOffset = mapHeightOffset - 34;
 constexpr int horizontalGrayCodeWidthOffset = mapWidthOffset + 17 - 1; // 1 = text's left bound
 constexpr int verticalGrayCodeHeightOffset = mapHeightOffset + 21 - 8;
 constexpr int verticalGrayCodeWidthOffset = mapWidthOffset - 34; // 1 = text's left bound
+
 constexpr int ABVariablesWidthOffset = mapWidthOffset + 101;
 constexpr int ABVariablesHeightOffset = mapHeightOffset - 68;
 constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
 constexpr int CVariableHeightOffset = mapHeightOffset + 69;
+
 constexpr int mintermsWidthOffset = mapWidthOffset - 230;
 constexpr int mintermsHeightOffset = mapHeightOffset + 240 + 50;
+
 constexpr int truthTableWidthOffset = 70;
 constexpr int truthTableHeightOffset = 80; 
 constexpr char truthTableHeader[] = {'A', 'B', 'C', 'D', '0', '1'};
+
 sf::Color colors[8] = {
     sf::Color::Red, sf::Color::Blue, 
     sf::Color::Cyan, sf::Color::Green,
@@ -59,15 +64,6 @@ MapInterface::MapInterface(sf::Font& font)
     variablesText[0].setFont(font);
     variablesText[1].setFont(font);
 
-    currentMapHeight = map2x4Height;
-    currentMapWidth = map2x4Width;
-    currentMapType = MapType::map2x4;
-    currentVariables1 = "AB";
-    currentVariables2 = "C";
-    currentVariables1HeightOffset = ABVariablesHeightOffset;
-    currentVariables1WidthOffset = ABVariablesWidthOffset;
-    currentVariables2HeightOffset = CVariableHeightOffset;
-    currentVariables2WidthOffset = CDVariablesWidthOffset;
     // performMap4x4Minimizing();
 }
 
@@ -498,8 +494,29 @@ void MapInterface::drawSingleGroups()
 void MapInterface::drawGroups() 
 {
     currentColorIndex = 0;
+
+    switch (currentMapType)
+    {
+        case MapType::map4x4:
+            drawMap4x4Groups();
+            break;
+        case MapType::map2x4:
+            drawMap2x4Groups();
+            break;
+    }
+}
+void MapInterface::drawMap4x4Groups() 
+{
     drawMapBorder();
     drawOctets();
+    drawRectQuads();
+    drawSquareQuads();
+    drawPairs();
+    drawSingleGroups();
+}
+void MapInterface::drawMap2x4Groups() 
+{
+    drawMapBorder();
     drawRectQuads();
     drawSquareQuads();
     drawPairs();
@@ -663,14 +680,6 @@ void MapInterface::drawTruthTable()
         ++value;
     }
 
-    // sf::CircleShape shape(8.f);
-    // shape.setFillColor(sf::Color(100, 250, 50));
-    // bounds = shape.getLocalBounds();
-    // shape.setPosition(
-    //     truthTableWidthOffset + (26 - bounds.width) / 2 + 4*28 - bounds.left,  
-    //     truthTableHeightOffset + 28 + (26 - bounds.height) / 2);
-    // window.draw(shape);
-
     truthTableStateCircle[0].setRadius(6.f);
     bounds = truthTableStateCircle[0].getLocalBounds();
     float stateCirclePosX, stateCirclePosY;
@@ -737,6 +746,26 @@ Value MapInterface::getCellValue(int cellIndex)
         default:
             return Value::zero;
     }
+}
+
+void MapInterface::setMap2x4Variables()
+{
+    kmap2x4Object.fillMapWithZeroValues();
+    // kmap2x4Object.reset();
+    kmap2x4Object.findAlgebraicMinterms();
+    squareQuads = kmap2x4Object.getSquareQuads();
+    rectQuads = kmap2x4Object.getRectQuads();
+    pairs = kmap2x4Object.getPairs();
+    singleGroups = kmap2x4Object.getSingleGroups();
+    currentMapType = MapType::map2x4;
+    currentMapHeight = map2x4Height;
+    currentMapWidth = map2x4Width;
+    currentVariables1 = "AB";
+    currentVariables2 = "C";
+    currentVariables1HeightOffset = ABVariablesHeightOffset;
+    currentVariables1WidthOffset = ABVariablesWidthOffset;
+    currentVariables2HeightOffset = CVariableHeightOffset;
+    currentVariables2WidthOffset = CDVariablesWidthOffset;
 }
 
 void MapInterface::incrementCurrentColorIndex()

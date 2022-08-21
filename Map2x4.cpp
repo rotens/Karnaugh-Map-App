@@ -282,6 +282,18 @@ std::string Map2x4::getProduct(std::vector<std::string>& cellsBinaryNumbers)
 
 void Map2x4::findAlgebraicMinterms()
 {
+    if (ones == 8)
+    {
+        algebraicMinterms.push_back("1");
+        return;
+    }
+
+    if (ones == 0)
+    {
+        algebraicMinterms.push_back("0");
+        return;
+    }
+
     findAlgebraicMintermsForGivenGroup(rectQuads);
     findAlgebraicMintermsForGivenGroup(squareQuads);
     findAlgebraicMintermsForGivenGroup(pairs);
@@ -363,4 +375,11 @@ void Map2x4::printAlgebraicMinterms()
 Value Map2x4::getCellValue(int cellIndex)
 { 
     return kmap[cellIndex % 8]->getCellValue(); 
+}
+
+void Map2x4::fillMapWithZeroValues()
+{
+    std::for_each(kmap.begin(), kmap.end(), 
+        [](Kmap2x4Cell* cell) { cell->setCellValue(Value::zero); });
+    ones = 0;
 }

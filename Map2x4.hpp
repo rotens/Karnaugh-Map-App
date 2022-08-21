@@ -21,6 +21,7 @@ public:
     Groups& getPairs() { return pairs; }
     Groups& getSquareQuads() { return squareQuads; }
     Groups& getRectQuads() { return rectQuads; }
+    std::vector<int>& getSingleGroups() { return singleGroups; }
     void findPossiblePairs();
     void pairCells(int);
     void findSquareQuads();
@@ -37,7 +38,8 @@ public:
     std::string getProduct(std::vector<std::string>&);
     void printAlgebraicMinterms();
     std::vector<std::string>& getAlgebraicMinterms() { return algebraicMinterms; }
-
+    void fillMapWithZeroValues();
+    void reset();
     
     friend class MapTest;
     

@@ -911,3 +911,10 @@ void Map4x4::changeCellValue(int cellIndex, Value valueToSet)
         --ones;
     }
 }
+
+void Map4x4::fillMapWithZeroValues()
+{
+    std::for_each(kmap.begin(), kmap.end(), 
+        [](KmapCell* cell) { cell->setCellValue(Value::zero); });
+    ones = 0;
+}

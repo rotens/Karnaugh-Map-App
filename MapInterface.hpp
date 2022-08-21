@@ -31,6 +31,11 @@ class MapInterface
     std::string currentVariables1;
     std::string currentVariables2;
     MapType currentMapType;
+    Groups& const octets;
+    Groups& const squareQuads;
+    Groups& const rectQuads;
+    Groups& const pairs;
+    std::vector<int>& const singleGroups;
 
     void fillCellsWithWhiteColor();
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
@@ -48,6 +53,8 @@ class MapInterface
     void drawRectQuads();
     void drawOctets();
     void drawGroups();
+    void drawMap4x4Groups();
+    void drawMap2x4Groups();
     void drawAlgebraicMinterms();
     void drawTruthTable();
     void handleMouseButtonPressedOnTruthTable(
@@ -55,6 +62,8 @@ class MapInterface
     void performMap4x4Minimizing();
     void incrementCurrentColorIndex();
     Value getCellValue(int cellIndex);
+    void setMap2x4Variables();
+    void setMap4x4Variables();
 
 public:
     MapInterface(sf::Font&);
