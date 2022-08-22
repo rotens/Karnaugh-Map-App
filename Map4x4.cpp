@@ -166,11 +166,12 @@ void Map4x4::pairCells(int pairsNumber)
 
             pairFound1 = true;
             pairFound2 = true;
-            decrementGroupingPossibilities();
-
+            
             std::cout << "PAIRING WITHOUT SHARING AND " << pairsNumber << " POSSIBILITIES" << std::endl;
         }
     }
+
+    decrementGroupingPossibilities();
 }
 
 void Map4x4::pairCellsWithSharing()
@@ -743,7 +744,7 @@ void Map4x4::printEverything()
     printSquareQuads();
     std::cout << "\nRect quads: \n";
     printRectQuads();
-    std::cout << "\nPrint pairs: \n";
+    std::cout << "\nPairs: \n";
     printPairs();
     std::cout << "\nAlgebraic minterms: \n";
     printAlgebraicMinterms();
@@ -772,10 +773,10 @@ void Map4x4::findAlgebraicMinterms()
         return;
     }
 
-    findAlgebraicMintermsForGivenGroup(pairs);
+    findAlgebraicMintermsForGivenGroup(octets);
     findAlgebraicMintermsForGivenGroup(rectQuads);
     findAlgebraicMintermsForGivenGroup(squareQuads);
-    findAlgebraicMintermsForGivenGroup(octets);
+    findAlgebraicMintermsForGivenGroup(pairs);
 
     for (const auto cellIndex : singleGroups)
     {

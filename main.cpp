@@ -792,10 +792,10 @@ int main()
 
     // Map4x4 kmap;
     // kmap.initializeElementsWithGivenValues({
-    //     Value::one, Value::one, Value::zero, Value::zero,
     //     Value::zero, Value::one, Value::one, Value::zero,
-    //     Value::zero, Value::zero, Value::zero, Value::zero,
-    //     Value::zero, Value::zero, Value::zero, Value::zero});
+    //     Value::zero, Value::one, Value::one, Value::zero,
+    //     Value::one, Value::one, Value::zero, Value::zero,
+    //     Value::zero, Value::one, Value::zero, Value::zero});
     // kmap.findGroups();
     // kmap.findAlgebraicMinterms();
     // kmap.printKmap();
