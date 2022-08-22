@@ -227,25 +227,29 @@ void MapInterface::drawSwitchMapText()
     switchMapText.setPosition(switchMapWidthOffset, switchMapHeightOffset);
     window.draw(switchMapText);
 
-    sf::FloatRect bounds = switchMapText.getLocalBounds();
-
-    std::cout << bounds.width << std::endl;
+    
+    // std::cout << bounds.height << std::endl;
+    int additionalOffset = switchMapText.getLocalBounds().width;
+    // std::cout << additionalOffset+10 << std::endl;
 
     switchMapVariablesText[2].setString("3");
     switchMapVariablesText[2].setCharacterSize(24); 
     switchMapVariablesText[2].setFillColor(sf::Color::Black);
     switchMapVariablesText[2].setPosition(
-        switchMapWidthOffset + bounds.width + 10, 
+        switchMapWidthOffset + additionalOffset + 10, 
         switchMapHeightOffset);
     window.draw(switchMapVariablesText[2]);
+
+    additionalOffset += switchMapVariablesText[2].getLocalBounds().width + 10;
 
     switchMapVariablesText[3].setString("4");
     switchMapVariablesText[3].setCharacterSize(24); 
     switchMapVariablesText[3].setFillColor(sf::Color::Black);
     switchMapVariablesText[3].setPosition(
-        switchMapWidthOffset + bounds.width + 20, 
+        switchMapWidthOffset + additionalOffset + 10, 
         switchMapHeightOffset);
     window.draw(switchMapVariablesText[3]);
+    // std::cout << additionalOffset+10+switchMapVariablesText[3].getLocalBounds().width << std::endl;
 }
 
 void MapInterface::drawMapBorder()
@@ -645,7 +649,7 @@ void MapInterface::cellHover(sf::Event::MouseMoveEvent& mouseMove)
     rectangles[index].setFillColor(sf::Color(170, 215, 255));
 }
 
-void MapInterface::handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseButtonEvent)
+void MapInterface::handleMouseButtonPressedOnKmap(sf::Event::MouseButtonEvent& mouseButtonEvent)
 {
     if (mouseButtonEvent.x <= mapWidthOffset or mouseButtonEvent.x >= mapWidthOffset + currentMapWidth*58 + 6)
     {
@@ -663,6 +667,38 @@ void MapInterface::handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseBu
 
     changeCellValue(index);
     performMapMinimizing();
+}
+
+void MapInterface::handleMouseButtonPressedOnNumberOfVariables(sf::Event::MouseButtonEvent& mouseButtonEvent)
+{
+    if (mouseButtonEvent.x <= switchMapWidthOffset + 108 or mouseButtonEvent.x > switchMapWidthOffset + 140)
+    {
+        return;
+    } 
+
+    if (mouseButtonEvent.y <= switchMapHeightOffset or mouseButtonEvent.y > switchMapHeightOffset + 24)
+    {
+        return;
+    }
+    
+    int numOfVariables = 3 + ((mouseButtonEvent.x - (switchMapWidthOffset + 108)) / 16);
+    switchMap(static_cast<MapType>(numOfVariables));
+ }
+
+void MapInterface::switchMap(MapType mapType)
+{
+    if (mapType == currentMapType)
+        return;
+
+    switch (mapType)
+    {
+        case MapType::map4x4:
+            setUpMap4x4();
+            break;
+        case MapType::map2x4:
+            setUpMap2x4();
+            break;
+    }
 }
 
 void MapInterface::drawTruthTable()
@@ -935,8 +971,9 @@ void MapInterface::loop()
                     window.close();
                     break;
                 case sf::Event::MouseButtonPressed:
-                    handleMouseButtonPressed(event.mouseButton);
+                    handleMouseButtonPressedOnKmap(event.mouseButton);
                     handleMouseButtonPressedOnTruthTable(event.mouseButton);
+                    handleMouseButtonPressedOnNumberOfVariables(event.mouseButton);
                     break;
                 case sf::Event::MouseMoved:
                     cellHover(event.mouseMove);

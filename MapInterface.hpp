@@ -48,7 +48,7 @@ class MapInterface
 
     void fillCellsWithWhiteColor();
     void cellHover(sf::Event::MouseMoveEvent& mouseMove);
-    void handleMouseButtonPressed(sf::Event::MouseButtonEvent& mouseButtonEvent);
+    void handleMouseButtonPressedOnKmap(sf::Event::MouseButtonEvent& mouseButtonEvent);
     void drawMap();
     void drawCellValues();
     void drawGrayCode();
@@ -69,6 +69,8 @@ class MapInterface
     void drawSwitchMapText();
     void handleMouseButtonPressedOnTruthTable(
         sf::Event::MouseButtonEvent& mouseButtonEvent);
+    void handleMouseButtonPressedOnNumberOfVariables(
+        sf::Event::MouseButtonEvent& mouseButtonEvent);
     void performMapMinimizing();
     void performMap4x4Minimizing();
     void performMap2x4Minimizing();
@@ -79,6 +81,7 @@ class MapInterface
     void setUpMap2x4();
     void setUpMap4x4();
     int getOnes();
+    void switchMap(MapType);
 
 public:
     MapInterface(sf::Font&);
