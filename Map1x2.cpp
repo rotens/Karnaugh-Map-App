@@ -1,31 +1,28 @@
 #include "Map1x2.hpp"
 
-std::string& Map1x2::getAlgebraicMinterm()
-{
-    return algebraicMinterm;
-}
-
 void Map1x2::findAlgebraicMinterm()
 {
-    if (zeroes == 2)
+    if (ones == 2)
     {
-        algebraicMinterm = "0";
+        algebraicMinterm = "1";
         return;
     }
 
-    if (zeroes == 0)
+    if (ones == 0)
     {
-        algebraicMinterm = "1";
+        algebraicMinterm = "0";
         return;
     }
 
     if (kmap[0] == Value::one)
     {
         algebraicMinterm = "A\'";
+        singleGroups.push_back(0);
         return;
     }
 
     algebraicMinterm = "A";
+    singleGroups.push_back(1);
 }
 
 bool Map1x2::changeValue(int index, Value value)
@@ -40,11 +37,20 @@ bool Map1x2::changeValue(int index, Value value)
 
     if (value == Value::one)
     {
-        --zeroes;
+        ++ones;
         return true;
     }
 
-    ++zeroes;
+    --ones;
 
     return true;
+}
+
+void Map1x2::reset()
+{
+    ones = 0;
+    algebraicMinterm = "";
+    singleGroups.clear();
+    kmap[0] = Value::zero;
+    kmap[1] = Value::zero;
 }
