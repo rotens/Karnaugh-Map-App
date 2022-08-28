@@ -5,24 +5,25 @@
 
 class Map2x2
 {
-    std::array<std::array<Value, 2>, 2> kmap;
-    int zeroes{4};
-    std::vector<std::pair<int, int>> _1x1Groups;
-    std::vector<std::array<std::pair<int, int>, 2>> rect2x1Groups;
+    std::vector<Value> kmap{4, Value::zero};
+    int ones{0};
+    std::vector<int> singleGroups;
+    std::vector<std::vector<int>> pairs;
     std::vector<std::string> algebraicMinterms;
 
-    void find2x1Groups();
-    void find1x1Groups();
-    void add2x1Group(int, int, int, int);
-    bool is2x1Group(int, int, int, int);
-    void findAlgebraicMinterms();
-    void findAlgebraicMintermsFor2x1Groups();
-    void findAlgebraicMintermsFor1x1Groups();
-    bool changeValue(int, int, Value);
-    void findGroups();
+    void findPairs();
+    void findSingleGroups();
+    void addPair(int, int);
+    bool isPair(int, int);
+    void findAlgebraicMintermsForPairs();
+    void findAlgebraicMintermsForSingleGroups();
 
 public:
-    void solve();
-    void initializeKmapWith(std::array<std::array<Value, 2>, 2>&);
+    void initializeKmapWith(std::vector<Value>& kmap);
     std::vector<std::string>& getAlgebraicMinterms();
+    std::vector<std::vector<int>>& getPairs() { return pairs; }
+    std::vector<int>& getSingleGroups() { return singleGroups; }
+    void findGroups();
+    void findAlgebraicMinterms();
+    bool changeValue(int, Value);
 };

@@ -1,123 +1,109 @@
 #include "Map2x2.hpp"
 
-void Map2x2::find2x1Groups()
+void Map2x2::findPairs()
 {
-    for (int8_t i = 0; i < 2; ++i)
+    for (const auto i : {0, 3})
     {
-        if (is2x1Group(i, 0, 1, 2))
+        for (const auto j : {1, 2})
         {
-            add2x1Group(i, 0, 1, 2);
-        }
-
-        if (is2x1Group(0, i, 2, 1))
-        {
-            add2x1Group(0, i, 2, 1);
-        }
-    }   
-}
-
-bool Map2x2::is2x1Group(int row, int col, int height, int width)
-{
-    for (int8_t i = row; i < row+height; ++i)
-    {
-        for (int8_t j = col; j < col+width; ++j)
-        {
-            if (kmap[i][j] != Value::one)
-                return false;            
+            if (isPair(i, j))
+            {
+                addPair(i, j);
+            }
         }
     }
+}
+
+bool Map2x2::isPair(int firstCell, int secondCell)
+{
+    if (kmap[firstCell] != Value::one)
+        return false;
+
+    if (kmap[secondCell] != Value::one)
+        return false;
 
     return true;
 }
 
-void Map2x2::add2x1Group(int row, int col, int height, int width)
+void Map2x2::addPair(int firstCell, int secondCell)
 {
-    int k = 0;
-    std::array<std::pair<int, int>, 2> newGroup;
-
-    for (int i = row; i < row+height; ++i) 
-    {
-        for (int j = col; j < col+width; ++j)
-        {
-            newGroup[k++] = std::make_pair(i, j);
-        }
-    }
-
-    rect2x1Groups.push_back(std::move(newGroup));
+    std::vector<int> newPair{firstCell, secondCell};
+    pairs.push_back(std::move(newPair));
 }
 
-void Map2x2::find1x1Groups()
+void Map2x2::findSingleGroups()
 {
-    for (int i : {0, 1})
+    for (const auto cellIndex : {0, 1, 2, 3})
     {
-        for (int j : {0, 1})
+        if (kmap[cellIndex] == Value::one)
         {
-            if (kmap[i][j] == Value::one)
-                _1x1Groups.push_back(std::make_pair(i, j));
+            singleGroups.push_back(cellIndex);
         }
-    }
+    }  
 }
 
 void Map2x2::findGroups()
 {
-    rect2x1Groups.clear();
-    _1x1Groups.clear();
+    pairs.clear();
+    singleGroups.clear();
 
-    find2x1Groups();
+    findPairs();
     
-    if (not rect2x1Groups.empty())
+    if (not pairs.empty())
         return;
 
-    find1x1Groups();
+    findSingleGroups();
 }
 
-void Map2x2::initializeKmapWith(std::array<std::array<Value, 2>, 2>& kmap)
+void Map2x2::initializeKmapWith(std::vector<Value>& kmap)
 {
     this->kmap = kmap;
-    for (const auto& row : kmap)
+    for (const auto cellValue : kmap)
     {
-        for (const auto& cell : row)
-        {
-            if (cell == Value::one)
-                --zeroes;
-        }
+        if (cellValue == Value::one)
+            ++ones;
     }
 }
 
-void Map2x2::findAlgebraicMintermsFor1x1Groups()
+void Map2x2::findAlgebraicMintermsForSingleGroups()
 {
     std::string product = "";
 
-    for (const auto& group : _1x1Groups)
+    for (const auto cellIndex : singleGroups)
     {
-        product += group.first == 0 ? "B\'" : "B";
-        product += group.second == 0 ? "A\'" : "A";
+        int row = cellIndex / 2;
+        int col = cellIndex % 2;
+        product += row == 0 ? "!B" : "B";
+        product += col == 0 ? "!A" : "A";
         algebraicMinterms.push_back(product);
         product = "";
     }
 }
 
-void Map2x2::findAlgebraicMintermsFor2x1Groups()
+void Map2x2::findAlgebraicMintermsForPairs()
 {
     std::string product = "";
     int onesA = 0;
     int onesB = 0;
 
-    for (const auto& group : rect2x1Groups)
+    for (const auto& pair : pairs)
     {
-        for (const auto& cell : group)
+        for (const auto cellIndex : pair)
         {
-            if (cell.first == 1)
+            int row = cellIndex / 2;
+            int col = cellIndex % 2;
+
+            if (row == 1)
                 ++onesB;
 
-            if (cell.second == 1)
+            if (col == 1)
                 ++onesA;
         }
 
         product += onesA == 2 ? "A" : "";
-        product += onesA == 0 ? "A\'" : "";
+        product += onesA == 0 ? "!A" : "";
         product += onesB == 2 ? "B" : "";
-        product += onesB == 0 ? "B\'" : "";
+        product += onesB == 0 ? "!B" : "";
         algebraicMinterms.push_back(product);
         
         onesA = 0;
@@ -130,48 +116,39 @@ void Map2x2::findAlgebraicMinterms()
 {
     algebraicMinterms.clear();
 
-    if (zeroes == 4)
+    if (ones == 0)
     {
         algebraicMinterms.push_back("0");
         return;
     }
 
-    if (zeroes == 0)
+    if (ones == 4)
     {
         algebraicMinterms.push_back("1");
         return;
     }
     
-    findAlgebraicMintermsFor2x1Groups();
-    findAlgebraicMintermsFor1x1Groups();
+    findAlgebraicMintermsForPairs();
+    findAlgebraicMintermsForSingleGroups();
 }
 
-void Map2x2::solve() 
+bool Map2x2::changeValue(int cellIndex, Value value)
 {
-    findGroups();
-    findAlgebraicMinterms();
-}
-
-bool Map2x2::changeValue(int row, int col, Value value)
-{
-    if (row < 0 or row > 1)
+    if (cellIndex < 0 or cellIndex > 3)
         return false;
 
-    if (col < 0 or col > 1)
-        return false;
-
-    if (kmap[row][col] == value)
+    if (kmap[cellIndex] == value)
         return true;
 
-    kmap[row][col] = value;
+    kmap[cellIndex] = value;
 
     if (value == Value::one)
     {
-        --zeroes;
+        ++ones;
         return true;
     }
 
-    ++zeroes;
+    --ones;
 
     return true;
 }
