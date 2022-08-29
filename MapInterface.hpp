@@ -54,6 +54,8 @@ class MapInterface
     void drawGrayCode();
     void drawGrayCodeMap4x4();
     void drawGrayCodeMap2x4();
+    void drawGrayCodeMap2x2();
+    void drawGrayCodeMap1x2();
     void drawVariables();
     void drawMapBorder();
     void drawSquareQuads();
@@ -64,6 +66,8 @@ class MapInterface
     void drawGroups();
     void drawMap4x4Groups();
     void drawMap2x4Groups();
+    void drawMap2x2Groups();
+    void drawMap1x2Groups();
     void drawAlgebraicMinterms();
     void drawTruthTable();
     void drawSwitchMapText();
@@ -80,6 +84,8 @@ class MapInterface
     void changeCellValue(int, Value);
     void setUpMap2x4();
     void setUpMap4x4();
+    void setUpMap2x2();
+    void setUpMap1x2();
     int getOnes();
     void switchMap(MapType);
 

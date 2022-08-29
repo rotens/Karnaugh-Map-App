@@ -26,4 +26,5 @@ public:
     void findGroups();
     void findAlgebraicMinterms();
     bool changeValue(int, Value);
+    void reset();
 };

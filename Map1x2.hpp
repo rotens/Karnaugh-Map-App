@@ -15,4 +15,5 @@ public:
     std::vector<int>& getSingleGroups() { return singleGroups; }
     bool changeValue(int, Value);
     void reset();
+    int getOnes() { return ones; }
 };

@@ -157,3 +157,10 @@ std::vector<std::string>& Map2x2::getAlgebraicMinterms()
 {
     return algebraicMinterms;
 }
+
+void  Map2x2::reset() 
+{
+    singleGroups.clear();
+    pairs.clear();
+    algebraicMinterms.clear();
+}

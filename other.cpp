@@ -1,6 +1,7 @@
 #include "other.hpp"
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 int getCellIndex(int cellIndex, int rowOffset, int colOffset)
 {

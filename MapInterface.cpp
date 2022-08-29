@@ -8,6 +8,10 @@ constexpr int map4x4Height = 4;
 constexpr int map4x4Width = 4;
 constexpr int map2x4Height = 2;
 constexpr int map2x4Width = 4;
+constexpr int map2x2Height = 2;
+constexpr int map2x2Width = 2;
+constexpr int map1x2Height = 1;
+constexpr int map1x2Width = 2;
 
 constexpr int windowWidth = 800;
 constexpr int windowHeight = 640;
@@ -16,8 +20,12 @@ constexpr int mapHeightOffset = 197;
 constexpr int textRelativeHeightOffset = 19 - 10;
 constexpr int textRelativeWidthOffset = 24 - 3;
 
+constexpr int map1x2CellsNumber = 2;
+constexpr int map2x2CellsNumber = 4;
 constexpr int map2x4CellsNumber = 8;
 constexpr int map4x4CellsNumber = 16;
+constexpr int map1x2VariablesNumber = 1;
+constexpr int map2x2VariablesNumber = 2;
 constexpr int map2x4VariablesNumber = 3;
 constexpr int map4x4VariablesNumber = 4;
 
@@ -31,6 +39,10 @@ constexpr int ABVariablesHeightOffset = mapHeightOffset - 68;
 constexpr int CDVariablesWidthOffset = mapWidthOffset - 74;
 constexpr int CDVariablesHeightOffset = mapHeightOffset + 138;
 constexpr int CVariableHeightOffset = mapHeightOffset + 69;
+constexpr int AVariablesWidthOffset = mapWidthOffset + 50;
+constexpr int AVariablesHeightOffset = mapHeightOffset - 68;
+constexpr int BVariablesWidthOffset = mapWidthOffset - 74;
+constexpr int BVariablesHeightOffset = mapHeightOffset + 69;
 
 constexpr int switchMapWidthOffset = 400;
 constexpr int switchMapHeightOffset = 50;
@@ -54,6 +66,9 @@ constexpr int kmapToTruthTable[] = {1, 5, 13, 9, 2, 6, 14, 10, 4, 8, 16, 12, 3, 
 constexpr int truthTableToKmap2x4[] = {0, 4, 1, 5, 3, 7, 2, 6};
 constexpr int kmap2x4ToTruthTable[] = {1, 3, 7, 5, 2, 4, 8, 6};
 constexpr Value intToValue[] = {Value::zero, Value::one, Value::dont_care};
+
+std::vector<int> _pair{0, 1};
+std::vector<std::vector<int>> vec1{_pair};
 
 MapInterface::MapInterface(sf::Font& font)
 {
@@ -79,7 +94,8 @@ MapInterface::MapInterface(sf::Font& font)
     variablesText[1].setFont(font);
     switchMapText.setFont(font);
 
-    setUpMap2x4();
+    setUpMap2x2();
+    // setUpMap2x4();
 }
 
 void MapInterface::fillCellsWithWhiteColor()
@@ -119,7 +135,7 @@ void MapInterface::drawCellValues()
     {
         for (int j = 0; j < currentMapWidth; ++j)
         {
-            cellIndex = 4*i + j;
+            cellIndex = currentMapWidth*i + j;
             cellValues[k].setString(static_cast<char>(getCellValue(cellIndex)));
             cellValues[k].setCharacterSize(30); 
             cellValues[k].setFillColor(sf::Color::Black);
@@ -142,6 +158,12 @@ void MapInterface::drawGrayCode()
             break;
         case MapType::map2x4:
             drawGrayCodeMap2x4();
+            break;
+        case MapType::map2x2:
+            drawGrayCodeMap2x2();
+            break;
+        case MapType::map1x2:
+            drawGrayCodeMap1x2();
             break;
     }
 }
@@ -185,6 +207,60 @@ void MapInterface::drawGrayCodeMap2x4()
     }
 
     for (int i = 0; i < map2x4Height; ++i)
+    {
+        grayCodeText[i+4].setString(grayCode[1][i]);
+        grayCodeText[i+4].setCharacterSize(24); 
+        grayCodeText[i+4].setFillColor(sf::Color::Black);
+        grayCodeText[i+4].setPosition(
+            verticalGrayCodeWidthOffset + 12,
+            verticalGrayCodeHeightOffset + i * 60);
+
+        window.draw(grayCodeText[i+4]);
+    }
+}
+
+void MapInterface::drawGrayCodeMap2x2()
+{
+    for (int i = 0; i < map2x2Width; ++i)
+    {
+        grayCodeText[i].setString(grayCode[i][i]);
+        grayCodeText[i].setCharacterSize(24); 
+        grayCodeText[i].setFillColor(sf::Color::Black);
+        grayCodeText[i].setPosition(
+            horizontalGrayCodeWidthOffset + i * 60 + 6,
+            horizontalGrayCodeHeightOffset);
+
+        window.draw(grayCodeText[i]);
+    }
+
+    for (int i = 0; i < map2x2Height; ++i)
+    {
+        grayCodeText[i+4].setString(grayCode[1][i]);
+        grayCodeText[i+4].setCharacterSize(24); 
+        grayCodeText[i+4].setFillColor(sf::Color::Black);
+        grayCodeText[i+4].setPosition(
+            verticalGrayCodeWidthOffset + 12,
+            verticalGrayCodeHeightOffset + i * 60);
+
+        window.draw(grayCodeText[i+4]);
+    }
+}
+
+void MapInterface::drawGrayCodeMap1x2()
+{
+    for (int i = 0; i < map2x2Width; ++i)
+    {
+        grayCodeText[i].setString(grayCode[i][i]);
+        grayCodeText[i].setCharacterSize(24); 
+        grayCodeText[i].setFillColor(sf::Color::Black);
+        grayCodeText[i].setPosition(
+            horizontalGrayCodeWidthOffset + i * 60,
+            horizontalGrayCodeHeightOffset);
+
+        window.draw(grayCodeText[i]);
+    }
+
+    for (int i = 0; i < map2x2Height; ++i)
     {
         grayCodeText[i+4].setString(grayCode[1][i]);
         grayCodeText[i+4].setCharacterSize(24); 
@@ -455,9 +531,12 @@ void MapInterface::drawPairs()
 
     for (const auto& pair : *pairs)
     {
+        
         auto sortedPair = getSortedPair(pair);
-        firstCell = std::make_pair(sortedPair.first / 4, sortedPair.first % 4);
-        lastCell = std::make_pair(sortedPair.second / 4, sortedPair.second % 4);
+        firstCell = std::make_pair(
+            sortedPair.first / currentMapHeight, sortedPair.first % currentMapHeight);
+        lastCell = std::make_pair(
+            sortedPair.second / currentMapHeight, sortedPair.second % currentMapHeight);
 
         if (firstCell.first == lastCell.first)
         {
@@ -554,8 +633,15 @@ void MapInterface::drawGroups()
         case MapType::map2x4:
             drawMap2x4Groups();
             break;
+        case MapType::map2x2:
+            drawMap2x2Groups();
+            break;
+        case MapType::map1x2:
+            drawMap1x2Groups();
+            break;
     }
 }
+
 void MapInterface::drawMap4x4Groups() 
 {
     drawMapBorder();
@@ -565,12 +651,26 @@ void MapInterface::drawMap4x4Groups()
     drawPairs();
     drawSingleGroups();
 }
+
 void MapInterface::drawMap2x4Groups() 
 {
     drawMapBorder();
     drawRectQuads();
     drawSquareQuads();
     drawPairs();
+    drawSingleGroups();
+}
+
+void MapInterface::drawMap2x2Groups() 
+{
+    drawMapBorder();
+    drawPairs();
+    drawSingleGroups();
+}
+
+void MapInterface::drawMap1x2Groups() 
+{
+    drawMapBorder();
     drawSingleGroups();
 }
 
@@ -838,6 +938,22 @@ void MapInterface::performMapMinimizing()
     }
 }
 
+Value tempFunc1(int cellIndex)
+{
+    if (cellIndex < 2)
+        return Value::one;
+
+    return Value::zero;
+}
+
+Value tempFunc2(int cellIndex)
+{
+    if (cellIndex < 1)
+        return Value::one;
+
+    return Value::zero;
+}
+
 Value MapInterface::getCellValue(int cellIndex)
 {
     switch (currentMapType)
@@ -846,6 +962,10 @@ Value MapInterface::getCellValue(int cellIndex)
             return kmapObject.getCellValue(cellIndex);
         case MapType::map2x4:
             return kmap2x4Object.getCellValue(cellIndex);
+        case MapType::map2x2:
+            return tempFunc1(cellIndex);
+        case MapType::map1x2:
+            return tempFunc2(cellIndex);
         default:
             return Value::zero;
     }
@@ -938,6 +1058,30 @@ void MapInterface::setUpMap4x4()
     currentVariables2WidthOffset = CDVariablesWidthOffset;
     currentCellsNumber = map4x4CellsNumber;
     currentVariablesNumber = map4x4VariablesNumber;
+    currentTableHeader = truthTableHeaderFourVar;
+    currentKmapToTruthTable = kmapToTruthTable;
+    currentTruthTableToKmap = truthTableToKmap;
+}
+
+void MapInterface::setUpMap2x2()
+{
+    // kmapObject.fillMapWithZeroValues();
+    // kmapObject.reset();
+    // kmapObject.findAlgebraicMinterms();
+    pairs = &vec1;
+    singleGroups = &kmapObject.getSingleGroups();
+    minterms = &kmapObject.getAlgebraicMinterms();
+    currentMapType = MapType::map2x2;
+    currentMapHeight = map2x2Height;
+    currentMapWidth = map2x2Width;
+    currentVariables1 = "A";
+    currentVariables2 = "B";
+    currentVariables1HeightOffset = AVariablesHeightOffset;
+    currentVariables1WidthOffset = AVariablesWidthOffset;
+    currentVariables2HeightOffset = BVariablesHeightOffset;
+    currentVariables2WidthOffset = BVariablesWidthOffset;
+    currentCellsNumber = map2x2CellsNumber;
+    currentVariablesNumber = map2x2VariablesNumber;
     currentTableHeader = truthTableHeaderFourVar;
     currentKmapToTruthTable = kmapToTruthTable;
     currentTruthTableToKmap = truthTableToKmap;
