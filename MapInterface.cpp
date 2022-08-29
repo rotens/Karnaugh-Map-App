@@ -68,6 +68,7 @@ constexpr int kmap2x4ToTruthTable[] = {1, 3, 7, 5, 2, 4, 8, 6};
 constexpr Value intToValue[] = {Value::zero, Value::one, Value::dont_care};
 
 std::vector<int> _pair{0, 1};
+std::vector<int> _single{0};
 std::vector<std::vector<int>> vec1{_pair};
 
 MapInterface::MapInterface(sf::Font& font)
@@ -94,8 +95,9 @@ MapInterface::MapInterface(sf::Font& font)
     variablesText[1].setFont(font);
     switchMapText.setFont(font);
 
-    setUpMap2x2();
-    // setUpMap2x4();
+    // setUpMap1x2();
+    // setUpMap2x2();
+    setUpMap2x4();
 }
 
 void MapInterface::fillCellsWithWhiteColor()
@@ -254,22 +256,10 @@ void MapInterface::drawGrayCodeMap1x2()
         grayCodeText[i].setCharacterSize(24); 
         grayCodeText[i].setFillColor(sf::Color::Black);
         grayCodeText[i].setPosition(
-            horizontalGrayCodeWidthOffset + i * 60,
+            horizontalGrayCodeWidthOffset + i * 60 + 6,
             horizontalGrayCodeHeightOffset);
 
         window.draw(grayCodeText[i]);
-    }
-
-    for (int i = 0; i < map2x2Height; ++i)
-    {
-        grayCodeText[i+4].setString(grayCode[1][i]);
-        grayCodeText[i+4].setCharacterSize(24); 
-        grayCodeText[i+4].setFillColor(sf::Color::Black);
-        grayCodeText[i+4].setPosition(
-            verticalGrayCodeWidthOffset + 12,
-            verticalGrayCodeHeightOffset + i * 60);
-
-        window.draw(grayCodeText[i+4]);
     }
 }
 
@@ -283,6 +273,11 @@ void MapInterface::drawVariables()
         currentVariables1HeightOffset);
 
     window.draw(variablesText[0]);
+
+    if (currentVariables2 == "")
+    {
+        return;
+    }
 
     variablesText[1].setString(currentVariables2);
     variablesText[1].setCharacterSize(30); 
@@ -534,9 +529,9 @@ void MapInterface::drawPairs()
         
         auto sortedPair = getSortedPair(pair);
         firstCell = std::make_pair(
-            sortedPair.first / currentMapHeight, sortedPair.first % currentMapHeight);
+            sortedPair.first / currentMapWidth, sortedPair.first % currentMapWidth);
         lastCell = std::make_pair(
-            sortedPair.second / currentMapHeight, sortedPair.second % currentMapHeight);
+            sortedPair.second / currentMapWidth, sortedPair.second % currentMapWidth);
 
         if (firstCell.first == lastCell.first)
         {
@@ -1082,6 +1077,27 @@ void MapInterface::setUpMap2x2()
     currentVariables2WidthOffset = BVariablesWidthOffset;
     currentCellsNumber = map2x2CellsNumber;
     currentVariablesNumber = map2x2VariablesNumber;
+    currentTableHeader = truthTableHeaderFourVar;
+    currentKmapToTruthTable = kmapToTruthTable;
+    currentTruthTableToKmap = truthTableToKmap;
+}
+
+void MapInterface::setUpMap1x2()
+{
+    // kmapObject.fillMapWithZeroValues();
+    // kmapObject.reset();
+    // kmapObject.findAlgebraicMinterms();
+    singleGroups = &_single;
+    minterms = &kmapObject.getAlgebraicMinterms();
+    currentMapType = MapType::map1x2;
+    currentMapHeight = map1x2Height;
+    currentMapWidth = map1x2Width;
+    currentVariables1 = "A";
+    currentVariables2 = "";
+    currentVariables1HeightOffset = AVariablesHeightOffset;
+    currentVariables1WidthOffset = AVariablesWidthOffset;
+    currentCellsNumber = map1x2CellsNumber;
+    currentVariablesNumber = map1x2VariablesNumber;
     currentTableHeader = truthTableHeaderFourVar;
     currentKmapToTruthTable = kmapToTruthTable;
     currentTruthTableToKmap = truthTableToKmap;

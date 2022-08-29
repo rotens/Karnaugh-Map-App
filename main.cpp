@@ -814,8 +814,8 @@ int main()
 
     // Map2x4 kmap;
     // kmap.initializeElementsWithGivenValues({
-    //     Value::zero, Value::one, Value::one, Value::one,
-    //     Value::one, Value::one, Value::one, Value::one});
+    //     Value::zero, Value::zero, Value::zero, Value::zero,
+    //     Value::zero, Value::one, Value::one, Value::one});
     // kmap.findGroups();
     // kmap.findAlgebraicMinterms();
     // kmap.printKmap();

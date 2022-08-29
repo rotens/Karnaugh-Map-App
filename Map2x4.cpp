@@ -433,3 +433,15 @@ void Map2x4::changeCellValue(int cellIndex, Value valueToSet)
         --ones;
     }
 }
+
+void Map2x4::printEverything()
+{
+    std::cout << "\nSquare quads: \n";
+    printSquareQuads();
+    std::cout << "\nRect quads: \n";
+    printRectQuads();
+    std::cout << "\nPairs: \n";
+    printPairs();
+    std::cout << "\nAlgebraic minterms: \n";
+    printAlgebraicMinterms();
+}
